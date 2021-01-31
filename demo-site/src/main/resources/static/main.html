@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Finance manager</title>
+</head>
+
+<body>
+<form action="#">
+    <input id="spending_name" placeholder="Name">
+    <input id="spending_cost" placeholder="Cost">
+    <input type="date" id="spending_date" name="spending_date">
+	<select id="categories"></select>
+    <br><button onclick="createUser()">Create user</button>
+</form>
+
+<script>
+function loadCategories(){
+	var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                var categories = JSON.parse(this.responseText);
+                var html = '<option value="">Select a category:</option>';
+				for (var i = 0; i < categories.length; i++) {
+                    var category = categories[i];
+                    console.log(category);
+                    html = html + '<option value="'+category.id+'">'+category.name+'</option>';
+				}
+                document.getElementById("categories").innerHTML = html;
+			}
+		};
+		xhttp.open("GET", "http://localhost:8083/category/findAll", true);
+        xhttp.send();
+	}
+	function createUser() {
+        var spendingName = document.getElementById("spending_name").value;
+        var spendingCost = document.getElementById("spending_cost").value;
+		var spendingDate = document.getElementById("spending_date").value;
+        var spendingCategory = document.getElementById("categories").value;
+        var xmlhttp = new XMLHttpRequest();   // new HttpRequest instance
+        xmlhttp.open("POST", "http://localhost:8083/users/save");
+        xmlhttp.setRequestHeader("Content-Type", "application/json");
+        xmlhttp.send(JSON.stringify({name: userName, login: userLogin, email: userEmail}));
+
+    }
+loadCategories();
+</script>
+</body>
+</html>
