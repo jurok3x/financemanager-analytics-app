@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "user_table")
+@Table(name = "\"user_table\"")
 @Data
 @NoArgsConstructor
 @Getter
@@ -23,7 +23,7 @@ import lombok.Setter;
 public class User {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name="userId")
+	@Column(name="id")
 	private int id;
 	
 	@Column(name="user_name")
@@ -38,7 +38,7 @@ public class User {
 	@Column(name="email")
 	private String email;
 	
-	@JoinColumn(name="group")
+	@JoinColumn(name="\"group\"")
 	@OneToOne
 	private Group group;
 }

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.financemanager.demo.site.dto.CategoryDto;
 import com.financemanager.demo.site.entity.Category;
+import com.financemanager.demo.site.exception.NoSuchCategoryException;
 import com.financemanager.demo.site.repository.CategoryRepository;
 
 import lombok.AllArgsConstructor;
@@ -33,6 +34,14 @@ public List<CategoryDto> findAll() {
 			.stream()
 			.map(categoryConverter::fromCategoryToCategoryDto)
 			.collect(Collectors.toList());
+}
+
+@Override
+public CategoryDto findById(Integer id) throws NoSuchCategoryException {
+	// TODO Auto-generated method stub
+	Category category = categoryRepository.findById(id)
+			.orElseThrow(() -> new NoSuchCategoryException("Category not found"));
+	return categoryConverter.fromCategoryToCategoryDto(category);
 }
 
 

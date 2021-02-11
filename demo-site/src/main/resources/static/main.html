@@ -6,11 +6,17 @@
 
 <body>
 <form action="#">
-    <input id="spending_name" placeholder="Name">
-    <input id="spending_cost" placeholder="Cost">
-    <input type="date" id="spending_date" name="spending_date">
-	<select id="categories"></select>
-    <br><button onclick="createUser()">Create user</button>
+    <input id="item_name" placeholder="Name">
+    <input id="price" placeholder="Cost">
+    <input type="date" id="item_date" name="item_date">
+	<select id="categories">
+	<option value="1">Leisure</option>
+	<option value="2">Food</option>
+	<option value="3">Transport</option>
+	<option value="4">Other</option>
+	</select>
+    <br><button onclick="addItem()">Add new item</button>
+    <h1 id="cat">55</h1>
 </form>
 
 <script>
@@ -31,18 +37,32 @@ function loadCategories(){
 		xhttp.open("GET", "http://localhost:8083/category/findAll", true);
         xhttp.send();
 	}
-	function createUser() {
-        var spendingName = document.getElementById("spending_name").value;
-        var spendingCost = document.getElementById("spending_cost").value;
-		var spendingDate = document.getElementById("spending_date").value;
-        var spendingCategory = document.getElementById("categories").value;
-        var xmlhttp = new XMLHttpRequest();   // new HttpRequest instance
-        xmlhttp.open("POST", "http://localhost:8083/users/save");
+	function addItem() {
+        var itemName = document.getElementById("item_name").value;
+        var itemPrice = document.getElementById("price").value;
+		var itemDate = new Date(document.getElementById("item_date").value);
+		var catId = document.getElementById("categories").value; //category id from form
+        var itemCategory = {"id":3,"name":"Transport"};
+        
+		var group = {"id":1, name: "Admin"};
+		var user = {"id":2, name: "Yura KOc", login: "jurok3x", password: "metro2033", email: "jurok3x@gmail.com", group: group};
+	    var xmlhttp = new XMLHttpRequest();   // new HttpRequest instance
+        xmlhttp.open("POST", "http://localhost:8083/item/save");
         xmlhttp.setRequestHeader("Content-Type", "application/json");
-        xmlhttp.send(JSON.stringify({name: userName, login: userLogin, email: userEmail}));
+        xmlhttp.send(JSON.stringify({name: itemName, price: itemPrice, category: itemCategory, user: user, date: itemDate}));
 
     }
-loadCategories();
+	function getCategoryById(id){
+		var xhttp = new XMLHttpRequest();
+		var http = "http://localhost:8083/category/" + id;
+		xhttp.open("GET", http, true);
+        xhttp.send();
+        group = this.responseText;
+        return group ;
+        
+	}
+
+//loadCategories();
 </script>
 </body>
 </html>

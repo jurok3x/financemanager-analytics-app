@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.financemanager.demo.site.dto.CategoryDto;
+import com.financemanager.demo.site.exception.NoSuchCategoryException;
 import com.financemanager.demo.site.service.CategoryService;
 import lombok.AllArgsConstructor;
 import lombok.extern.java.Log;
@@ -39,4 +40,9 @@ public class CategoryController {
         categoryService.deleteCategory(id);
         return ResponseEntity.ok().build();
     }
+	@GetMapping("/{id}")
+	public CategoryDto findCategoryById(@PathVariable Integer id) throws NoSuchCategoryException {
+		log.info("Handling find caegory with id="+id);
+		return categoryService.findById(id);
+	}
 }

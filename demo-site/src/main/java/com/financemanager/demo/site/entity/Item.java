@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "item_table")
+@Table(name = "\"item_table\"")
 @Data
 @NoArgsConstructor
 @Getter
@@ -31,10 +31,10 @@ public class Item {
 	private String name;
 	@Column(name="price")
 	private double price;
-	@JoinColumn(name="category")
+	@JoinColumn(name="\"category\"")
 	@OneToOne
 	private Category category;
-	@JoinColumn(name="user")
+	@JoinColumn(name="\"user\"")
 	@OneToOne
 	private User user;
 	@Column(name="date")
