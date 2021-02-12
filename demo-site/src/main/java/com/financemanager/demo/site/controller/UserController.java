@@ -11,7 +11,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.financemanager.demo.site.dto.UserDto;
+import com.financemanager.demo.site.entity.Role;
 import com.financemanager.demo.site.exception.ValidationException;
+import com.financemanager.demo.site.service.RoleConverter;
+import com.financemanager.demo.site.service.RoleService;
 import com.financemanager.demo.site.service.UserService;
 import lombok.AllArgsConstructor;
 import lombok.extern.java.Log;
@@ -23,10 +26,14 @@ import lombok.extern.java.Log;
 public class UserController {
 	
 	private final UserService userService;
+	private final RoleService roleService;
+	private final RoleConverter roleConverter;
 	
 	@PostMapping("/save")
     public UserDto saveUser(@RequestBody UserDto userDto) throws ValidationException {
-        log.info("Handling save user: " + userDto);
+		Role role = roleConverter.fromRoleDtoToRole(roleService.findByName("ROLE_USER"));
+		userDto.setRole(role);
+		log.info("Handling save user: " + userDto);
         return userService.saveUser(userDto);
     }
 	
@@ -46,10 +53,10 @@ public class UserController {
         userService.deleteUser(id);
         return ResponseEntity.ok().build();
     }
-	@GetMapping("/findByGroup/{id}")
+	@GetMapping("/findByRole/{id}")
     public List<UserDto> findByGroupId(@RequestParam Integer id) {
         log.info("Handling find all users by group request");
-        return userService.findByGroupId(id);
+        return userService.findByRoleId(id);
     }
 	
 }

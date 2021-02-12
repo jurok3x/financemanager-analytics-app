@@ -56,8 +56,8 @@ public class DefaultUserService implements UserService{
 	}
 
 	@Override
-	public List<UserDto> findByGroupId(Integer id) {
-		return  userRepository.findByGroupId(id)
+	public List<UserDto> findByRoleId(Integer id) {
+		return  userRepository.findByRoleId(id)
                 .stream()
                 .map(userConverter::fromUserToUserDto)
                 .collect(Collectors.toList());

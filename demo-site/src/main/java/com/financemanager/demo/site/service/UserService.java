@@ -17,5 +17,5 @@ public interface UserService {
 
     List<UserDto> findAll();
     
-    List<UserDto> findByGroupId(Integer id);
+    List<UserDto> findByRoleId(Integer id);
 }

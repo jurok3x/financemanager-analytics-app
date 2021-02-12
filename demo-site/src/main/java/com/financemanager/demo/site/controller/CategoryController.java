@@ -41,8 +41,14 @@ public class CategoryController {
         return ResponseEntity.ok().build();
     }
 	@GetMapping("/{id}")
-	public CategoryDto findCategoryById(@PathVariable Integer id) throws NoSuchCategoryException {
+	public CategoryDto findCategoryById(@PathVariable Integer id) {
 		log.info("Handling find caegory with id="+id);
-		return categoryService.findById(id);
+		try {
+			return categoryService.findById(id);
+		} catch (NoSuchCategoryException e) {
+			// TODO Auto-generated catch block
+			log.info("Category not found.");
+			return null;
+		} 
 	}
 }

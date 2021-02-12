@@ -1,6 +1,6 @@
 package com.financemanager.demo.site.dto;
 
-import com.financemanager.demo.site.entity.Group;
+import com.financemanager.demo.site.entity.Role;
 
 import lombok.Builder;
 import lombok.Data;
@@ -15,7 +15,6 @@ public class UserDto {
 	private int id;
 	private String name;
 	private String login;//change
-	private String password;//remove
 	private String email;
-	private Group group;
+	private Role role;
 }

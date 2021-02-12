@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Builder
 @Data
-public class GroupDto {
+public class RoleDto {
 
 	private int id;
 	private String name;

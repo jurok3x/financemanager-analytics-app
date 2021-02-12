@@ -13,7 +13,7 @@ public class UserConverter {
         user.setEmail(userDto.getEmail());
         user.setName(userDto.getName());
         user.setLogin(userDto.getLogin());
-        user.setGroup(userDto.getGroup());
+        user.setRole(userDto.getRole());
         return user;
     }
 	
@@ -23,7 +23,7 @@ public class UserConverter {
 				 .login(user.getLogin())
 				 .email(user.getEmail())
 				 .name(user.getName())
-				 .group(user.getGroup())
+				 .role(user.getRole())
 				 .build();
 	}
 }

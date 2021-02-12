@@ -9,5 +9,5 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
 	User findByLogin(String login);
 	
-	List<User> findByGroupId(Integer id);
+	List<User> findByRoleId(Integer id);
 }
