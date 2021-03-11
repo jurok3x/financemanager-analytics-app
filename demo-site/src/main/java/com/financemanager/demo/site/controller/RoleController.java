@@ -11,14 +11,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.financemanager.demo.site.dto.RoleDto;
+import com.financemanager.demo.site.entity.Role;
 import com.financemanager.demo.site.service.RoleService;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.java.Log;
 
 @RestController
-@RequestMapping("/group")
+@RequestMapping("/role")
 @AllArgsConstructor
 @Log
 public class RoleController {
@@ -26,14 +26,14 @@ public class RoleController {
 	private final RoleService roleService;
 	
 	@GetMapping("/findAll")
-	public List<RoleDto> findAllGroups() {
+	public List<Role> findAllRoles() {
 		log.info("Handling find all groups request");
 		return roleService.findAll();
 	}
 	@PostMapping("/save")
-    public RoleDto saveGroup(@RequestBody RoleDto roleDto) {
-        log.info("Handling save group: " + roleDto);
-        return roleService.saveRole(roleDto);
+    public Role saveRole(@RequestBody Role role) {
+        log.info("Handling save group: " + role);
+        return roleService.saveRole(role);
     }
 	@DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteCategory(@PathVariable Integer id) {

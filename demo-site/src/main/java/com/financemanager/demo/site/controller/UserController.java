@@ -1,6 +1,10 @@
 package com.financemanager.demo.site.controller;
 
+import java.net.http.HttpRequest;
 import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,11 +14,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.financemanager.demo.site.config.jwt.JwtProvider;
 import com.financemanager.demo.site.dto.UserDto;
-import com.financemanager.demo.site.entity.Role;
+import com.financemanager.demo.site.entity.User;
 import com.financemanager.demo.site.exception.ValidationException;
-import com.financemanager.demo.site.service.RoleConverter;
-import com.financemanager.demo.site.service.RoleService;
 import com.financemanager.demo.site.service.UserService;
 import lombok.AllArgsConstructor;
 import lombok.extern.java.Log;
@@ -26,15 +30,13 @@ import lombok.extern.java.Log;
 public class UserController {
 	
 	private final UserService userService;
-	private final RoleService roleService;
-	private final RoleConverter roleConverter;
+    private JwtProvider jwtProvider;
+
 	
 	@PostMapping("/save")
-    public UserDto saveUser(@RequestBody UserDto userDto) throws ValidationException {
-		Role role = roleConverter.fromRoleDtoToRole(roleService.findByName("ROLE_USER"));
-		userDto.setRole(role);
-		log.info("Handling save user: " + userDto);
-        return userService.saveUser(userDto);
+    public User saveUser(@RequestBody User user) throws ValidationException {
+		log.info("Handling save user: " + user);
+        return userService.saveUser(user);
     }
 	
 	@GetMapping("/findAll")
@@ -58,5 +60,24 @@ public class UserController {
         log.info("Handling find all users by group request");
         return userService.findByRoleId(id);
     }
+	
+	@GetMapping("/admin/get")
+    public String getAdmin(HttpRequest request) {
+		
+		
+		return "Hi admin";
+    }
+	
+	@GetMapping("/user/get")
+    public String getUser() {
+        return "Hi user";
+    }
+	
+	 @PostMapping("/auth")
+	    public AuthResponse auth(@RequestParam String login, String password) {
+	        User user = userService.findByLoginAndPassword(login, password);
+	        String token = jwtProvider.generateToken(user.getLogin());
+	        return new AuthResponse(token);
+	    }
 	
 }

@@ -3,6 +3,7 @@ package com.financemanager.demo.site.service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.financemanager.demo.site.dto.ItemDto;
@@ -18,6 +19,7 @@ public class DefaultItemService implements ItemService{
 	private final ItemConverter itemConverter;
 	@Override
 	public ItemDto saveItem(ItemDto itemDto) {
+		SecurityContextHolder.getContext().getAuthentication().getName();
 		Item savedItem = itemRepository.save(itemConverter.fromItemDtoToItem(itemDto));
 		return itemConverter.fromItemToItemDto(savedItem);
 	}
