@@ -4,16 +4,16 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 
-import com.financemanager.demo.site.dto.RoleDto;
+import com.financemanager.demo.site.entity.Role;
 
 @Component
 public interface RoleService {
 
-	RoleDto saveRole(RoleDto roleDto);
+	Role saveRole(Role role);
 
     void deleteRole(Integer catId);
 
-    List<RoleDto> findAll();
+    List<Role> findAll();
     
-    RoleDto findByName(String name);
+    Role findByName(String name);
 }

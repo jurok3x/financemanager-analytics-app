@@ -3,9 +3,12 @@ package com.financemanager.demo.site.service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.financemanager.demo.site.dto.UserDto;
+import com.financemanager.demo.site.entity.Role;
 import com.financemanager.demo.site.entity.User;
 import com.financemanager.demo.site.exception.ValidationException;
 import com.financemanager.demo.site.repository.UserRepository;
@@ -18,11 +21,16 @@ public class DefaultUserService implements UserService{
 
 	private final UserRepository userRepository;
 	private final UserConverter userConverter;
+	private final RoleService roleService;
+	@Autowired
+	private PasswordEncoder passwordEncoder;
 	@Override
-	public UserDto saveUser(UserDto userDto) throws ValidationException {
-		validateUserDto(userDto);
-		User savedUser = userRepository.save(userConverter.fromUserDtoToUser(userDto));
-		return userConverter.fromUserToUserDto(savedUser);
+	public User saveUser(User user) throws ValidationException {
+		validateUser(user);
+		Role role = roleService.findByName("ROLE_USER");
+		user.setRole(role);
+		user.setPassword(passwordEncoder.encode(user.getPassword()));
+		return userRepository.save(user);
 	}
 
 	@Override
@@ -46,11 +54,11 @@ public class DefaultUserService implements UserService{
                 .map(userConverter::fromUserToUserDto)
                 .collect(Collectors.toList());
 	}
-	private void validateUserDto(UserDto userDto) throws ValidationException{
-		if(userDto.equals(null)){
+	private void validateUser(User user) throws ValidationException{
+		if(user.equals(null)){
 			throw new ValidationException("Object user is null");
 		}
-		if (userDto.getLogin().isEmpty() || userDto.getLogin().equals(null)){
+		if (user.getLogin().isEmpty() || user.getLogin().equals(null)){
 			throw new ValidationException("Login is empty");
 		}
 	}
@@ -63,4 +71,13 @@ public class DefaultUserService implements UserService{
                 .collect(Collectors.toList());
 	}
 
+	@Override
+	public User findByLoginAndPassword(String login, String password) {
+		User user = userRepository.findByLogin(login);
+		if (user != null) {
+			if(passwordEncoder.matches(password, user.getPassword()))
+				return user;
+        }
+		return null;
+	}
 }

@@ -4,16 +4,16 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 
-import com.financemanager.demo.site.dto.CategoryDto;
+import com.financemanager.demo.site.entity.Category;
 import com.financemanager.demo.site.exception.NoSuchCategoryException;
 
 @Component
 public interface CategoryService {
-	CategoryDto saveCategory(CategoryDto categoryDto);
+	Category saveCategory(Category category);
 
     void deleteCategory(Integer catId);
 
-    List<CategoryDto> findAll();
+    List<Category> findAll();
     
-    CategoryDto findById(Integer catId) throws NoSuchCategoryException;
+    Category findById(Integer catId) throws NoSuchCategoryException;
 }

@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import com.financemanager.demo.site.dto.CategoryDto;
+import com.financemanager.demo.site.entity.Category;
 import com.financemanager.demo.site.exception.NoSuchCategoryException;
 import com.financemanager.demo.site.service.CategoryService;
 import lombok.AllArgsConstructor;
@@ -25,14 +25,14 @@ public class CategoryController {
 	private final CategoryService categoryService;
 	
 	@GetMapping("/findAll")
-	public List<CategoryDto> findAllCategories() {
+	public List<Category> findAllCategories() {
 		log.info("Handling find all caegories request");
 		return categoryService.findAll();
 	}
 	@PostMapping("/save")
-    public CategoryDto saveCategory(@RequestBody CategoryDto categoryDto) {
-        log.info("Handling save category: " + categoryDto);
-        return categoryService.saveCategory(categoryDto);
+    public Category saveCategory(@RequestBody Category category) {
+        log.info("Handling save category: " + category);
+        return categoryService.saveCategory(category);
     }
 	@DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteCategory(@PathVariable Integer id) {
@@ -41,7 +41,7 @@ public class CategoryController {
         return ResponseEntity.ok().build();
     }
 	@GetMapping("/{id}")
-	public CategoryDto findCategoryById(@PathVariable Integer id) {
+	public Category findCategoryById(@PathVariable Integer id) {
 		log.info("Handling find caegory with id="+id);
 		try {
 			return categoryService.findById(id);

@@ -5,15 +5,18 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 
 import com.financemanager.demo.site.dto.UserDto;
+import com.financemanager.demo.site.entity.User;
 import com.financemanager.demo.site.exception.ValidationException;
 
 @Component
 public interface UserService {
-	UserDto saveUser(UserDto usersDto) throws ValidationException;
+	User saveUser(User user) throws ValidationException;
 
     void deleteUser(Integer userId);
 
     UserDto findByLogin(String login);
+    
+    User findByLoginAndPassword(String login, String password);
 
     List<UserDto> findAll();
     
