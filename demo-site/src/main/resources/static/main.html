@@ -44,12 +44,11 @@ function loadCategories(){
 		var catId = document.getElementById("categories").value; //category id from form
         var itemCategory = {"id":3,"name":"Transport"};
         
-		var group = {"id":1, name: "Admin"};
-		var user = {"id":2, name: "Yura KOc", login: "jurok3x", password: "metro2033", email: "jurok3x@gmail.com", group: group};
+		
 	    var xmlhttp = new XMLHttpRequest();   // new HttpRequest instance
         xmlhttp.open("POST", "http://localhost:8083/item/save");
         xmlhttp.setRequestHeader("Content-Type", "application/json");
-        xmlhttp.send(JSON.stringify({name: itemName, price: itemPrice, category: itemCategory, user: user, date: itemDate}));
+        xmlhttp.send(JSON.stringify({name: itemName, price: itemPrice, category: itemCategory,  date: itemDate}));
 
     }
 	function getCategoryById(id){

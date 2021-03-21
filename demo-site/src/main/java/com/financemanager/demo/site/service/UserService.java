@@ -21,4 +21,6 @@ public interface UserService {
     List<UserDto> findAll();
     
     List<UserDto> findByRoleId(Integer id);
+    
+    User getContextUser();
 }

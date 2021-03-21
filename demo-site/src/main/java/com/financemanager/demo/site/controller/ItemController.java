@@ -43,9 +43,15 @@ public class ItemController {
         return ResponseEntity.ok().build();
     }
 	
-	@GetMapping("/find?CategoryId={category_id}&UserId={user_id}")
-    public List<ItemDto> findByCategoryIdInAndUserIdIn(@PathVariable Integer category_id, Integer user_id) {
-        log.info("Handling find item by category id=" + category_id + ", and user id=" + user_id);
-        return itemService.findByCategoryIdInAndUserIdIn(category_id, user_id);
+	@GetMapping("/find?CategoryId={category_id}")
+    public List<ItemDto> findByCategoryId(@PathVariable Integer category_id) {
+        log.info("Handling find item by category id=" + category_id);
+        return itemService.findByCategoryId(category_id);
+    }
+	
+	@GetMapping("/findContextUserItems")
+    public List<ItemDto> findByUserId() {
+        log.info("Handling find item by context user" );
+        return itemService.findContextUserItems();
     }
 }

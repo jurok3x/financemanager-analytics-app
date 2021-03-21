@@ -14,5 +14,7 @@ public interface ItemService {
 
     List<ItemDto> findAll();
     
-    List<ItemDto> findByCategoryIdInAndUserIdIn (int categoryId, int userId);
+    List<ItemDto> findByCategoryId (int categoryId);
+    
+    List<ItemDto> findContextUserItems ();
 }
