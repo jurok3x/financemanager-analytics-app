@@ -1,11 +1,16 @@
 package com.financemanager.demo.site.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import com.financemanager.demo.site.dto.ItemDto;
 import com.financemanager.demo.site.entity.Item;
 
 @Component
 public class ItemConverter {
+	
+	@Autowired
+	private UserConverter userConverter;
+	
 	public Item fromItemDtoToItem(ItemDto itemDto) {
 		Item item = new Item();
 		item.setId(itemDto.getId());
@@ -13,7 +18,7 @@ public class ItemConverter {
 		item.setName(itemDto.getName());
 		item.setDate(itemDto.getDate());
 		item.setCategory(itemDto.getCategory());
-		item.setUser(itemDto.getUser());
+		item.setUser(userConverter.fromUserDtoToUser(itemDto.getUserDto()));
         return item;
     }
 	public ItemDto fromItemToItemDto(Item item) {
@@ -23,7 +28,7 @@ public class ItemConverter {
         		.name(item.getName())
         		.date(item.getDate())
         		.category(item.getCategory())
-        		.user(item.getUser())
+        		.userDto(userConverter.fromUserToUserDto(item.getUser()))
         		.build();
     }
 

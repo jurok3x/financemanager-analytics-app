@@ -1,5 +1,7 @@
 package com.financemanager.demo.site.entity;
 
+
+
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -31,10 +33,10 @@ public class Item {
 	private String name;
 	@Column(name="price")
 	private double price;
-	@JoinColumn(name="\"category\"")
+	@JoinColumn(name="\"category_id\"")
 	@OneToOne
 	private Category category;
-	@JoinColumn(name="\"user\"")
+	@JoinColumn(name="\"user_id\"")
 	@OneToOne
 	private User user;
 	@Column(name="date")

@@ -1,5 +1,6 @@
 package com.financemanager.demo.site.service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.stereotype.Component;
@@ -15,6 +16,10 @@ public interface ItemService {
     List<ItemDto> findAll();
     
     List<ItemDto> findByCategoryId (int categoryId);
+
+    List<ItemDto> getCurrentUserItems();
     
-    List<ItemDto> findContextUserItems ();
+    List<ItemDto> getSpecifiedUserItems(int year, int month);
+    
+    List<ItemDto> saveItemsFromExelFile(String path);
 }

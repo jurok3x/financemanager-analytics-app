@@ -24,34 +24,49 @@ import lombok.extern.java.Log;
 public class ItemController {
 
 	private ItemService itemService;
-	
+
 	@GetMapping("/findAll")
 	public List<ItemDto> findAllItems() {
-		log.info("Handling find all caegories request");
+		log.info("Handling find all items request");
 		return itemService.findAll();
 	}
-	
+
 	@PostMapping("/save")
-    public ItemDto saveItem(@RequestBody ItemDto itemDto)  {
-        log.info("Handling save item: " + itemDto);
-        return itemService.saveItem(itemDto);
-    }
+	public ItemDto saveItem(@RequestBody ItemDto itemDto) {
+		
+		log.info("Handling save item: " + itemDto);
+		return itemService.saveItem(itemDto);
+	}
+
 	@DeleteMapping("/delete/{id}")
-    public ResponseEntity<Void> deleteItem(@PathVariable Integer id) {
-        log.info("Handling delete item request: " + id);
-        itemService.deleteItem(id);
-        return ResponseEntity.ok().build();
-    }
-	
-	@GetMapping("/find?CategoryId={category_id}")
-    public List<ItemDto> findByCategoryId(@PathVariable Integer category_id) {
-        log.info("Handling find item by category id=" + category_id);
-        return itemService.findByCategoryId(category_id);
-    }
-	
-	@GetMapping("/findContextUserItems")
-    public List<ItemDto> findByUserId() {
-        log.info("Handling find item by context user" );
-        return itemService.findContextUserItems();
-    }
+	public ResponseEntity<Void> deleteItem(@PathVariable Integer id) {
+		log.info("Handling delete item request: " + id);
+		itemService.deleteItem(id);
+		return ResponseEntity.ok().build();
+	}
+
+	@GetMapping("/findCategoryId/{category_id}")
+	public List<ItemDto> findByCategoryId(@PathVariable Integer category_id) {
+		log.info("Handling find item by category id=" + category_id);
+		return itemService.findByCategoryId(category_id);
+	}
+
+	@GetMapping("/findDate/{year}/{month}")
+	public List<ItemDto> findByMonthAndYear(@PathVariable Integer month, @PathVariable Integer year) {
+		month++;
+		log.info("Handling find item with month =" + month + " and year =" + year);
+		return itemService.getSpecifiedUserItems(year, month);
+	}
+
+	@GetMapping("/findCurrentItems") // add date to string
+	public List<ItemDto> findCurrentUserItems() {
+		log.info("Handling find cuurent user items");
+		return itemService.getCurrentUserItems();
+	}
+
+	@GetMapping("/saveFromExelFile")
+	public List<ItemDto> saveFromExelFile() {
+		log.info("Handling save multiple items: ");
+		return itemService.saveItemsFromExelFile("E:\\items.xls");
+	}
 }
