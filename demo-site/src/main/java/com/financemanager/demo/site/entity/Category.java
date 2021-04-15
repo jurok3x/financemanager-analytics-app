@@ -17,11 +17,16 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public class Category {
+public class Category implements Comparable<Category>{
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name="id")
 	private int id;
 	@Column(name="name")
 	private String name;
+	@Override
+	public int compareTo(Category category) {
+		// TODO Auto-generated method stub
+		return this.id - category.getId();
+	}
 }

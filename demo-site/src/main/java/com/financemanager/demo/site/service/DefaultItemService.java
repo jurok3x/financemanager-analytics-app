@@ -88,6 +88,9 @@ public class DefaultItemService implements ItemService {
 			case "price":
 				comparator = Comparator.comparing(ItemDto::getPrice);
 				break;
+			case "category":
+				comparator = Comparator.comparing(ItemDto::getCategory);
+				break;
 			default:
 				comparator = Comparator.comparing(ItemDto::getId);
 				break;
