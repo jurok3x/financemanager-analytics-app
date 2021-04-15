@@ -3,8 +3,10 @@ package com.financemanager.demo.site.service;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.poi.hssf.usermodel.HSSFSheet;
@@ -69,18 +71,36 @@ public class DefaultItemService implements ItemService {
 		Date end = Date.from(LocalDate.now(ZoneId.systemDefault()).with(lastDayOfMonth())
 				.atStartOfDay(ZoneId.systemDefault()).toInstant());
 		return itemRepository
-				.findByUserIdAndDateGreaterThanEqualAndDateLessThanEqual(userService.getContextUser().getId(), start, end)
+				.findByUserIdAndDateGreaterThanEqualAndDateLessThanEqual(userService.getContextUser().getId(), start,
+						end)
 				.stream().map(itemConverter::fromItemToItemDto).collect(Collectors.toList());
 	}
 
 	@Override
-	public List<ItemDto> getSpecifiedUserItems(int year, int month) {
+	public List<ItemDto> getSpecifiedUserItems(int year, int month, Optional<String> sort) {
 		LocalDate init = LocalDate.of(year, month, 1);
+		Comparator<ItemDto> comparator;
+		if (sort.isPresent()) {
+			switch (sort.get()) {
+			case "name":
+				comparator = Comparator.comparing(ItemDto::getName);
+				break;
+			case "price":
+				comparator = Comparator.comparing(ItemDto::getPrice);
+				break;
+			default:
+				comparator = Comparator.comparing(ItemDto::getId);
+				break;
+			}
+		} else {
+			comparator = Comparator.comparing(ItemDto::getId);
+		}
 		Date start = Date.from(init.atStartOfDay(ZoneId.systemDefault()).toInstant());
 		Date end = Date.from(init.with(lastDayOfMonth()).atStartOfDay(ZoneId.systemDefault()).toInstant());
 		return itemRepository
-				.findByUserIdAndDateGreaterThanEqualAndDateLessThanEqual(userService.getContextUser().getId(), start, end)
-				.stream().map(itemConverter::fromItemToItemDto).collect(Collectors.toList());
+				.findByUserIdAndDateGreaterThanEqualAndDateLessThanEqual(userService.getContextUser().getId(), start,
+						end)
+				.stream().map(itemConverter::fromItemToItemDto).sorted(comparator).collect(Collectors.toList());
 	}
 
 	@Override
@@ -150,7 +170,7 @@ public class DefaultItemService implements ItemService {
 						break;
 					}
 				}
-			}	
+			}
 			wb.close();
 			items.forEach((storedItem) -> itemRepository.save(storedItem));
 			return items.stream().map(itemConverter::fromItemToItemDto).collect(Collectors.toList());

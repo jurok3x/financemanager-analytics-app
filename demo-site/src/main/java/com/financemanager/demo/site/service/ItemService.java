@@ -2,6 +2,7 @@ package com.financemanager.demo.site.service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Component;
 
@@ -19,7 +20,7 @@ public interface ItemService {
 
     List<ItemDto> getCurrentUserItems();
     
-    List<ItemDto> getSpecifiedUserItems(int year, int month);
+    List<ItemDto> getSpecifiedUserItems(int year, int month, Optional<String> sort);
     
     List<ItemDto> saveItemsFromExelFile(String path);
 }

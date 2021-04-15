@@ -1,6 +1,7 @@
 package com.financemanager.demo.site.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.financemanager.demo.site.dto.ItemDto;
@@ -51,11 +53,12 @@ public class ItemController {
 		return itemService.findByCategoryId(category_id);
 	}
 
-	@GetMapping("/findDate/{year}/{month}")
-	public List<ItemDto> findByMonthAndYear(@PathVariable Integer month, @PathVariable Integer year) {
+	@GetMapping(value = {"/findDate/{year}/{month}"})
+	public List<ItemDto> findByMonthAndYear(@PathVariable Integer month, @PathVariable Integer year,
+			@RequestParam(name = "sortBy") Optional<String> sort) {
 		month++;
-		log.info("Handling find item with month =" + month + " and year =" + year);
-		return itemService.getSpecifiedUserItems(year, month);
+		log.info("Handling find item with month =" + month + " and year =" + year + sort);
+		return itemService.getSpecifiedUserItems(year, month, sort);
 	}
 
 	@GetMapping("/findCurrentItems") // add date to string
