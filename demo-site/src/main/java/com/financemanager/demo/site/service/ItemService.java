@@ -20,7 +20,7 @@ public interface ItemService {
 
     List<ItemDto> getCurrentUserItems();
     
-    List<ItemDto> getSpecifiedUserItems(int year, int month, Optional<String> sort);
+    List<ItemDto> getSpecifiedUserItems(int year, int month, Optional<String> sort, Optional<Boolean> isReversed);
     
     List<ItemDto> saveItemsFromExelFile(String path);
 }

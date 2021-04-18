@@ -55,10 +55,10 @@ public class ItemController {
 
 	@GetMapping(value = {"/findDate/{year}/{month}"})
 	public List<ItemDto> findByMonthAndYear(@PathVariable Integer month, @PathVariable Integer year,
-			@RequestParam(name = "sortBy") Optional<String> sort) {
+			@RequestParam(name = "sortBy") Optional<String> sort, @RequestParam(name = "reversed") Optional<Boolean> isReversed) {
 		month++;
-		log.info("Handling find item with month =" + month + " and year =" + year + sort);
-		return itemService.getSpecifiedUserItems(year, month, sort);
+		log.info("Handling find item with month = " + month + " and year = " + year + " sorted by " + sort + " reverse " + isReversed);
+		return itemService.getSpecifiedUserItems(year, month, sort, isReversed);
 	}
 
 	@GetMapping("/findCurrentItems") // add date to string

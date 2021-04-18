@@ -77,22 +77,30 @@ public class DefaultItemService implements ItemService {
 	}
 
 	@Override
-	public List<ItemDto> getSpecifiedUserItems(int year, int month, Optional<String> sort) {
+	public List<ItemDto> getSpecifiedUserItems(int year, int month, Optional<String> sort, Optional<Boolean> isReversed) {
 		LocalDate init = LocalDate.of(year, month, 1);
 		Comparator<ItemDto> comparator;
 		if (sort.isPresent()) {
 			switch (sort.get()) {
 			case "name":
-				comparator = Comparator.comparing(ItemDto::getName);
+				comparator = (isReversed.isPresent() && isReversed.get().equals(true)) ?
+				Comparator.comparing(ItemDto::getName).reversed(): Comparator.comparing(ItemDto::getName);
 				break;
 			case "price":
-				comparator = Comparator.comparing(ItemDto::getPrice);
+				comparator = (isReversed.isPresent() && isReversed.get().equals(true)) ?
+				Comparator.comparing(ItemDto::getPrice).reversed(): Comparator.comparing(ItemDto::getPrice);
 				break;
 			case "category":
-				comparator = Comparator.comparing(ItemDto::getCategory);
+				comparator = (isReversed.isPresent() && isReversed.get().equals(true)) ?
+				Comparator.comparing(ItemDto::getCategory).reversed(): Comparator.comparing(ItemDto::getCategory);
+				break;
+			case "date":
+				comparator = (isReversed.isPresent() && isReversed.get().equals(true)) ?
+				Comparator.comparing(ItemDto::getDate).reversed(): Comparator.comparing(ItemDto::getDate);
 				break;
 			default:
-				comparator = Comparator.comparing(ItemDto::getId);
+					comparator = (isReversed.isPresent() && isReversed.get().equals(true)) ?
+					Comparator.comparing(ItemDto::getId).reversed(): Comparator.comparing(ItemDto::getId);
 				break;
 			}
 		} else {
