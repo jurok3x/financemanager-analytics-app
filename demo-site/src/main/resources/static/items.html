@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Items page</title>
+      <link rel="stylesheet" href="css/items.css">
+</head>
+<body>
+<div id="header">
+<button class="move" style="vertical-align:middle" onclick="monthBack()"><span>Назад </span></button>
+<a id="current_date"></a>
+<button id="forward" style="vertical-align:middle" class="disabled" onclick="monthForward()"><span>Вперед </span></button>
+</div>
+
+
+
+
+<div class="container">
+<div class="main_table">
+<table class="table_price" id="itemsList"></table>
+</div>
+<table class="table_category" id="categoryList">
+<caption>По категоріям</caption>
+<tr>
+<th>Категорія</th>
+<th>Кількість</th>
+</tr>
+</table>
+</div>
+
+<div id="decor" class="decor">
+<form action="#" class="form-inner">
+<h3>Додати елемент</h3>
+<button onclick="document.getElementById('decor').style.display = 'none'">
+<b>&#10006;</b></button><br>
+<input type="text" id="item_name" placeholder="Назва товару/послуги">
+<input type="text" id="price" placeholder="Ціна">
+<select id="categories"></select>
+<select id="days"></select>
+<input type="submit" onclick="addItem()" value="Додати">
+</form>
+</div>
+
+<script src="js/items.js"></script>
+</body>
+
+
+</html>
