@@ -52,6 +52,7 @@ function loadItems(httpRequest) {
 	};
 	xhttp.open("GET", httpRequest, true);
 	xhttp.send();
+	loadCategories();
 }
 
 function deleteItem(itemId) {
@@ -139,16 +140,33 @@ function loadCategories() {
 		if (this.readyState == 4 && this.status == 200) {
 			categories = JSON.parse(this.responseText);
 			var html = '<option value="">Виберіть категорію:</option>';
+			var table = '<caption>По категоріям</caption><tr>' +
+						'		<th>Категорія</th>' +
+						'	<th>Кількість</th></tr>';
+			var categoryCount;
+			var link;
 			for (var i = 0; i < categories.length; i++) {
 				var category = categories[i];
 				console.log(category);
-				html = html + '<option value="'+category.id+'">'+category.name+'</option>';
+				link = 'http://localhost:8083/item/itemsCount/' + (i + 1) + '?month=' + month + '&year=' + year;
+				categoryCount =  getCategoryCount(link);	
+				html = html + '<option value="'+ category.id + '">' + category.name + '</option>';
+				table += '      <tr><td>' + category.name + '</td>' +
+					     '		  <td>' + categoryCount + '</td></tr>';
 			}
 			document.getElementById("categories").innerHTML = html;
+			document.getElementById("categoryList").innerHTML = table;
 		}
 	};
 	xhttp.open("GET", "http://localhost:8083/category/findAll", true);
 	xhttp.send();
+}
+
+	function getCategoryCount(link){
+		var request = new XMLHttpRequest();
+		request.open("GET", link, false);
+		request.send();
+		return request.responseText;
 }
 
 function addItem() {
@@ -197,6 +215,6 @@ var month = d.getMonth();
 var year = d.getFullYear();
 var httpRequest = "http://localhost:8083/item/findDate/" + year + "/" + month; 
 loadItems(httpRequest);
-loadCategories();
+
 daysList(year, month);
 

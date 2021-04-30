@@ -109,8 +109,7 @@ public class DefaultItemService implements ItemService {
 		Date start = Date.from(init.atStartOfDay(ZoneId.systemDefault()).toInstant());
 		Date end = Date.from(init.with(lastDayOfMonth()).atStartOfDay(ZoneId.systemDefault()).toInstant());
 		return itemRepository
-				.findByUserIdAndDateGreaterThanEqualAndDateLessThanEqual(userService.getContextUser().getId(), start,
-						end)
+				.findByUserIdAndDateGreaterThanEqualAndDateLessThanEqual(userService.getContextUser().getId(), start,end)
 				.stream().map(itemConverter::fromItemToItemDto).sorted(comparator).collect(Collectors.toList());
 	}
 
@@ -172,7 +171,7 @@ public class DefaultItemService implements ItemService {
 							date = cell.getDateCellValue();
 						} else {
 							item.setPrice(cell.getNumericCellValue());
-							items.add(item);
+							items.add(item);							
 						}
 						break;
 					case FORMULA:
@@ -199,6 +198,15 @@ public class DefaultItemService implements ItemService {
 			return null;
 		}
 
+	}
+
+	@Override
+	public Integer countItemsByCategory(int cetegoryId, int year, int month) {
+		LocalDate init = LocalDate.of(year, month, 1);
+		Date start = Date.from(init.atStartOfDay(ZoneId.systemDefault()).toInstant());
+		Date end = Date.from(init.with(lastDayOfMonth()).atStartOfDay(ZoneId.systemDefault()).toInstant());
+		return itemRepository.countByCategoryIdAndUserIdAndDateGreaterThanEqualAndDateLessThanEqual(cetegoryId,
+				userService.getContextUser().getId(), start, end);
 	}
 
 }

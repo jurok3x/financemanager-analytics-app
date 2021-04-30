@@ -4,7 +4,6 @@ package com.financemanager.demo.site.dto;
 import java.util.Date;
 
 import com.financemanager.demo.site.entity.Category;
-import com.financemanager.demo.site.entity.User;
 
 import lombok.Builder;
 import lombok.Data;

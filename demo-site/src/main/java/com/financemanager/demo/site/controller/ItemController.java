@@ -47,10 +47,10 @@ public class ItemController {
 		return ResponseEntity.ok().build();
 	}
 
-	@GetMapping("/findCategoryId/{category_id}")
-	public List<ItemDto> findByCategoryId(@PathVariable Integer category_id) {
-		log.info("Handling find item by category id=" + category_id);
-		return itemService.findByCategoryId(category_id);
+	@GetMapping("/findCategoryId/{categoryId}")
+	public List<ItemDto> findByCategoryId(@PathVariable Integer categoryId) {
+		log.info("Handling find item by category id = " + categoryId);
+		return itemService.findByCategoryId(categoryId);
 	}
 
 	@GetMapping(value = {"/findDate/{year}/{month}"})
@@ -71,5 +71,13 @@ public class ItemController {
 	public List<ItemDto> saveFromExelFile() {
 		log.info("Handling save multiple items: ");
 		return itemService.saveItemsFromExelFile("E:\\items.xls");
+	}
+	
+	@GetMapping("/itemsCount/{categoryId}")
+	public Integer countByCategoryAndDate(@PathVariable Integer categoryId, @RequestParam int year
+			, @RequestParam int month) {
+		month++;
+		log.info("Handling get category count of id =" + categoryId);
+		return itemService.countItemsByCategory(categoryId, year, month);
 	}
 }

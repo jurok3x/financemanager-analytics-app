@@ -1,14 +1,13 @@
 package com.financemanager.demo.site.exception;
 
-public class ValidationException extends Exception {
-
-	/**
+public class NoSuchCategoryException extends Exception {
+/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private String message;
+private String message;
 	
-	public ValidationException(String message){
+	public NoSuchCategoryException(String message){
 	}
 
 	public String getMessage() {

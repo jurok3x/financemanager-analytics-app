@@ -1,6 +1,5 @@
 package com.financemanager.demo.site.service;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,4 +22,6 @@ public interface ItemService {
     List<ItemDto> getSpecifiedUserItems(int year, int month, Optional<String> sort, Optional<Boolean> isReversed);
     
     List<ItemDto> saveItemsFromExelFile(String path);
+    
+    Integer countItemsByCategory(int cetegoryId, int year, int month);
 }
