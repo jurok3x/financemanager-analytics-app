@@ -5,40 +5,22 @@ function loadItems(httpRequest) {
 			var items = JSON.parse(this.responseText);
 			var html = '<caption id="table_head">' +
 		'		 <h1 id="total_price"></h1>' +
-		'		 <span><b>Сортувати за:</b></span>' + 
-		'		 <a onclick="sort(0)">додано</a>' +
-		'		 <a onclick="sort(1)">ім\'я</a>' +
-		'		 <a onclick="sort(2)">ціна</a>' +
-		'		 <a onclick="sort(3)">категорія</a>' +
-		'		 <a onclick="sort(4)">дата</a>' +
 		'		 <button id="add" onclick="document.getElementById(\'decor\').'+
 		'        style.display = \'block\'">&#10010;</a>' +
 		'		 </caption>' +
 		'		 <tr>\n' +
-		'        <th>№</th>\n' +
-		'        <th>Назва</th>\n' +
-		'        <th>Ціна</th>\n' +
-		'        <th>Категорія</th>\n' +
-		'        <th>Дата</th>\n' +
+		'        <th><a onclick="sort(0)">№</a></th>\n' +
+		'        <th><a onclick="sort(1)">Назва</a></th>\n' +
+		'        <th><a onclick="sort(2)">Ціна</a></th>\n' +
+		'        <th><a onclick="sort(3)">Категорія</a></th>\n' +
+		'        <th><a onclick="sort(4)">Дата</a></th>\n' +
 		'        <th>Редагувати</th>\n' +
 		'    </tr>';
 	for (var i = 0; i < items.length; i++) {
 		var item = items[i];
 		var classname;
-		switch (item.category.id) {
-			case 1: classname = "comunication"; break;
-			case 2: classname = "food"; break;
-			case 3: classname = "charity"; break;
-			case 4: classname = "transport"; break;
-			case 5: classname = "everyday_life"; break;
-			case 6: classname = "living"; break;
-			case 7: classname = "medicine"; break;
-			case 8: classname = "leisure"; break;
-			case 9: classname = "services"; break;
-			default: classname = "other"
-		}
 		console.log(item);
-		html = html + '<tr class="' + classname + '"><td>' + (i + 1) + '</td>\n' +
+		html = html + '<tr><td>' + (i + 1) + '</td>\n' +
 			'        <td>' + item.name + '</td>\n' +
 			'        <td>' + item.price + '</td>\n' +
 			'        <td>' + item.category.name + '</td>' +
@@ -140,7 +122,7 @@ function loadCategories() {
 		if (this.readyState == 4 && this.status == 200) {
 			categories = JSON.parse(this.responseText);
 			var html = '<option value="">Виберіть категорію:</option>';
-			var table = '<caption>По категоріям</caption><tr>' +
+			var table = '<caption><h1>По категоріям</h1></caption><tr>' +
 						'		<th>Категорія</th>' +
 						'	<th>Кількість</th></tr>';
 			var categoryCount;

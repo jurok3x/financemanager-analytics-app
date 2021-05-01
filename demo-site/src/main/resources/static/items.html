@@ -6,22 +6,24 @@
       <link rel="stylesheet" href="css/items.css">
 </head>
 <body>
-<div id="header">
+
+
+
+
+
+
+<div class="container_top">
 <button class="move" style="vertical-align:middle" onclick="monthBack()"><span>Назад </span></button>
-<a id="current_date"></a>
+<h1 id="current_date"></h1>
 <button id="forward" style="vertical-align:middle" class="disabled" onclick="monthForward()"><span>Вперед </span></button>
 </div>
-
-
-
-
 <div class="container">
 <div class="main_table">
 <table class="table_price" id="itemsList"></table>
 </div>
-<table class="table_category" id="categoryList">
-
-</table>
+<div class="secondary_table">
+<table class="table_price" id="categoryList"></table>
+</div>
 </div>
 
 <div id="decor" class="decor">
