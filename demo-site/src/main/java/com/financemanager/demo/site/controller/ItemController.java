@@ -24,18 +24,10 @@ import lombok.extern.java.Log;
 @AllArgsConstructor
 @Log
 public class ItemController {
-
 	private ItemService itemService;
-
-	@GetMapping("/findAll")
-	public List<ItemDto> findAllItems() {
-		log.info("Handling find all items request");
-		return itemService.findAll();
-	}
 
 	@PostMapping("/save")
 	public ItemDto saveItem(@RequestBody ItemDto itemDto) {
-		
 		log.info("Handling save item: " + itemDto);
 		return itemService.saveItem(itemDto);
 	}
@@ -47,37 +39,34 @@ public class ItemController {
 		return ResponseEntity.ok().build();
 	}
 
-	@GetMapping("/findCategoryId/{categoryId}")
-	public List<ItemDto> findByCategoryId(@PathVariable Integer categoryId) {
-		log.info("Handling find item by category id = " + categoryId);
-		return itemService.findByCategoryId(categoryId);
-	}
-
-	@GetMapping(value = {"/findDate/{year}/{month}"})
-	public List<ItemDto> findByMonthAndYear(@PathVariable Integer month, @PathVariable Integer year,
+	@GetMapping(value = {"/findAll"})
+	public List<ItemDto> findAll(@RequestParam Optional<Integer> year, @RequestParam Optional<Integer> month,
 			@RequestParam(name = "sortBy") Optional<String> sort, @RequestParam(name = "reversed") Optional<Boolean> isReversed) {
-		month++;
-		log.info("Handling find item with month = " + month + " and year = " + year + " sorted by " + sort + " reverse " + isReversed);
-		return itemService.getSpecifiedUserItems(year, month, sort, isReversed);
+		log.info("Handling find items with " + ((month.isPresent()) ? "month = " + (month.get() + 1) : "") + ((year.isPresent()) ? " and year = " + year.get() : "") +
+				((sort.isPresent()) ? " sorted by = " + sort.get() : "") + ((isReversed.isPresent()) ? " reverse = " + isReversed.get() : ""));
+		return itemService.findAll(year, month, sort, isReversed);
+	}
+	
+	@GetMapping(value = {"/findByCategoryId/{categoryId}"})
+	public List<ItemDto> findByCategoryId(@PathVariable Integer categoryId, @RequestParam Optional<Integer> year, @RequestParam Optional<Integer> month,
+			@RequestParam(name = "sortBy") Optional<String> sort, @RequestParam(name = "reversed") Optional<Boolean> isReversed) {
+		log.info("Handling find items with categoryId = " + categoryId + ((month.isPresent()) ? "month = " + (month.get() + 1) : "") + ((year.isPresent()) ? " and year = " + year.get() : "") +
+				((sort.isPresent()) ? " sorted by = " + sort.get() : "") + ((isReversed.isPresent()) ? " reverse = " + isReversed.get() : ""));
+		return itemService.findByCategory(categoryId, year, month, sort, isReversed);
 	}
 
-	@GetMapping("/findCurrentItems") // add date to string
-	public List<ItemDto> findCurrentUserItems() {
-		log.info("Handling find cuurent user items");
-		return itemService.getCurrentUserItems();
+	@GetMapping("/itemsCount/{categoryId}")
+	public Integer countByCategoryAndDate(@PathVariable Integer categoryId, @RequestParam Optional<Integer> year
+			, @RequestParam Optional<Integer> month) {
+		log.info("Handling get items count in category  with id = " + categoryId + ((month.isPresent()) ? " and month = " + (month.get() + 1) : "") +
+				((year.isPresent()) ? " and year = " + year.get() : ""));
+		return itemService.countItemsByCategory(categoryId, year, month);
 	}
-
+	
 	@GetMapping("/saveFromExelFile")
 	public List<ItemDto> saveFromExelFile() {
-		log.info("Handling save multiple items: ");
+		log.info("Handling save multiple items from exel file.");
 		return itemService.saveItemsFromExelFile("E:\\items.xls");
 	}
 	
-	@GetMapping("/itemsCount/{categoryId}")
-	public Integer countByCategoryAndDate(@PathVariable Integer categoryId, @RequestParam int year
-			, @RequestParam int month) {
-		month++;
-		log.info("Handling get category count of id =" + categoryId);
-		return itemService.countItemsByCategory(categoryId, year, month);
-	}
 }

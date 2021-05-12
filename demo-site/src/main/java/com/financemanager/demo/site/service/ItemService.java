@@ -13,15 +13,11 @@ public interface ItemService {
 
     void deleteItem(Integer itemId);
 
-    List<ItemDto> findAll();
+    List<ItemDto> findAll(Optional<Integer> year, Optional<Integer> month, Optional<String> sort, Optional<Boolean> isReversed);
     
-    List<ItemDto> findByCategoryId (int categoryId);
-
-    List<ItemDto> getCurrentUserItems();
-    
-    List<ItemDto> getSpecifiedUserItems(int year, int month, Optional<String> sort, Optional<Boolean> isReversed);
-    
+    List<ItemDto> findByCategory(int categoryId, Optional<Integer> year, Optional<Integer> month, Optional<String> sort, Optional<Boolean> isReversed);
+         
     List<ItemDto> saveItemsFromExelFile(String path);
     
-    Integer countItemsByCategory(int cetegoryId, int year, int month);
+    Integer countItemsByCategory(int cetegoryId, Optional<Integer> year, Optional<Integer> month);
 }

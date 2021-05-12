@@ -60,7 +60,7 @@ function monthBack() {
 			document.getElementById("forward").className = "move";
 		}
 	}
-	httpRequest = "http://localhost:8083/item/findDate/" + year + "/" + month;
+	httpRequest = "http://localhost:8083/item/findAll" + "?year=" + year + "&month=" + month;
 	loadItems(httpRequest);
 	daysList(year, month);
 }
@@ -75,7 +75,7 @@ function monthForward() {
 				year++;
 				month = 0;
 		} 		
-		httpRequest = "http://localhost:8083/item/findDate/" + year + "/" + month;
+		httpRequest = "http://localhost:8083/item/findAll" + "?year=" + year + "&month=" + month;
 		loadItems(httpRequest);
 		daysList(year, month);	
 	}
@@ -85,10 +85,10 @@ function monthForward() {
 
 function sort() {
 	if(httpRequest.search("=") == -1){
-		httpRequest = "http://localhost:8083/item/findDate/" + year + "/" + month + "?sortBy=" +
+		httpRequest = "http://localhost:8083/item/findAll" + "?year=" + year + "&month=" + month + "&sortBy=" +
 		comparator[arguments[0]] + "&reversed=" + false;
 	} else{
-		httpRequest = "http://localhost:8083/item/findDate/" + year + "/" + month + "?sortBy=" +
+		httpRequest = "http://localhost:8083/item/findAll" + "?year=" + year + "&month=" + month + "&sortBy=" +
 		comparator[arguments[0]] + "&reversed=" + /false/.test(httpRequest);
 	}
 	loadItems(httpRequest);
@@ -195,7 +195,7 @@ var categories;
 const comparator = ["", "name", "price", "category", "date"];
 var month = d.getMonth();
 var year = d.getFullYear();
-var httpRequest = "http://localhost:8083/item/findDate/" + year + "/" + month; 
+var httpRequest = "http://localhost:8083/item/findAll" + "?year=" + year + "&month=" + month; 
 loadItems(httpRequest);
 
 daysList(year, month);

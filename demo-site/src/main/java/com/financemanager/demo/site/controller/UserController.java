@@ -2,11 +2,7 @@ package com.financemanager.demo.site.controller;
 
 import java.util.List;
 
-import javax.servlet.http.HttpSession;
-
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.financemanager.demo.site.dto.UserDto;
-import com.financemanager.demo.site.entity.CustomUserDetails;
 import com.financemanager.demo.site.entity.User;
 import com.financemanager.demo.site.exception.ValidationException;
 import com.financemanager.demo.site.service.UserService;
@@ -30,7 +25,6 @@ import lombok.extern.java.Log;
 public class UserController {
 	
 	private final UserService userService;
-	private final HttpSession session; 
 	
 	@PostMapping("/save")
     public User saveUser(@RequestBody User user) throws ValidationException {

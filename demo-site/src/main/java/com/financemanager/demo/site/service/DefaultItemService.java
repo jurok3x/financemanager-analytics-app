@@ -39,7 +39,7 @@ public class DefaultItemService implements ItemService {
 	private final UserService userService;
 	private final UserConverter userConverter;
 	private final CategoryService categoryService;
-
+	
 	@Override
 	public ItemDto saveItem(ItemDto itemDto) {
 		itemDto.setUserDto(userConverter.fromUserToUserDto(userService.getContextUser()));
@@ -53,32 +53,46 @@ public class DefaultItemService implements ItemService {
 	}
 
 	@Override
-	public List<ItemDto> findAll() {
-		return itemRepository.findByUserId(userService.getContextUser().getId()).stream()
-				.map(itemConverter::fromItemToItemDto).collect(Collectors.toList());
+	public List<ItemDto> findAll(Optional<Integer> year, Optional<Integer> month, Optional<String> sort, Optional<Boolean> isReversed) {	
+		if(year.isPresent()) {
+			return itemRepository
+					.findByUserIdAndDateGreaterThanEqualAndDateLessThanEqual(userService.getContextUser().getId(), getBoundaryDate(year.get(), month, true), getBoundaryDate(year.get(), month, false))
+					.stream().map(itemConverter::fromItemToItemDto).sorted(getComparator(sort, isReversed)).collect(Collectors.toList());
+		} else {
+			return itemRepository.findByUserId(userService.getContextUser().getId()).stream().map(itemConverter::fromItemToItemDto).sorted(getComparator(sort, isReversed)).collect(Collectors.toList());
+		}	
 	}
 
 	@Override
-	public List<ItemDto> findByCategoryId(int categoryId) {
-		return itemRepository.findByCategoryIdAndUserId(categoryId, userService.getContextUser().getId()).stream()
-				.map(itemConverter::fromItemToItemDto).collect(Collectors.toList());
+	public Integer countItemsByCategory(int cetegoryId, Optional<Integer> year, Optional<Integer> month) {
+		if(year.isPresent()) {
+			return itemRepository.countByUserIdAndCategoryIdAndDateGreaterThanEqualAndDateLessThanEqual(userService.getContextUser().getId(),
+					cetegoryId, getBoundaryDate(year.get(), month, true), getBoundaryDate(year.get(), month, false));
+		} else {
+			return itemRepository.countByUserIdAndCategoryId(userService.getContextUser().getId(), cetegoryId);
+		}
 	}
 
 	@Override
-	public List<ItemDto> getCurrentUserItems() {
-		Date start = Date.from(LocalDate.now(ZoneId.systemDefault()).withDayOfMonth(1)
-				.atStartOfDay(ZoneId.systemDefault()).toInstant());
-		Date end = Date.from(LocalDate.now(ZoneId.systemDefault()).with(lastDayOfMonth())
-				.atStartOfDay(ZoneId.systemDefault()).toInstant());
-		return itemRepository
-				.findByUserIdAndDateGreaterThanEqualAndDateLessThanEqual(userService.getContextUser().getId(), start,
-						end)
-				.stream().map(itemConverter::fromItemToItemDto).collect(Collectors.toList());
+	public List<ItemDto> findByCategory(int categoryId, Optional<Integer> year, Optional<Integer> month, Optional<String> sort, Optional<Boolean> isReversed) {
+		if(year.isPresent()) {
+			return itemRepository.findByUserIdAndCategoryIdAndDateGreaterThanEqualAndDateLessThanEqual(userService.getContextUser().getId(), categoryId,
+					getBoundaryDate(year.get(), month, true), getBoundaryDate(year.get(), month, false))
+					.stream().map(itemConverter::fromItemToItemDto).sorted(getComparator(sort, isReversed)).collect(Collectors.toList());
+		} else {
+			return itemRepository.findByUserIdAndCategoryId(userService.getContextUser().getId(), categoryId)
+					.stream().map(itemConverter::fromItemToItemDto).sorted(getComparator(sort, isReversed)).collect(Collectors.toList());		
+		}
 	}
-
-	@Override
-	public List<ItemDto> getSpecifiedUserItems(int year, int month, Optional<String> sort, Optional<Boolean> isReversed) {
-		LocalDate init = LocalDate.of(year, month, 1);
+	
+	private static Date getBoundaryDate(int year, Optional<Integer> month, boolean isStart) {
+		LocalDate init = LocalDate.of(year, (month.isPresent()) ? month.get() + 1 : 1, 1);
+		Date date = (isStart) ? Date.from(init.atStartOfDay(ZoneId.systemDefault()).toInstant()):
+		Date.from(init.with((month.isPresent()) ? lastDayOfMonth() : lastDayOfYear()).atStartOfDay(ZoneId.systemDefault()).toInstant());
+		return date;
+	}
+	
+	private Comparator<ItemDto> getComparator(Optional<String> sort, Optional<Boolean> isReversed){
 		Comparator<ItemDto> comparator;
 		if (sort.isPresent()) {
 			switch (sort.get()) {
@@ -106,13 +120,9 @@ public class DefaultItemService implements ItemService {
 		} else {
 			comparator = Comparator.comparing(ItemDto::getId);
 		}
-		Date start = Date.from(init.atStartOfDay(ZoneId.systemDefault()).toInstant());
-		Date end = Date.from(init.with(lastDayOfMonth()).atStartOfDay(ZoneId.systemDefault()).toInstant());
-		return itemRepository
-				.findByUserIdAndDateGreaterThanEqualAndDateLessThanEqual(userService.getContextUser().getId(), start,end)
-				.stream().map(itemConverter::fromItemToItemDto).sorted(comparator).collect(Collectors.toList());
+		return comparator;	
 	}
-
+	
 	@Override
 	public List<ItemDto> saveItemsFromExelFile(String path) {
 		List<Item> items = new ArrayList<Item>();
@@ -185,28 +195,14 @@ public class DefaultItemService implements ItemService {
 			items.forEach((storedItem) -> itemRepository.save(storedItem));
 			return items.stream().map(itemConverter::fromItemToItemDto).collect(Collectors.toList());
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return null;
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return null;
 		} catch (NoSuchCategoryException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return null;
 		}
-
 	}
-
-	@Override
-	public Integer countItemsByCategory(int cetegoryId, int year, int month) {
-		LocalDate init = LocalDate.of(year, month, 1);
-		Date start = Date.from(init.atStartOfDay(ZoneId.systemDefault()).toInstant());
-		Date end = Date.from(init.with(lastDayOfMonth()).atStartOfDay(ZoneId.systemDefault()).toInstant());
-		return itemRepository.countByCategoryIdAndUserIdAndDateGreaterThanEqualAndDateLessThanEqual(cetegoryId,
-				userService.getContextUser().getId(), start, end);
-	}
-
 }
