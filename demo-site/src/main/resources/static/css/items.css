@@ -293,9 +293,14 @@
 .secondary_table{
 	padding-top: 20px;
 	position: absolute;
-    left: 700px;
+    left: 650px;
     top: 0px;
 	width: 500px;
 	height: 600px;
 	display: inline-block;
+}
+
+#canvas {
+	margin-top: 1px;
+    border: 2px solid #F79361;
 }

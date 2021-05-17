@@ -50,7 +50,7 @@ public class ItemController {
 	@GetMapping(value = {"/findByCategoryId/{categoryId}"})
 	public List<ItemDto> findByCategoryId(@PathVariable Integer categoryId, @RequestParam Optional<Integer> year, @RequestParam Optional<Integer> month,
 			@RequestParam(name = "sortBy") Optional<String> sort, @RequestParam(name = "reversed") Optional<Boolean> isReversed) {
-		log.info("Handling find items with categoryId = " + categoryId + ((month.isPresent()) ? "month = " + (month.get() + 1) : "") + ((year.isPresent()) ? " and year = " + year.get() : "") +
+		log.info("Handling find items with categoryId = " + categoryId + ((month.isPresent()) ? " month = " + (month.get() + 1) : "") + ((year.isPresent()) ? " and year = " + year.get() : "") +
 				((sort.isPresent()) ? " sorted by = " + sort.get() : "") + ((isReversed.isPresent()) ? " reverse = " + isReversed.get() : ""));
 		return itemService.findByCategory(categoryId, year, month, sort, isReversed);
 	}

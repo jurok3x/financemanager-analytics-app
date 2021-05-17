@@ -1,8 +1,94 @@
+const monthNames = ["Січень", "Лютий", "Березень", "Квітень", "Травень", "Червень",
+	"Липень", "Серпень", "Вересень", "Жовтень", "Листопад", "Грудень"];
+var d = new Date();
+var categories;
+const comparator = ["", "name", "price", "category", "date"];
+var month = d.getMonth();
+var year = d.getFullYear();
+var httpRequest = "http://localhost:8083/item/findAll" + "?year=" + year + "&month=" + month; 
+loadItems(httpRequest);
+daysList(year, month);
+drawGraph(0);
+getMinYear();
+
+
+function drawGraph() {
+	let id = document.getElementById("categoriesGraph").value;
+	this.year = document.getElementById("yearGraph").value; 
+	if(this.year == ''){this.year = d.getFullYear()};
+	var xhttp = new XMLHttpRequest();
+	var http = (id != 0)? 'http://localhost:8083/item/findByCategoryId/' + id + '?year=' + year :
+	'http://localhost:8083/item/findAll' + "?year=" + year;
+	xhttp.onreadystatechange = function(){
+		if (this.readyState == 4 && this.status == 200){
+			let items = JSON.parse(this.responseText);		
+			var data = new Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+			for (var i = 0; i < items.length; i++){
+				let item = items[i];	
+				data[(formatDate(item.date).substring(5,7) / 1) - 1] += item.price;
+			}
+					
+			//Graph
+			let canvas = document.getElementById('canvas');
+			let ctx = canvas.getContext('2d');
+			var koef = (canvas.height - 50) / Math.max.apply(null, data);
+			var scaleLength = 50 / koef;
+			ctx.clearRect(0, 0, canvas.width, canvas.height);
+			ctx.fillStyle = "black"; // line color 
+			ctx.lineWidth = 2.0; // line width
+			ctx.beginPath(); 
+			ctx.moveTo(30, 10); 
+			ctx.lineTo(30, (canvas.height - 40)); 
+			ctx.lineTo(500, (canvas.height - 40));
+			ctx.stroke(); 
+			//y
+			ctx.fillStyle = "black";
+			for(let i = 0; i < 10; i++) { 
+			    ctx.fillText(Math.floor((9 - i) * scaleLength ) + "грн.", 2, i * 50 + 8); 
+			    ctx.beginPath(); 
+			    ctx.moveTo(25, i * 50 + 10); 
+			    ctx.lineTo(30, i * 50 + 10); 
+			    ctx.stroke(); 
+			}
+			//x
+			for(var i=0; i<12; i++) { 
+			    ctx.fillText(monthNames[i].substring(3, 0), 45 + i*38, 475); 
+			}
+			//columns
+			ctx.fillStyle = "green"
+			for(var i=0; i<12; i++) { 
+			    var dp = data[i]; 
+			    ctx.fillRect(40 + i*38, 460-dp * koef , 25, dp * koef); 
+			}
+			
+		}
+	}
+	xhttp.open("GET", http, true);
+	xhttp.send();
+}
+
+function getMinYear(){
+	var xhttp = new XMLHttpRequest();
+	xhttp.onreadystatechange = function() {
+		let items = JSON.parse(this.responseText);
+		var minYear = items[0].date.slice(0, 4) / 1;
+		var html;
+		for(var i=0; i<=(d.getFullYear() - minYear); i++){
+			html += '<option value="' + (d.getFullYear() - i) + '">' + (d.getFullYear() - i) + '</option>';
+		}
+		document.getElementById("yearGraph").innerHTML = html;
+	}
+	xhttp.open("GET", 'http://localhost:8083/item/findAll' + "?sortBy=date", true);
+	xhttp.send();
+}
+
+
+
 function loadItems(httpRequest) {
 	var xhttp = new XMLHttpRequest();
 	xhttp.onreadystatechange = function() {
 		if (this.readyState == 4 && this.status == 200) {
-			var items = JSON.parse(this.responseText);
+			let items = JSON.parse(this.responseText);
 			var html = '<caption id="table_head">' +
 		'		 <h1 id="total_price"></h1>' +
 		'		 <button id="add" onclick="document.getElementById(\'decor\').'+
@@ -16,9 +102,8 @@ function loadItems(httpRequest) {
 		'        <th><a onclick="sort(4)">Дата</a></th>\n' +
 		'        <th>Редагувати</th>\n' +
 		'    </tr>';
-	for (var i = 0; i < items.length; i++) {
-		var item = items[i];
-		var classname;
+	for (let i = 0; i < items.length; i++) {
+		let item = items[i];
 		console.log(item);
 		html = html + '<tr><td>' + (i + 1) + '</td>\n' +
 			'        <td>' + item.name + '</td>\n' +
@@ -96,7 +181,7 @@ function sort() {
 
 function getTotalPrice(items) {
 	var sum = 0;
-	for (var i = 0; i < items.length; i++) {
+	for (let i = 0; i < items.length; i++) {
 		item = items[i];
 		sum += item.price;
 	}
@@ -132,11 +217,12 @@ function loadCategories() {
 				console.log(category);
 				link = 'http://localhost:8083/item/itemsCount/' + (i + 1) + '?month=' + month + '&year=' + year;
 				categoryCount =  getCategoryCount(link);	
-				html = html + '<option value="'+ category.id + '">' + category.name + '</option>';
+				html = html + '<option value="' + category.id + '">' + category.name + '</option>';
 				table += '      <tr><td>' + category.name + '</td>' +
 					     '		  <td>' + categoryCount + '</td></tr>';
 			}
 			document.getElementById("categories").innerHTML = html;
+			document.getElementById("categoriesGraph").innerHTML = '<option value="0">Всі витрати</option>' + html.slice(45);
 			document.getElementById("categoryList").innerHTML = table;
 		}
 	};
@@ -185,18 +271,3 @@ function daysList(year, month) {
 	}
 	document.getElementById("days").innerHTML = html;
 }
-
-
-const monthNames = ["Січень", "Лютий", "Березень", "Квітень", "Травень", "Червень",
-	"Липень", "Серпень", "Вересень", "Жовтень", "Листопад", "Грудень"];
-var d = new Date();
-var categories;
-
-const comparator = ["", "name", "price", "category", "date"];
-var month = d.getMonth();
-var year = d.getFullYear();
-var httpRequest = "http://localhost:8083/item/findAll" + "?year=" + year + "&month=" + month; 
-loadItems(httpRequest);
-
-daysList(year, month);
-
