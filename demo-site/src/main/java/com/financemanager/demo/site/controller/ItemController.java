@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.financemanager.demo.site.dto.ItemDto;
+import com.financemanager.demo.site.entity.projects.ProjectNameAndCount;
 import com.financemanager.demo.site.service.ItemService;
 
 import lombok.AllArgsConstructor;
@@ -67,6 +68,12 @@ public class ItemController {
 	public List<ItemDto> saveFromExelFile() {
 		log.info("Handling save multiple items from exel file.");
 		return itemService.saveItemsFromExelFile("E:\\items.xls");
+	}
+	
+	@GetMapping("/getMostFrequentItems")
+	public List<ProjectNameAndCount> getMostFrequentItems(@RequestParam Optional<Integer> categoryId) {
+		log.info("Handling find most popular items.");
+		return itemService.getMostFrequentItems(categoryId);
 	}
 	
 }

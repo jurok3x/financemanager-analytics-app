@@ -42,3 +42,4 @@ public class Item {
 	@Column(name="date")
 	private Date date;
 }
+

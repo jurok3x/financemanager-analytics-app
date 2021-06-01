@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Component;
 
 import com.financemanager.demo.site.dto.ItemDto;
+import com.financemanager.demo.site.entity.projects.ProjectNameAndCount;
 
 @Component
 public interface ItemService {
@@ -20,4 +21,6 @@ public interface ItemService {
     List<ItemDto> saveItemsFromExelFile(String path);
     
     Integer countItemsByCategory(int cetegoryId, Optional<Integer> year, Optional<Integer> month);
+    
+    List<ProjectNameAndCount>getMostFrequentItems(Optional<Integer> categoryId);
 }

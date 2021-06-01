@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import com.financemanager.demo.site.dto.ItemDto;
 import com.financemanager.demo.site.entity.Category;
 import com.financemanager.demo.site.entity.Item;
+import com.financemanager.demo.site.entity.projects.ProjectNameAndCount;
 import com.financemanager.demo.site.exception.NoSuchCategoryException;
 import com.financemanager.demo.site.repository.ItemRepository;
 
@@ -204,5 +205,11 @@ public class DefaultItemService implements ItemService {
 			e.printStackTrace();
 			return null;
 		}
+	}
+
+	@Override
+	public List<ProjectNameAndCount> getMostFrequentItems(Optional<Integer> categoryId) {
+		return (categoryId.isPresent())? itemRepository.getMostFrequentItemsByCategory(userService.getContextUser().getId(), categoryId.get()) :
+			itemRepository.getMostFrequentItems(userService.getContextUser().getId());
 	}
 }

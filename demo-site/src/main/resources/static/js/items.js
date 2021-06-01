@@ -12,9 +12,10 @@ drawGraph(0);
 getMinYear();
 
 
+
 function drawGraph() {
 	let id = document.getElementById("categoriesGraph").value;
-	this.year = document.getElementById("yearGraph").value; 
+	let year = document.getElementById("yearGraph").value; 
 	if(this.year == ''){this.year = d.getFullYear()};
 	var xhttp = new XMLHttpRequest();
 	var http = (id != 0)? 'http://localhost:8083/item/findByCategoryId/' + id + '?year=' + year :
@@ -27,7 +28,6 @@ function drawGraph() {
 				let item = items[i];	
 				data[(formatDate(item.date).substring(5,7) / 1) - 1] += item.price;
 			}
-					
 			//Graph
 			let canvas = document.getElementById('canvas');
 			let ctx = canvas.getContext('2d');
@@ -60,7 +60,7 @@ function drawGraph() {
 			    var dp = data[i]; 
 			    ctx.fillRect(40 + i*38, 460-dp * koef , 25, dp * koef); 
 			}
-			
+			mostPopularItems();
 		}
 	}
 	xhttp.open("GET", http, true);
@@ -70,6 +70,7 @@ function drawGraph() {
 function getMinYear(){
 	var xhttp = new XMLHttpRequest();
 	xhttp.onreadystatechange = function() {
+		if (this.readyState == 4 && this.status == 200){
 		let items = JSON.parse(this.responseText);
 		var minYear = items[0].date.slice(0, 4) / 1;
 		var html;
@@ -78,11 +79,41 @@ function getMinYear(){
 		}
 		document.getElementById("yearGraph").innerHTML = html;
 	}
+	};
 	xhttp.open("GET", 'http://localhost:8083/item/findAll' + "?sortBy=date", true);
 	xhttp.send();
 }
 
-
+function mostPopularItems(){
+	let categoryId = document.getElementById("categoriesGraph").value;
+	let http = 'http://localhost:8083/item/getMostFrequentItems';
+	if(categoryId != 0){http += '?categoryId=' + categoryId};
+	var xhttp = new XMLHttpRequest();
+	xhttp.onreadystatechange = function() {
+	if (this.readyState == 4 && this.status == 200){
+		let objects = JSON.parse(this.responseText);
+		var html = '<caption>Найбільш популярні</caption><tr>\n' +
+		'        <th><a>№</a></th>\n' +
+		'        <th><a>Назва</a></th>\n' +
+		'        <th><a>Кількість</a></th>\n' +
+		'        <th><a>Загальна ціна</a></th>\n' +
+		'    </tr>';
+		
+		for(var i=0; i<objects.length; i++){
+			var object = objects[i];
+			html = html + '<tr><td>' + (i +1) + '</td>\n' +
+			'        <td>' + object.name + '</td>\n' +
+			'        <td>' + object.value+ '</td>\n' +
+			'        <td>' + object.total + '</td>\n' +
+			'    </tr>';
+		}
+		
+		document.getElementById("mostPopular").innerHTML = html;
+		}
+	};
+	xhttp.open("GET", http, true);
+	xhttp.send();
+}
 
 function loadItems(httpRequest) {
 	var xhttp = new XMLHttpRequest();
