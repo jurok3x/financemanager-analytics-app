@@ -2,6 +2,7 @@ const monthNames = ["Січень", "Лютий", "Березень", "Квіт�
 	"Липень", "Серпень", "Вересень", "Жовтень", "Листопад", "Грудень"];
 var d = new Date();
 var categories;
+var items;
 const comparator = ["", "name", "price", "category", "date"];
 var month = d.getMonth();
 var year = d.getFullYear();
@@ -119,22 +120,31 @@ function loadItems(httpRequest) {
 	var xhttp = new XMLHttpRequest();
 	xhttp.onreadystatechange = function() {
 		if (this.readyState == 4 && this.status == 200) {
-			let items = JSON.parse(this.responseText);
-			var html = '<caption id="table_head">' +
+			items = JSON.parse(this.responseText);
+			displayItems(items);	
+		}
+	};
+	xhttp.open("GET", httpRequest, true);
+	xhttp.send();
+	loadCategories();
+}
+
+function displayItems(items){
+var html = '<caption id="table_head">' +
 		'		 <h1 id="total_price"></h1>' +
 		'		 <button id="add" onclick="document.getElementById(\'decor\').'+
 		'        style.display = \'block\'">&#10010;</a>' +
 		'		 </caption>' +
 		'		 <tr>\n' +
-		'        <th><a onclick="sort(0)">№</a></th>\n' +
-		'        <th><a onclick="sort(1)">Назва</a></th>\n' +
-		'        <th><a onclick="sort(2)">Ціна</a></th>\n' +
-		'        <th><a onclick="sort(3)">Категорія</a></th>\n' +
-		'        <th><a onclick="sort(4)">Дата</a></th>\n' +
+		'        <th><a onclick="sortItems(0)">№</a></th>\n' +
+		'        <th><a onclick="sortItems(1)">Назва</a></th>\n' +
+		'        <th><a onclick="sortItems(2)">Ціна</a></th>\n' +
+		'        <th><a onclick="sortItems(3)">Категорія</a></th>\n' +
+		'        <th><a onclick="sortItems(4)">Дата</a></th>\n' +
 		'        <th>Редагувати</th>\n' +
 		'    </tr>';
-	for (let i = 0; i < items.length; i++) {
-		let item = items[i];
+	for (var i = 0; i < items.length; i++) {
+		var item = items[i];
 		console.log(item);
 		html = html + '<tr><td>' + (i + 1) + '</td>\n' +
 			'        <td>' + item.name + '</td>\n' +
@@ -146,11 +156,30 @@ function loadItems(httpRequest) {
 			document.getElementById("itemsList").innerHTML = html;
 			document.getElementById("current_date").innerHTML = monthNames[month] + ' ' + year;
 			document.getElementById("total_price").innerHTML = "Загальні витрати за місяць: " + getTotalPrice(items).toFixed(2) + "грн";
-		}
-	};
-	xhttp.open("GET", httpRequest, true);
-	xhttp.send();
-	loadCategories();
+}
+
+function sortItems(type) {
+	if(type == 0){items.sort(function(a, b){return a.id - b.id})};
+	if(type == 1){items.sort(function(a, b){
+		var x = a.name.toLowerCase();
+ 		var y = b.name.toLowerCase();
+ 		if (x < y) {return -1;}
+  		if (x > y) {return 1;}
+  		return 0;
+	})};
+	if(type == 2){items.sort(function(a, b){return a.price - b.price})};
+	if(type == 3){items.sort(function(a, b){return a.category.id - b.category.id})};
+	if(type == 4){items.sort(function(a, b){return a.date - b.date})};
+	displayItems(items);
+}
+
+function getTotalPrice(items) {
+	var sum = 0;
+	for (let i = 0; i < items.length; i++) {
+		item = items[i];
+		sum += item.price;
+	}
+	return sum;
 }
 
 function deleteItem(itemId) {
@@ -195,28 +224,6 @@ function monthForward() {
 		loadItems(httpRequest);
 		daysList(year, month);	
 	}
-	
-
-}
-
-function sort() {
-	if(httpRequest.search("=") == -1){
-		httpRequest = "http://localhost:8083/item/findAll" + "?year=" + year + "&month=" + month + "&sortBy=" +
-		comparator[arguments[0]] + "&reversed=" + false;
-	} else{
-		httpRequest = "http://localhost:8083/item/findAll" + "?year=" + year + "&month=" + month + "&sortBy=" +
-		comparator[arguments[0]] + "&reversed=" + /false/.test(httpRequest);
-	}
-	loadItems(httpRequest);
-}
-
-function getTotalPrice(items) {
-	var sum = 0;
-	for (let i = 0; i < items.length; i++) {
-		item = items[i];
-		sum += item.price;
-	}
-	return sum;
 }
 
 function formatDate(date) {
