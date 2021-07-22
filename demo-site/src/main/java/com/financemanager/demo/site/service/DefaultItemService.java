@@ -40,7 +40,7 @@ public class DefaultItemService implements ItemService {
 	private final UserService userService;
 	private final UserConverter userConverter;
 	private final CategoryService categoryService;
-	
+
 	@Override
 	public ItemDto saveItem(ItemDto itemDto) {
 		itemDto.setUserDto(userConverter.fromUserToUserDto(userService.getContextUser()));
@@ -54,13 +54,13 @@ public class DefaultItemService implements ItemService {
 	}
 
 	@Override
-	public List<ItemDto> findAll(Optional<Integer> year, Optional<Integer> month, Optional<String> sort, Optional<Boolean> isReversed) {	
+	public List<ItemDto> findAll(Optional<Integer> year, Optional<Integer> month) {	
 		if(year.isPresent()) {
 			return itemRepository
 					.findByUserIdAndDateGreaterThanEqualAndDateLessThanEqual(userService.getContextUser().getId(), getBoundaryDate(year.get(), month, true), getBoundaryDate(year.get(), month, false))
-					.stream().map(itemConverter::fromItemToItemDto).sorted(getComparator(sort, isReversed)).collect(Collectors.toList());
+					.stream().map(itemConverter::fromItemToItemDto).collect(Collectors.toList());
 		} else {
-			return itemRepository.findByUserId(userService.getContextUser().getId()).stream().map(itemConverter::fromItemToItemDto).sorted(getComparator(sort, isReversed)).collect(Collectors.toList());
+			return itemRepository.findByUserId(userService.getContextUser().getId()).stream().map(itemConverter::fromItemToItemDto).collect(Collectors.toList());
 		}	
 	}
 
@@ -75,14 +75,14 @@ public class DefaultItemService implements ItemService {
 	}
 
 	@Override
-	public List<ItemDto> findByCategory(int categoryId, Optional<Integer> year, Optional<Integer> month, Optional<String> sort, Optional<Boolean> isReversed) {
+	public List<ItemDto> findByCategory(int categoryId, Optional<Integer> year, Optional<Integer> month) {
 		if(year.isPresent()) {
 			return itemRepository.findByUserIdAndCategoryIdAndDateGreaterThanEqualAndDateLessThanEqual(userService.getContextUser().getId(), categoryId,
 					getBoundaryDate(year.get(), month, true), getBoundaryDate(year.get(), month, false))
-					.stream().map(itemConverter::fromItemToItemDto).sorted(getComparator(sort, isReversed)).collect(Collectors.toList());
+					.stream().map(itemConverter::fromItemToItemDto).collect(Collectors.toList());
 		} else {
 			return itemRepository.findByUserIdAndCategoryId(userService.getContextUser().getId(), categoryId)
-					.stream().map(itemConverter::fromItemToItemDto).sorted(getComparator(sort, isReversed)).collect(Collectors.toList());		
+					.stream().map(itemConverter::fromItemToItemDto).collect(Collectors.toList());		
 		}
 	}
 	
@@ -93,36 +93,6 @@ public class DefaultItemService implements ItemService {
 		return date;
 	}
 	
-	private Comparator<ItemDto> getComparator(Optional<String> sort, Optional<Boolean> isReversed){
-		Comparator<ItemDto> comparator;
-		if (sort.isPresent()) {
-			switch (sort.get()) {
-			case "name":
-				comparator = (isReversed.isPresent() && isReversed.get().equals(true)) ?
-				Comparator.comparing(ItemDto::getName).reversed(): Comparator.comparing(ItemDto::getName);
-				break;
-			case "price":
-				comparator = (isReversed.isPresent() && isReversed.get().equals(true)) ?
-				Comparator.comparing(ItemDto::getPrice).reversed(): Comparator.comparing(ItemDto::getPrice);
-				break;
-			case "category":
-				comparator = (isReversed.isPresent() && isReversed.get().equals(true)) ?
-				Comparator.comparing(ItemDto::getCategory).reversed(): Comparator.comparing(ItemDto::getCategory);
-				break;
-			case "date":
-				comparator = (isReversed.isPresent() && isReversed.get().equals(true)) ?
-				Comparator.comparing(ItemDto::getDate).reversed(): Comparator.comparing(ItemDto::getDate);
-				break;
-			default:
-					comparator = (isReversed.isPresent() && isReversed.get().equals(true)) ?
-					Comparator.comparing(ItemDto::getId).reversed(): Comparator.comparing(ItemDto::getId);
-				break;
-			}
-		} else {
-			comparator = Comparator.comparing(ItemDto::getId);
-		}
-		return comparator;	
-	}
 	
 	@Override
 	public List<ItemDto> saveItemsFromExelFile(String path) {

@@ -1,30 +1,93 @@
 const monthNames = ["Січень", "Лютий", "Березень", "Квітень", "Травень", "Червень",
 	"Липень", "Серпень", "Вересень", "Жовтень", "Листопад", "Грудень"];
-var d = new Date();
-var categories;
-var items;
-const comparator = ["", "name", "price", "category", "date"];
-var month = d.getMonth();
-var year = d.getFullYear();
-var httpRequest = "http://localhost:8083/item/findAll" + "?year=" + year + "&month=" + month; 
-loadItems(httpRequest);
-daysList(year, month);
+let navigator = siteNavigator();
 drawGraph(0);
-getMinYear();
 
 
+function siteNavigator(){
+	let items;
+	let categories;
+	let d = new Date();
+	let month = d.getMonth();
+	let year = d.getFullYear();
+	function daysList() {
+		let y = year;
+		let m = month + 1;
+		let daysInMonth = /8|3|5|10/.test(--m)?30:m==1?(!(y%4)&&y%100)||!(y%400)?29:28:31;
+		let html = '<option value="">День:</option>';
+		for (let i = 1; i <= daysInMonth; i++) {
+			html = html + '<option value="' + i + '">' + i + '</option>';
+		}
+		document.getElementById("days").innerHTML = html;
+	};
+	(async() => {
+		await doGet("http://localhost:8083/items" + "?year=" + year +
+		 "&month=" + month, (obj) => {items = obj});
+		await doGet("http://localhost:8083/categories", (obj) => {categories = obj});
+		await doGet("http://localhost:8083/items" + "?sortBy=date", (obj) => {
+			let html;
+			for(let i = 0; i <= (d.getFullYear() - (obj[0].date.slice(0, 4) / 1)); i++){
+			html += '<option value="' + (d.getFullYear() - i) + '">' + (d.getFullYear() - i) + '</option>';
+		}
+		document.getElementById("yearGraph").innerHTML = html;
+		});
+		loadCategories();
+		daysList();
+		displayItems();
+		doGet('http://localhost:8083/items/popular' + '?categoryId=' + 0, mostPopularItems);
+	})();
+	return {
+		getItems: () => items,
+		setItems: (obj) => {items = obj},
+		getCategories: () => categories,
+		getMonth: () => month,
+		getYear: () => year,
+		monthBack: async() => {
+			month--;
+			if (month < 0) {
+				year--;
+				month = 11;
+			}
+			if (month != d.getMonth() && year != d.getYear()) {
+				if(document.getElementById("forward").className != "move"){
+					document.getElementById("forward").className = "move";
+				}
+			}
+			await doGet("http://localhost:8083/items" + "?year=" + year +
+			 "&month=" + month, (obj) => {items = obj});
+			displayItems(() => (a, b) =>  a.date - b.date);
+			daysList();
+				},
+		monthForward: async() => {
+			if (month != d.getMonth() || year != d.getFullYear()) {
+				month++;
+				if(month == d.getMonth() && year == d.getFullYear()){
+					document.getElementById("forward").className = "disabled";
+				}
+					if (month > 11) {
+						year++;
+						month = 0;
+				} 		
+			await doGet("http://localhost:8083/items" + "?year=" + year +
+			 "&month=" + month, (obj) => {items = obj});
+			displayItems(() => (a, b) =>  a.date - b.date);
+			daysList();	
+			}
+		}
+	}
+}
 
 function drawGraph() {
 	let id = document.getElementById("categoriesGraph").value;
 	let year = document.getElementById("yearGraph").value; 
 	if(this.year == ''){this.year = d.getFullYear()};
 	var xhttp = new XMLHttpRequest();
-	var http = (id != 0)? 'http://localhost:8083/item/findByCategoryId/' + id + '?year=' + year :
-	'http://localhost:8083/item/findAll' + "?year=" + year;
+	var http = (id != 0)? 'http://localhost:8083/items/category/' + id + '?year=' + year :
+	'http://localhost:8083/items' + "?year=" + year;
 	xhttp.onreadystatechange = function(){
 		if (this.readyState == 4 && this.status == 200){
 			let items = JSON.parse(this.responseText);		
-			var data = new Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+			let data = new Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 			for (var i = 0; i < items.length; i++){
 				let item = items[i];	
 				data[(formatDate(item.date).substring(5,7) / 1) - 1] += item.price;
@@ -61,169 +124,23 @@ function drawGraph() {
 			    var dp = data[i]; 
 			    ctx.fillRect(40 + i*38, 460-dp * koef , 25, dp * koef); 
 			}
-			mostPopularItems();
+			let categoryId = document.getElementById("categoriesGraph").value;
+			if(categoryId != 0){
+				doGet('http://localhost:8083/items/popular' + '?categoryId=' + categoryId, mostPopularItems);
+			};
 		}
 	}
 	xhttp.open("GET", http, true);
 	xhttp.send();
 }
 
-function getMinYear(){
-	var xhttp = new XMLHttpRequest();
-	xhttp.onreadystatechange = function() {
-		if (this.readyState == 4 && this.status == 200){
-		let items = JSON.parse(this.responseText);
-		var minYear = items[0].date.slice(0, 4) / 1;
-		var html;
-		for(var i=0; i<=(d.getFullYear() - minYear); i++){
-			html += '<option value="' + (d.getFullYear() - i) + '">' + (d.getFullYear() - i) + '</option>';
-		}
-		document.getElementById("yearGraph").innerHTML = html;
-	}
-	};
-	xhttp.open("GET", 'http://localhost:8083/item/findAll' + "?sortBy=date", true);
-	xhttp.send();
-}
-
-function mostPopularItems(){
-	let categoryId = document.getElementById("categoriesGraph").value;
-	let http = 'http://localhost:8083/item/getMostFrequentItems';
-	if(categoryId != 0){http += '?categoryId=' + categoryId};
-	var xhttp = new XMLHttpRequest();
-	xhttp.onreadystatechange = function() {
-	if (this.readyState == 4 && this.status == 200){
-		let objects = JSON.parse(this.responseText);
-		var html = '<caption>Найбільш популярні</caption><tr>\n' +
-		'        <th><a>№</a></th>\n' +
-		'        <th><a>Назва</a></th>\n' +
-		'        <th><a>Кількість</a></th>\n' +
-		'        <th><a>Загальна ціна</a></th>\n' +
-		'    </tr>';
-		
-		for(var i=0; i<objects.length; i++){
-			var object = objects[i];
-			html = html + '<tr><td>' + (i +1) + '</td>\n' +
-			'        <td>' + object.name + '</td>\n' +
-			'        <td>' + object.value+ '</td>\n' +
-			'        <td>' + object.total + '</td>\n' +
-			'    </tr>';
-		}
-		
-		document.getElementById("mostPopular").innerHTML = html;
-		}
-	};
-	xhttp.open("GET", http, true);
-	xhttp.send();
-}
-
-function loadItems(httpRequest) {
-	var xhttp = new XMLHttpRequest();
-	xhttp.onreadystatechange = function() {
-		if (this.readyState == 4 && this.status == 200) {
-			items = JSON.parse(this.responseText);
-			displayItems(items);	
-		}
-	};
-	xhttp.open("GET", httpRequest, true);
-	xhttp.send();
-	loadCategories();
-}
-
-function displayItems(items){
-var html = '<caption id="table_head">' +
-		'		 <h1 id="total_price"></h1>' +
-		'		 <button id="add" onclick="document.getElementById(\'decor\').'+
-		'        style.display = \'block\'">&#10010;</a>' +
-		'		 </caption>' +
-		'		 <tr>\n' +
-		'        <th><a onclick="sortItems(0)">№</a></th>\n' +
-		'        <th><a onclick="sortItems(1)">Назва</a></th>\n' +
-		'        <th><a onclick="sortItems(2)">Ціна</a></th>\n' +
-		'        <th><a onclick="sortItems(3)">Категорія</a></th>\n' +
-		'        <th><a onclick="sortItems(4)">Дата</a></th>\n' +
-		'        <th>Редагувати</th>\n' +
-		'    </tr>';
-	for (var i = 0; i < items.length; i++) {
-		var item = items[i];
-		console.log(item);
-		html = html + '<tr><td>' + (i + 1) + '</td>\n' +
-			'        <td>' + item.name + '</td>\n' +
-			'        <td>' + item.price + '</td>\n' +
-			'        <td>' + item.category.name + '</td>' +
-			'        <td>' + formatDate(item.date) + '</td>' +
-			'        <td><button onclick="deleteItem(' + item.id + ')">Видалити</button></td></tr>';
-			}
-			document.getElementById("itemsList").innerHTML = html;
-			document.getElementById("current_date").innerHTML = monthNames[month] + ' ' + year;
-			document.getElementById("total_price").innerHTML = "Загальні витрати за місяць: " + getTotalPrice(items).toFixed(2) + "грн";
-}
-
-function sortItems(type) {
-	if(type == 0){items.sort(function(a, b){return a.id - b.id})};
-	if(type == 1){items.sort(function(a, b){
-		var x = a.name.toLowerCase();
- 		var y = b.name.toLowerCase();
- 		if (x < y) {return -1;}
-  		if (x > y) {return 1;}
-  		return 0;
-	})};
-	if(type == 2){items.sort(function(a, b){return a.price - b.price})};
-	if(type == 3){items.sort(function(a, b){return a.category.id - b.category.id})};
-	if(type == 4){items.sort(function(a, b){return a.date - b.date})};
-	displayItems(items);
-}
-
-function getTotalPrice(items) {
-	var sum = 0;
-	for (let i = 0; i < items.length; i++) {
-		item = items[i];
-		sum += item.price;
-	}
-	return sum;
-}
-
-function deleteItem(itemId) {
-	var xhttp = new XMLHttpRequest();
-	xhttp.onreadystatechange = function() {
-		if (this.readyState == 4 && this.status == 200) {
-			loadItems(httpRequest);
-		}
-	}
-	xhttp.open("DELETE", "http://localhost:8083/item/delete/" + itemId, true);
-	xhttp.send();	
-}
-
-
-function monthBack() {
-	month--;
-	if (month < 0) {
-		year--;
-		month = 11;
-	}
-	if (month != d.getMonth() && year != d.getYear()) {
-		if(document.getElementById("forward").className != "move"){
-			document.getElementById("forward").className = "move";
-		}
-	}
-	httpRequest = "http://localhost:8083/item/findAll" + "?year=" + year + "&month=" + month;
-	loadItems(httpRequest);
-	daysList(year, month);
-}
-
-function monthForward() {
-	if (month != d.getMonth() || year != d.getFullYear()) {
-		month++;
-		if(month == d.getMonth() && year == d.getFullYear()){
-			document.getElementById("forward").className = "disabled";
-		}
-			if (month > 11) {
-				year++;
-				month = 0;
-		} 		
-		httpRequest = "http://localhost:8083/item/findAll" + "?year=" + year + "&month=" + month;
-		loadItems(httpRequest);
-		daysList(year, month);	
-	}
+async function deleteItem(itemId) {
+	let response = await fetch("http://localhost:8083/items/" + itemId, {
+		method: "DELETE"	 	  	
+    });
+	await doGet("http://localhost:8083/items" + "?year=" + navigator.getYear() + "&month=" +
+	navigator.getMonth(), (obj) => {navigator.setItems(obj)});
+	displayItems();
 }
 
 function formatDate(date) {
@@ -231,7 +148,6 @@ function formatDate(date) {
 		month = '' + (d.getMonth() + 1),
 		day = '' + d.getDate(),
 		year = d.getFullYear();
-
 	if (month.length < 2)
 		month = '0' + month;
 	if (day.length < 2)
@@ -239,73 +155,93 @@ function formatDate(date) {
 	return [year, month, day].join('-');
 }
 
+async function doGet(url, proccess) {
+	let response = await fetch(url, {
+	method: "GET"});
+	let returnedObject = await response.json();
+	proccess(returnedObject);
+}
+
+async function doPost(url, item) {
+	let response = await fetch(url, {
+		method: "POST",
+		body: item,
+		headers: {
+ 	     'Content-Type': 'application/json'
+  	  	}  	  	
+    });
+    console.log(response.json());
+}
+
+async function addItem() {
+	//x = document.forms["myForm"]
+	let itemName = document.getElementById("item_name").value;
+	let itemPrice = document.getElementById("price").value;
+	let itemDate = new Date(navigator.getYear(), navigator.getMonth(),
+	document.getElementById("days").value);
+	let itemCategory;
+	await doGet("http://localhost:8083/categories/" +
+	document.getElementById("categories").value, function(value) {itemCategory = value});
+	await doPost("http://localhost:8083/items", 
+	JSON.stringify({ name: itemName, price: itemPrice, category: itemCategory, date: itemDate }));
+	document.getElementById('decor').style.display = 'none';
+	await doGet("http://localhost:8083/items" + "?year=" + navigator.getYear() + "&month=" +
+	navigator.getMonth(), (obj) => {navigator.setItems(obj)});
+	displayItems();
+}
+
+function mostPopularItems(items){	
+	let html = '';
+	for(let i = 0; i < items.length; i++){
+		let item = items[i];
+		html = html + '<tr><td>' + (i +1) + '</td>\n' +
+		'        <td>' + item.name + '</td>\n' +
+		'        <td>' + item.value + '</td>\n' +
+		'        <td>' + item.total.toFixed(2) + '</td>\n' +
+		'    </tr>';
+	}	
+	document.getElementById("mostPopular").getElementsByTagName("tbody")[0].innerHTML = html;
+}
+
+function displayItems(){
+	let items = navigator.getItems();
+	let categories = navigator.getCategories();
+	let itemHtml ='';
+	items.forEach ((item, index) => {
+		console.log(item);
+		itemHtml += '<tr><td>' + (index + 1) + '</td>\n' +
+		'        <td>' + item.name + '</td>\n' +
+		'        <td>' + item.price + '</td>\n' +
+		'        <td>' + item.category.name + '</td>' +
+		'        <td>' + formatDate(item.date) + '</td>' +
+		'        <td><button onclick="deleteItem(' + item.id + ')">Видалити</button></td></tr>';
+		});
+	document.getElementById("itemsList").getElementsByTagName("tbody")[0].innerHTML = (itemHtml);
+	let categoryTable = '';
+	categories.forEach(category => {
+		categoryTable += '      <tr><td>' + category.name + '</td>' +
+		'	 <td>' + items.filter(item => item.category.id == category.id).length +
+		'</td></tr>';
+		}
+	);		
+	let resort = true;
+    $("#itemsList").trigger("update", [resort]);
+	document.getElementById("categoryList").getElementsByTagName("tbody")[0].innerHTML = categoryTable;
+	document.getElementById("current_date").innerHTML = monthNames[navigator.getMonth()] +
+	 ' ' + navigator.getYear();
+	document.getElementById("total_price").innerHTML = "Загальні витрати за місяць: " + 
+	items.reduce((value, item) => value + item.price, 0).toFixed(2) + "грн";			
+}
+
 function loadCategories() {
-	var xhttp = new XMLHttpRequest();
-	xhttp.onreadystatechange = function() {
-		if (this.readyState == 4 && this.status == 200) {
-			categories = JSON.parse(this.responseText);
-			var html = '<option value="">Виберіть категорію:</option>';
-			var table = '<caption><h1>По категоріям</h1></caption><tr>' +
-						'		<th>Категорія</th>' +
-						'	<th>Кількість</th></tr>';
-			var categoryCount;
-			var link;
-			for (var i = 0; i < categories.length; i++) {
-				var category = categories[i];
-				console.log(category);
-				link = 'http://localhost:8083/item/itemsCount/' + (i + 1) + '?month=' + month + '&year=' + year;
-				categoryCount =  getCategoryCount(link);	
-				html = html + '<option value="' + category.id + '">' + category.name + '</option>';
-				table += '      <tr><td>' + category.name + '</td>' +
-					     '		  <td>' + categoryCount + '</td></tr>';
-			}
-			document.getElementById("categories").innerHTML = html;
-			document.getElementById("categoriesGraph").innerHTML = '<option value="0">Всі витрати</option>' + html.slice(45);
-			document.getElementById("categoryList").innerHTML = table;
-		}
-	};
-	xhttp.open("GET", "http://localhost:8083/category/findAll", true);
-	xhttp.send();
+	let html = '<option value="">Виберіть категорію:</option>';
+	navigator.getCategories().forEach(category => {
+		html = html + '<option value="' + category.id + '">' + category.name + '</option>';	
+	});
+	document.getElementById("categoriesGraph").innerHTML = '<option value="0">Всі витрати</option>' + html.slice(45);
+	document.getElementById("categories").innerHTML = html;
 }
 
-	function getCategoryCount(link){
-		var request = new XMLHttpRequest();
-		request.open("GET", link, false);
-		request.send();
-		return request.responseText;
-}
-
-function addItem() {
-	var xmlhttp = new XMLHttpRequest();// new HttpRequest instance
-	xmlhttp.onreadystatechange = function() {
-		if (this.readyState == 4 && this.status == 200) {
-			document.getElementById('decor').style.display = 'none';
-			loadItems(httpRequest);
-		}
-	}
-	var itemName = document.getElementById("item_name").value;
-	var itemPrice = document.getElementById("price").value;
-	var itemDate = new Date(year, month, document.getElementById("days").value)
-	var itemCategory = getCategoryById(document.getElementById("categories").value);
-	xmlhttp.open("POST", "http://localhost:8083/item/save", true);
-	xmlhttp.setRequestHeader("Content-Type", "application/json");
-	xmlhttp.send(JSON.stringify({ name: itemName, price: itemPrice, category: itemCategory, date: itemDate }));
-}
-
-function getCategoryById(id) {
-	var xhttp = new XMLHttpRequest();
-	xhttp.open("GET", "http://localhost:8083/category/" + id, false);
-	xhttp.send();
-	return JSON.parse(xhttp.responseText);
-}
-
-function daysList(year, month) {
-	var y = year;
-	var m = month + 1;
-	var daysInMonth = /8|3|5|10/.test(--m)?30:m==1?(!(y%4)&&y%100)||!(y%400)?29:28:31;
-	var html = '<option value="">День:</option>';
-	for (var i = 1; i <= daysInMonth; i++) {
-		html = html + '<option value="' + i + '">' + i + '</option>';
-	}
-	document.getElementById("days").innerHTML = html;
-}
+$(function() {
+  $("#itemsList").tablesorter();
+});

@@ -3,7 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <title>Items page</title>
-      <link rel="stylesheet" href="css/items.css">
+  <link rel="stylesheet" href="css/items.css">
+  <link type="text/css" rel="stylesheet" href="css/theme.default.min.css">
+  <link type="text/css" rel="stylesheet" href="css/theme.blue.css">
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+  <script type="text/javascript" src="/js/jquery.js"></script>
+  <script type="text/javascript" src="/js/jquery.tablesorter.min.js"></script>
+
 </head>
 <body>
 
@@ -13,20 +19,49 @@
 
 
 <div class="container_top">
-<button class="move" style="vertical-align:middle" onclick="monthBack()"><span>Назад </span></button>
+<button class="move" style="vertical-align:middle" onclick="navigator.monthBack()"><span>Назад </span></button>
 <h1 id="current_date"></h1>
-<button id="forward" style="vertical-align:middle" class="disabled" onclick="monthForward()"><span>Вперед </span></button>
+<button id="forward" style="vertical-align:middle" class="disabled" onclick="navigator.monthForward()"><span>Вперед </span></button>
 </div>
 <div class="container">
 <div class="main_table">
-<table class="table_price" id="itemsList"></table>
+<table class="tablesorter-blue" id="itemsList">
+	<caption id="table_head">
+		<h1 id="total_price"></h1>
+		<button id="add" onclick="document.getElementById('decor').style.display = 'block'">&#10010</a>
+	 </caption>
+		 <thead><tr>
+		 	<th>№</th>
+		    <th>Назва</th> 
+			<th>Ціна</th>
+			<th>Категорія</th>
+			<th>Дата</th>
+			<th>Редагувати</th>
+		 </tr></thead>
+		 <tbody></tbody>
+</table>
+
 </div>
 <div class="secondary_table">
-<table class="table_price" id="categoryList"></table>
+<table class="table_price" id="categoryList">
+	<caption><h1>По категоріям</h1></caption><tr>
+		<thead><th>Категорія</th>
+			   <th>Кількість</th></tr></thead>
+		<tbody></tbody>
+</table>
 <select id="categoriesGraph" onchange="drawGraph()"></select>
 <select id="yearGraph" onchange="drawGraph()"></select>
 <canvas width="500" height="500" id="canvas"></canvas>
-<table class="table_price" id="mostPopular"></table>
+<table class="table_price" id="mostPopular">
+<caption><h1>Найбільш популярні</h1></caption>
+		<thead><tr>
+	        <th>№</th>
+	        <th>Назва</th>
+	      	<th>Кількість</th>
+	     	<th>Загальна ціна</th>
+	    </tr></thead>
+	    <tbody></tbody>
+</table>
 </div>
 </div>
 
@@ -35,9 +70,9 @@
 <h3>Додати елемент</h3>
 <button onclick="document.getElementById('decor').style.display = 'none'">
 <b>&#10006;</b></button><br>
-<input type="text" id="item_name" placeholder="Назва товару/послуги">
-<input type="text" id="price" placeholder="Ціна">
-<select id="categories"></select>
+<input type="text" id="item_name" placeholder="Назва товару/послуги" required>
+<input type="text" id="price" placeholder="Ціна" required>
+<select id="categories" required></select>
 <select id="days"></select>
 <input type="submit" onclick="addItem()" value="Додати">
 </form>

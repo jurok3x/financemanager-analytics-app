@@ -18,24 +18,24 @@ import lombok.AllArgsConstructor;
 import lombok.extern.java.Log;
 
 @RestController
-@RequestMapping("/group")
+@RequestMapping("/roles")
 @AllArgsConstructor
 @Log
 public class RoleController {
 
 	private final RoleService roleService;
 	
-	@GetMapping("/findAll")
+	@GetMapping
 	public List<Role> findAllRoles() {
 		log.info("Handling find all groups request");
 		return roleService.findAll();
 	}
-	@PostMapping("/save")
+	@PostMapping
     public Role saveRole(@RequestBody Role role) {
         log.info("Handling save group: " + role);
         return roleService.saveRole(role);
     }
-	@DeleteMapping("/delete/{id}")
+	@DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCategory(@PathVariable Integer id) {
         log.info("Handling delete group request: " + id);
         roleService.deleteRole(id);

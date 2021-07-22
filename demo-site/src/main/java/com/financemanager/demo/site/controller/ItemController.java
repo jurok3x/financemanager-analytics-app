@@ -21,42 +21,40 @@ import lombok.AllArgsConstructor;
 import lombok.extern.java.Log;
 
 @RestController
-@RequestMapping("/item")
+@RequestMapping("/items")
 @AllArgsConstructor
 @Log
 public class ItemController {
 	private ItemService itemService;
 
-	@PostMapping("/save")
+	@PostMapping
 	public ItemDto saveItem(@RequestBody ItemDto itemDto) {
 		log.info("Handling save item: " + itemDto);
 		return itemService.saveItem(itemDto);
 	}
 
-	@DeleteMapping("/delete/{id}")
+	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> deleteItem(@PathVariable Integer id) {
 		log.info("Handling delete item request: " + id);
 		itemService.deleteItem(id);
 		return ResponseEntity.ok().build();
 	}
 
-	@GetMapping(value = {"/findAll"})
-	public List<ItemDto> findAll(@RequestParam Optional<Integer> year, @RequestParam Optional<Integer> month,
-			@RequestParam(name = "sortBy") Optional<String> sort, @RequestParam(name = "reversed") Optional<Boolean> isReversed) {
-		log.info("Handling find items with " + ((month.isPresent()) ? "month = " + (month.get() + 1) : "") + ((year.isPresent()) ? " and year = " + year.get() : "") +
-				((sort.isPresent()) ? " sorted by = " + sort.get() : "") + ((isReversed.isPresent()) ? " reverse = " + isReversed.get() : ""));
-		return itemService.findAll(year, month, sort, isReversed);
+	@GetMapping
+	public List<ItemDto> findAll(@RequestParam Optional<Integer> year, @RequestParam Optional<Integer> month) {
+		log.info("Handling find items with " + ((month.isPresent()) ? "month = " + (month.get() + 1) : "") + ((year.isPresent()) ? " and year = " + year.get() : ""));
+		return itemService.findAll(year, month);
 	}
 	
-	@GetMapping(value = {"/findByCategoryId/{categoryId}"})
+	@GetMapping(value = {"/category/{categoryId}"})
 	public List<ItemDto> findByCategoryId(@PathVariable Integer categoryId, @RequestParam Optional<Integer> year, @RequestParam Optional<Integer> month,
 			@RequestParam(name = "sortBy") Optional<String> sort, @RequestParam(name = "reversed") Optional<Boolean> isReversed) {
 		log.info("Handling find items with categoryId = " + categoryId + ((month.isPresent()) ? " month = " + (month.get() + 1) : "") + ((year.isPresent()) ? " and year = " + year.get() : "") +
 				((sort.isPresent()) ? " sorted by = " + sort.get() : "") + ((isReversed.isPresent()) ? " reverse = " + isReversed.get() : ""));
-		return itemService.findByCategory(categoryId, year, month, sort, isReversed);
+		return itemService.findByCategory(categoryId, year, month);
 	}
 
-	@GetMapping("/itemsCount/{categoryId}")
+	@GetMapping("/count/category/{categoryId}")
 	public Integer countByCategoryAndDate(@PathVariable Integer categoryId, @RequestParam Optional<Integer> year
 			, @RequestParam Optional<Integer> month) {
 		log.info("Handling get items count in category  with id = " + categoryId + ((month.isPresent()) ? " and month = " + (month.get() + 1) : "") +
@@ -64,13 +62,13 @@ public class ItemController {
 		return itemService.countItemsByCategory(categoryId, year, month);
 	}
 	
-	@GetMapping("/saveFromExelFile")
+	@GetMapping("/import")
 	public List<ItemDto> saveFromExelFile() {
 		log.info("Handling save multiple items from exel file.");
 		return itemService.saveItemsFromExelFile("E:\\items.xls");
 	}
 	
-	@GetMapping("/getMostFrequentItems")
+	@GetMapping("/popular")
 	public List<ProjectNameAndCount> getMostFrequentItems(@RequestParam Optional<Integer> categoryId) {
 		log.info("Handling find most popular items.");
 		return itemService.getMostFrequentItems(categoryId);

@@ -14,9 +14,9 @@ public interface ItemService {
 
     void deleteItem(Integer itemId);
 
-    List<ItemDto> findAll(Optional<Integer> year, Optional<Integer> month, Optional<String> sort, Optional<Boolean> isReversed);
+    List<ItemDto> findAll(Optional<Integer> year, Optional<Integer> month);
     
-    List<ItemDto> findByCategory(int categoryId, Optional<Integer> year, Optional<Integer> month, Optional<String> sort, Optional<Boolean> isReversed);
+    List<ItemDto> findByCategory(int categoryId, Optional<Integer> year, Optional<Integer> month);
          
     List<ItemDto> saveItemsFromExelFile(String path);
     

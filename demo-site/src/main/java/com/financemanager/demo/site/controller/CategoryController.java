@@ -17,24 +17,24 @@ import lombok.AllArgsConstructor;
 import lombok.extern.java.Log;
 
 @RestController
-@RequestMapping("/category")
+@RequestMapping("/categories")
 @AllArgsConstructor
 @Log
 public class CategoryController {
 	
 	private final CategoryService categoryService;
 	
-	@GetMapping("/findAll")
+	@GetMapping
 	public List<Category> findAllCategories() {
 		log.info("Handling find all caegories request");
 		return categoryService.findAll();
 	}
-	@PostMapping("/save")
+	@PostMapping
     public Category saveCategory(@RequestBody Category category) {
         log.info("Handling save category: " + category);
         return categoryService.saveCategory(category);
     }
-	@DeleteMapping("/delete/{id}")
+	@DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCategory(@PathVariable Integer id) {
         log.info("Handling delete category request: " + id);
         categoryService.deleteCategory(id);

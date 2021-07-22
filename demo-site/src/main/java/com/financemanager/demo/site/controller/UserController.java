@@ -26,30 +26,30 @@ public class UserController {
 	
 	private final UserService userService;
 	
-	@PostMapping("/save")
+	@PostMapping
     public User saveUser(@RequestBody User user) throws ValidationException {
 		log.info("Handling save user: " + user);
         return userService.saveUser(user);
     }
 	
-	@GetMapping("/findAll")
+	@GetMapping
     public List<UserDto> findAllUsers() {
         log.info("Handling find all users request");
         return userService.findAll();
     }
-	@GetMapping("/findByLogin")
+	@GetMapping("/user")
     public UserDto findByLogin(@RequestParam String login) {
         log.info("Handling find by login request: " + login);
         return userService.findByLogin(login);
     }
-	@DeleteMapping("/delete/{id}")
+	@DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Integer id) {
         log.info("Handling delete user request: " + id);
         userService.deleteUser(id);
         return ResponseEntity.ok().build();
     }
-	@GetMapping("/findByRole/{id}")
-    public List<UserDto> findByGroupId(@RequestParam Integer id) {
+	@GetMapping("/role/{id}")
+    public List<UserDto> findByRoleId(@RequestParam Integer id) {
         log.info("Handling find all users by group request");
         return userService.findByRoleId(id);
     }
