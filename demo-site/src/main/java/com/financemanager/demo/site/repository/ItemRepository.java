@@ -1,6 +1,5 @@
 package com.financemanager.demo.site.repository;
 
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -8,35 +7,97 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.financemanager.demo.site.entity.Item;
-import com.financemanager.demo.site.entity.projects.ProjectNameAndCount;
+import com.financemanager.demo.site.entity.projects.DatePartAndCost;
+import com.financemanager.demo.site.entity.projects.ProjectNameAndCountAndCost;
 
 public interface ItemRepository extends JpaRepository<Item, Integer> {
-	List<Item> findByUserIdAndCategoryIdAndDateGreaterThanEqualAndDateLessThanEqual(int userId, int categoryId,
-			Date start, Date end);
-
+	
 	List<Item> findByUserId(int userId);
 
 	List<Item> findByUserIdAndCategoryId(int userId, int categoryId);
 
-	List<Item> findByUserIdAndDateGreaterThanEqualAndDateLessThanEqual(int userId, Date start, Date end);
-
-	Integer countByUserIdAndCategoryIdAndDateGreaterThanEqualAndDateLessThanEqual(int userId, int categoryId,
-			Date start, Date end);
-
-	Integer countByUserIdAndCategoryId(int userId, int categoryId);
-
-	@Query(value = "SELECT name, COUNT(name) as value, SUM (price) AS total\n"
-			+ "FROM item_table WHERE user_id = :userId\n"
-			+ "GROUP BY name ORDER BY value DESC LIMIT 5", nativeQuery = true)
-	List<ProjectNameAndCount> getMostFrequentItems(@Param("userId") int userId);
-
-	@Query(value = "SELECT name, COUNT(name) as value, SUM (price) AS total\n"
+	@Query(value = "SELECT * FROM item_table\n"
+			+ "WHERE user_id = :userId\n"
+			+ "AND CAST (date as text) LIKE :dateString\n"
+			+ "ORDER BY item_id OFFSET :offset ROWS\n"
+			+ "FETCH FIRST :limit ROW ONLY", nativeQuery = true)
+	List<Item> findByUserIdAndDate(
+			@Param("userId") int userId,
+			@Param("dateString") String dateString,
+			@Param("limit") int limit,
+			@Param("offset") int offset);
+	
+	@Query(value = "SELECT * FROM item_table\n"
+			+ "WHERE user_id = :userId and category_id = :categoryId\n"
+			+ "AND CAST (date as text) LIKE :dateString\n"
+			+ "ORDER BY item_id OFFSET :offset ROWS\n"
+			+ "FETCH FIRST :limit ROW ONLY", nativeQuery = true)
+	List<Item> findByUserIdAndCategoryIdAndDate(
+			@Param("userId") int userId,
+			@Param("categoryId") int categoryId,
+			@Param("dateString") String dateString,
+			@Param("limit") int limit,
+			@Param("offset") int offset);
+	
+	@Query(value = "SELECT  COUNT(item_name) as value\n"
 			+ "FROM item_table WHERE user_id = :userId AND category_id = :categoryId\n"
-			+ "GROUP BY name ORDER BY value DESC LIMIT 5", nativeQuery = true)
-	List<ProjectNameAndCount> getMostFrequentItemsByCategory(@Param("userId") int userId, @Param("categoryId") int categoryId);
+			+ "AND CAST (date as text) LIKE :dateString",
+			nativeQuery = true)
+	Integer countByUserIdAndCategoryIdAndDate(
+			@Param("userId") int userId,
+			@Param("categoryId") int categoryId,
+			@Param("dateString") String dateString);
+
+	@Query(value = "SELECT item_name, COUNT(item_name) as value, SUM (price) AS total\n"
+			+ "FROM item_table WHERE user_id = :userId\n"
+			+ "AND CAST (date as text) LIKE :dateString\n"
+			+ "GROUP BY item_name ORDER BY value DESC OFFSET :offset ROWS\n"
+			+ "FETCH FIRST :limit ROW ONLY", nativeQuery = true)
+	List<ProjectNameAndCountAndCost> getMostFrequentItemsByDate(
+			@Param("userId") int userId,
+			@Param("dateString") String dateString,
+			@Param("limit") int limit,
+			@Param("offset") int offset);
+
+	@Query(value = "SELECT item_name, COUNT(item_name) as value, SUM (price) AS total\n"
+			+ "FROM item_table WHERE user_id = :userId AND category_id = :categoryId\n"
+			+ "AND CAST (date as text) LIKE :dateString\n"
+			+ "GROUP BY item_name ORDER BY value DESC OFFSET :offset ROWS\n"
+			+ "FETCH FIRST :limit ROW ONLY", nativeQuery = true)
+	List<ProjectNameAndCountAndCost> getMostFrequentItemsByCategoryAndDate(
+			@Param("userId") int userId,
+			@Param("categoryId") int categoryId,
+			@Param("dateString") String dateString,
+			@Param("limit") int limit,
+			@Param("offset") int offset);
+	
+	@Query(value = "SELECT DISTINCT(EXTRACT (YEAR FROM date))\n"
+			+ "FROM item_table WHERE user_id = :userId \n"
+			+ "ORDER BY date_part", nativeQuery = true)
+	List<Integer> getAllYears(@Param("userId") int userId);
+	
+	@Query(value = "SELECT EXTRACT(MONTH from date), SUM(price) AS total\n"
+			+ "FROM item_table WHERE user_id = :userId \n"
+			+ "GROUP By date_part ORDER BY date_part", nativeQuery = true)
+	List<DatePartAndCost> getMonthStatistics(@Param("userId") int userId);
 }
 
 /*
- * SELECT name, COUNT(name) as value_occurrence FROM item_table GROUP BY name
- * ORDER BY value_occurrence DESC LIMIT 5;
+WITH months AS (SELECT * FROM generate_series(1, 12) AS t(n)),
+ categories AS (SELECT * FROM generate_series(1, 10) AS f(n))
+
+SELECT EXTRACT(year from date), months.n as date_part, categories.n AS category, COALESCE(SUM(price), 0) AS total
+FROM item_table
+RIGHT JOIN months ON EXTRACT(MONTH from date) = months.n
+RIGHT JOIN categories ON category_id = categories.n
+  AND user_id = 5  
+GROUP BY CUBE(EXTRACT(year from date), months.n, categories.n)
+ORDER By EXTRACT(year from date), months.n, categories.n;
+
+ * SELECT EXTRACT(MONTH from date), SUM(price)
+FROM item_table
+WHERE user_id = 5 AND date BETWEEN '2020-01-01' AND '2021-01-01'
+GROUP By date_part
+ORDER BY date_part;
+
  */

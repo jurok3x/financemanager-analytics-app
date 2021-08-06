@@ -1,7 +1,7 @@
 package com.financemanager.demo.site.entity.projects;
 
-public interface ProjectNameAndCount {
-    String getName();
+public interface ProjectNameAndCountAndCost {
+    String getItem_Name();
     Integer getValue();
     Double getTotal();
 }

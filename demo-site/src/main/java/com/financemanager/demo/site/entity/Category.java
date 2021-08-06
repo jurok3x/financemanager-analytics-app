@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "\"category\"")
+@Table(name = "\"categories\"")
 @Data
 @NoArgsConstructor
 @Getter
@@ -20,9 +20,9 @@ import lombok.Setter;
 public class Category implements Comparable<Category>{
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name="id")
+	@Column(name="category_id")
 	private int id;
-	@Column(name="name")
+	@Column(name="category_name")
 	private String name;
 	@Override
 	public int compareTo(Category category) {

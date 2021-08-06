@@ -9,7 +9,7 @@
   <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
   <script type="text/javascript" src="/js/jquery.js"></script>
   <script type="text/javascript" src="/js/jquery.tablesorter.min.js"></script>
-
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.5.0/chart.js"></script>
 </head>
 <body>
 
@@ -19,9 +19,9 @@
 
 
 <div class="container_top">
-<button class="move" style="vertical-align:middle" onclick="navigator.monthBack()"><span>Назад </span></button>
+<button class="move" style="vertical-align:middle" onclick="siteCore.monthBack()"><span>Назад </span></button>
 <h1 id="current_date"></h1>
-<button id="forward" style="vertical-align:middle" class="disabled" onclick="navigator.monthForward()"><span>Вперед </span></button>
+<button id="forward" style="vertical-align:middle" class="disabled" onclick="siteCore.monthForward()"><span>Вперед </span></button>
 </div>
 <div class="container">
 <div class="main_table">
@@ -35,7 +35,7 @@
 		    <th>Назва</th> 
 			<th>Ціна</th>
 			<th>Категорія</th>
-			<th>Дата</th>
+			<th>День</th>
 			<th>Редагувати</th>
 		 </tr></thead>
 		 <tbody></tbody>
@@ -50,8 +50,9 @@
 		<tbody></tbody>
 </table>
 <select id="categoriesGraph" onchange="drawGraph()"></select>
-<select id="yearGraph" onchange="drawGraph()"></select>
-<canvas width="500" height="500" id="canvas"></canvas>
+<select id="yearGraph" onchange="updateGraph()"></select>
+<canvas id="monthStatistic" width="400" height="400"></canvas>
+<canvas id="categoryStatistic" width="500" height="500" ></canvas>
 <table class="table_price" id="mostPopular">
 <caption><h1>Найбільш популярні</h1></caption>
 		<thead><tr>
@@ -63,19 +64,20 @@
 	    <tbody></tbody>
 </table>
 </div>
+
 </div>
 
 <div id="decor" class="decor">
-<form action="#" class="form-inner">
-<h3>Додати елемент</h3>
-<button onclick="document.getElementById('decor').style.display = 'none'">
-<b>&#10006;</b></button><br>
-<input type="text" id="item_name" placeholder="Назва товару/послуги" required>
-<input type="text" id="price" placeholder="Ціна" required>
-<select id="categories" required></select>
-<select id="days"></select>
-<input type="submit" onclick="addItem()" value="Додати">
-</form>
+	<form name="itemForm" action="#" class="form-inner">
+		<h3>Додати елемент</h3>
+		<button onclick="document.getElementById('decor').style.display = 'none'">
+		<b>&#10006;</b></button><br>
+		<input type="text" id="item_name" placeholder="Назва товару/послуги" required>
+		<input type="text" id="price" placeholder="Ціна" required>
+		<select id="categories" required></select>
+		<select id="days" required></select>
+		<input type="submit" onclick="addItem()" value="Додати">
+	</form>
 </div>
 
 <script src="js/items.js"></script>

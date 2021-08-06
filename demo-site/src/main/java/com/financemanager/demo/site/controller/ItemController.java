@@ -14,7 +14,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.financemanager.demo.site.dto.ItemDto;
-import com.financemanager.demo.site.entity.projects.ProjectNameAndCount;
+import com.financemanager.demo.site.entity.projects.DatePartAndCost;
+import com.financemanager.demo.site.entity.projects.ProjectNameAndCountAndCost;
 import com.financemanager.demo.site.service.ItemService;
 
 import lombok.AllArgsConstructor;
@@ -37,41 +38,50 @@ public class ItemController {
 	public ResponseEntity<Void> deleteItem(@PathVariable Integer id) {
 		log.info("Handling delete item request: " + id);
 		itemService.deleteItem(id);
-		return ResponseEntity.ok().build();
+		return ResponseEntity.noContent().build();
 	}
 
 	@GetMapping
-	public List<ItemDto> findAll(@RequestParam Optional<Integer> year, @RequestParam Optional<Integer> month) {
-		log.info("Handling find items with " + ((month.isPresent()) ? "month = " + (month.get() + 1) : "") + ((year.isPresent()) ? " and year = " + year.get() : ""));
-		return itemService.findAll(year, month);
+	public List<ItemDto> findAll(@RequestParam Optional<String> year, @RequestParam Optional<String> month,
+			Optional<Integer> limit, Optional<Integer> offset) {
+		log.info("Handling find items with year = " + year.orElse("All") + " and month = " + month.orElse("All"));
+		return itemService.findAll(year, month, limit, offset);
 	}
 	
 	@GetMapping(value = {"/category/{categoryId}"})
-	public List<ItemDto> findByCategoryId(@PathVariable Integer categoryId, @RequestParam Optional<Integer> year, @RequestParam Optional<Integer> month,
-			@RequestParam(name = "sortBy") Optional<String> sort, @RequestParam(name = "reversed") Optional<Boolean> isReversed) {
-		log.info("Handling find items with categoryId = " + categoryId + ((month.isPresent()) ? " month = " + (month.get() + 1) : "") + ((year.isPresent()) ? " and year = " + year.get() : "") +
-				((sort.isPresent()) ? " sorted by = " + sort.get() : "") + ((isReversed.isPresent()) ? " reverse = " + isReversed.get() : ""));
-		return itemService.findByCategory(categoryId, year, month);
+	public List<ItemDto> findByCategoryId(@PathVariable Integer categoryId, @RequestParam Optional<String> year, @RequestParam Optional<String> month,
+			Optional<Integer> limit, Optional<Integer> offset) {
+		log.info("Handling find items in category  with id =  " + categoryId + ". With year = " + year.orElse("All") + " and month = " + month.orElse("All"));
+		return itemService.findByCategory(categoryId, year, month, limit, offset);
 	}
 
 	@GetMapping("/count/category/{categoryId}")
-	public Integer countByCategoryAndDate(@PathVariable Integer categoryId, @RequestParam Optional<Integer> year
-			, @RequestParam Optional<Integer> month) {
-		log.info("Handling get items count in category  with id = " + categoryId + ((month.isPresent()) ? " and month = " + (month.get() + 1) : "") +
-				((year.isPresent()) ? " and year = " + year.get() : ""));
+	public Integer countByCategoryAndDate(@PathVariable Integer categoryId, @RequestParam Optional<String> year,
+			@RequestParam Optional<String> month) {
+		log.info("Handling get items count in category  with id = " + categoryId + ". With year = " + year.orElse("All") + " and month = " + month.orElse("All"));
 		return itemService.countItemsByCategory(categoryId, year, month);
 	}
 	
-	@GetMapping("/import")
-	public List<ItemDto> saveFromExelFile() {
-		log.info("Handling save multiple items from exel file.");
-		return itemService.saveItemsFromExelFile("E:\\items.xls");
-	}
 	
 	@GetMapping("/popular")
-	public List<ProjectNameAndCount> getMostFrequentItems(@RequestParam Optional<Integer> categoryId) {
-		log.info("Handling find most popular items.");
-		return itemService.getMostFrequentItems(categoryId);
+	public List<ProjectNameAndCountAndCost> getMostFrequentItems(@RequestParam Optional<Integer> categoryId,
+			@RequestParam Optional<String> year,
+			@RequestParam Optional<String> month,
+			@RequestParam Optional<Integer> limit,
+			@RequestParam Optional<Integer> offset) {
+		log.info("Handling find most popular items. With year = " + year.orElse("All") + " and month = " + month.orElse("All"));
+		return itemService.getMostFrequentItems(categoryId, year, month, limit, offset);
 	}
 	
+	@GetMapping("/years")
+	public List<Integer> getAllYears() {
+		log.info("Handling find all years.");
+		return itemService.getAllYears();
+	}
+	//fix
+	@GetMapping("/statistics")
+	public List<DatePartAndCost> getMonthStatistics() {
+		log.info("Handling get month statistics.");
+		return itemService.getMonthStatistics(null, null);
+	}
 }

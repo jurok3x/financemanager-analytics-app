@@ -1,36 +1,18 @@
 package com.financemanager.demo.site.service;
 
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.DateUtil;
-import org.apache.poi.ss.usermodel.Row;
 import org.springframework.stereotype.Service;
 
 import com.financemanager.demo.site.dto.ItemDto;
-import com.financemanager.demo.site.entity.Category;
 import com.financemanager.demo.site.entity.Item;
-import com.financemanager.demo.site.entity.projects.ProjectNameAndCount;
-import com.financemanager.demo.site.exception.NoSuchCategoryException;
+import com.financemanager.demo.site.entity.projects.DatePartAndCost;
+import com.financemanager.demo.site.entity.projects.ProjectNameAndCountAndCost;
 import com.financemanager.demo.site.repository.ItemRepository;
 
 import lombok.AllArgsConstructor;
-
-import static java.time.temporal.TemporalAdjusters.*;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 
 @AllArgsConstructor
 @Service
@@ -39,7 +21,6 @@ public class DefaultItemService implements ItemService {
 	private final ItemConverter itemConverter;
 	private final UserService userService;
 	private final UserConverter userConverter;
-	private final CategoryService categoryService;
 
 	@Override
 	public ItemDto saveItem(ItemDto itemDto) {
@@ -54,132 +35,50 @@ public class DefaultItemService implements ItemService {
 	}
 
 	@Override
-	public List<ItemDto> findAll(Optional<Integer> year, Optional<Integer> month) {	
-		if(year.isPresent()) {
-			return itemRepository
-					.findByUserIdAndDateGreaterThanEqualAndDateLessThanEqual(userService.getContextUser().getId(), getBoundaryDate(year.get(), month, true), getBoundaryDate(year.get(), month, false))
-					.stream().map(itemConverter::fromItemToItemDto).collect(Collectors.toList());
-		} else {
-			return itemRepository.findByUserId(userService.getContextUser().getId()).stream().map(itemConverter::fromItemToItemDto).collect(Collectors.toList());
-		}	
+	public List<ItemDto> findAll(Optional<String> year, Optional<String> month,
+		Optional<Integer> limit, Optional<Integer> offset) {	
+		String dateString = "%" + year.orElse("") + ((month.isPresent()) ? ("-" + month.get()) : "");
+		return itemRepository
+				.findByUserIdAndDate(userService.getContextUser().getId(), dateString,
+						limit.orElse(10), offset.orElse(0))
+				.stream().map(itemConverter::fromItemToItemDto).collect(Collectors.toList());		
 	}
 
 	@Override
-	public Integer countItemsByCategory(int cetegoryId, Optional<Integer> year, Optional<Integer> month) {
-		if(year.isPresent()) {
-			return itemRepository.countByUserIdAndCategoryIdAndDateGreaterThanEqualAndDateLessThanEqual(userService.getContextUser().getId(),
-					cetegoryId, getBoundaryDate(year.get(), month, true), getBoundaryDate(year.get(), month, false));
-		} else {
-			return itemRepository.countByUserIdAndCategoryId(userService.getContextUser().getId(), cetegoryId);
+	public List<ItemDto> findByCategory(int categoryId, Optional<String> year, Optional<String> month,
+		Optional<Integer> limit, Optional<Integer> offset) {
+		String dateString = "%" + year.orElse("") + ((month.isPresent()) ? ("-" + month.get()) : "");
+		return itemRepository.findByUserIdAndCategoryIdAndDate(userService.getContextUser().getId(), categoryId,
+				dateString, limit.orElse(10), offset.orElse(0))
+				.stream().map(itemConverter::fromItemToItemDto).collect(Collectors.toList());
+	}
+	
+	@Override
+	public Integer countItemsByCategory(int cetegoryId, Optional<String> year, Optional<String> month) {
+		String dateString = "%" + year.orElse("") + ((month.isPresent()) ? ("-" + month.get()) : "");
+			return itemRepository.countByUserIdAndCategoryIdAndDate(userService.getContextUser().getId(),
+					cetegoryId, dateString);	
+	}
+	
+	@Override
+	public List<ProjectNameAndCountAndCost> getMostFrequentItems(Optional<Integer> categoryId, Optional<String> year, Optional<String> month,
+			Optional<Integer> limit, Optional<Integer> offset) {
+		String dateString = "%" + year.orElse("") + ((month.isPresent()) ? ("-" + month.get()) : "");
+		if(categoryId.isEmpty()) {
+			return itemRepository.getMostFrequentItemsByDate(userService.getContextUser().getId(), dateString, limit.orElse(5), offset.orElse(0));
 		}
+		return  itemRepository.getMostFrequentItemsByCategoryAndDate(userService.getContextUser().getId(), categoryId.get(),
+				dateString, limit.orElse(5), offset.orElse(0));
 	}
 
 	@Override
-	public List<ItemDto> findByCategory(int categoryId, Optional<Integer> year, Optional<Integer> month) {
-		if(year.isPresent()) {
-			return itemRepository.findByUserIdAndCategoryIdAndDateGreaterThanEqualAndDateLessThanEqual(userService.getContextUser().getId(), categoryId,
-					getBoundaryDate(year.get(), month, true), getBoundaryDate(year.get(), month, false))
-					.stream().map(itemConverter::fromItemToItemDto).collect(Collectors.toList());
-		} else {
-			return itemRepository.findByUserIdAndCategoryId(userService.getContextUser().getId(), categoryId)
-					.stream().map(itemConverter::fromItemToItemDto).collect(Collectors.toList());		
-		}
-	}
-	
-	private static Date getBoundaryDate(int year, Optional<Integer> month, boolean isStart) {
-		LocalDate init = LocalDate.of(year, (month.isPresent()) ? month.get() + 1 : 1, 1);
-		Date date = (isStart) ? Date.from(init.atStartOfDay(ZoneId.systemDefault()).toInstant()):
-		Date.from(init.with((month.isPresent()) ? lastDayOfMonth() : lastDayOfYear()).atStartOfDay(ZoneId.systemDefault()).toInstant());
-		return date;
-	}
-	
-	
-	@Override
-	public List<ItemDto> saveItemsFromExelFile(String path) {
-		List<Item> items = new ArrayList<Item>();
-		try {
-			FileInputStream fis = new FileInputStream(new File(path));
-			HSSFWorkbook wb = new HSSFWorkbook(fis);
-			HSSFSheet sheet = wb.getSheetAt(0);
-			Item item = new Item();
-			Date date = new Date();
-			for (Row row : sheet) {
-				for (Cell cell : row) {
-					switch (cell.getCellTypeEnum()) {
-					case STRING:
-						item = new Item();
-						item.setUser(userService.getContextUser());
-						item.setName(cell.getStringCellValue().substring(0, 1).toUpperCase()
-								+ cell.getStringCellValue().substring(1).toLowerCase());
-						item.setDate(date);
-						Category category = new Category();
-						switch (cell.getCellStyle().getFillForegroundColor()) {
-						case 45:
-							category = categoryService.findById(1);
-							break;
-						case 13:
-							category = categoryService.findById(2);
-							break;
-						case 15:
-							category = categoryService.findById(3);
-							break;
-						case 11:
-							category = categoryService.findById(4);
-							break;
-						case 46:
-							category = categoryService.findById(5);
-							break;
-						case 10:
-							category = categoryService.findById(6);
-							break;
-						case 53:
-							category = categoryService.findById(7);
-							break;
-						case 61:
-							category = categoryService.findById(8);
-							break;
-						case 60:
-							category = categoryService.findById(9);
-							break;
-						default:
-							category = categoryService.findById(10);
-							break;
-						}
-						item.setCategory(category);
-						break;
-					case NUMERIC:
-						if (DateUtil.isCellDateFormatted(cell)) {
-							date = cell.getDateCellValue();
-						} else {
-							item.setPrice(cell.getNumericCellValue());
-							items.add(item);							
-						}
-						break;
-					case FORMULA:
-						break;
-					default:
-						break;
-					}
-				}
-			}
-			wb.close();
-			items.forEach((storedItem) -> itemRepository.save(storedItem));
-			return items.stream().map(itemConverter::fromItemToItemDto).collect(Collectors.toList());
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-			return null;
-		} catch (IOException e) {
-			e.printStackTrace();
-			return null;
-		} catch (NoSuchCategoryException e) {
-			e.printStackTrace();
-			return null;
-		}
+	public List<Integer> getAllYears() {
+		return itemRepository.getAllYears(userService.getContextUser().getId());
 	}
 
 	@Override
-	public List<ProjectNameAndCount> getMostFrequentItems(Optional<Integer> categoryId) {
-		return (categoryId.isPresent())? itemRepository.getMostFrequentItemsByCategory(userService.getContextUser().getId(), categoryId.get()) :
-			itemRepository.getMostFrequentItems(userService.getContextUser().getId());
+	public List<DatePartAndCost> getMonthStatistics(Optional<Integer> categoryId, Optional<String> year) {
+		return itemRepository.getMonthStatistics(userService.getContextUser().getId());
 	}
+	
 }

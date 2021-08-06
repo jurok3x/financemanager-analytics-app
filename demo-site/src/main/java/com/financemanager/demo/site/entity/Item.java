@@ -27,9 +27,9 @@ import lombok.Setter;
 public class Item {
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name="id")
+	@Column(name="item_id")
 	private int id;
-	@Column(name="name")
+	@Column(name="item_name")
 	private String name;
 	@Column(name="price")
 	private double price;
