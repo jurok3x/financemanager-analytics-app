@@ -15,5 +15,5 @@ public interface RoleService {
 
     List<Role> findAll();
     
-    Role findByName(String name);
+    Role findByName(String name) throws IllegalStateException;
 }

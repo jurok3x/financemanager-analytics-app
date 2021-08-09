@@ -35,9 +35,9 @@ public class DefaultRoleService implements RoleService {
 	}
 
 	@Override
-	public Role findByName(String name) {
-		// TODO Auto-generated method stub
-		return roleRepository.findByName(name);
+	public Role findByName(String name) throws IllegalStateException {
+		Role role = roleRepository.findByName(name).orElseThrow(() -> new IllegalStateException("Role not found."));
+		return role;
 	}
 
 }

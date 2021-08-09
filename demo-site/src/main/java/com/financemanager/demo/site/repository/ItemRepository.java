@@ -77,9 +77,21 @@ public interface ItemRepository extends JpaRepository<Item, Integer> {
 	List<Integer> getAllYears(@Param("userId") int userId);
 	
 	@Query(value = "SELECT EXTRACT(MONTH from date), SUM(price) AS total\n"
-			+ "FROM item_table WHERE user_id = :userId \n"
+			+ "FROM item_table WHERE user_id = :userId\n"
+			+ "AND CAST (date as text) LIKE :dateString\n"
 			+ "GROUP By date_part ORDER BY date_part", nativeQuery = true)
-	List<DatePartAndCost> getMonthStatistics(@Param("userId") int userId);
+	List<DatePartAndCost> getMonthStatistics(
+			@Param("userId") int userId,
+			@Param("dateString") String dateString);
+	
+	@Query(value = "SELECT EXTRACT(MONTH from date), SUM(price) AS total\n"
+			+ "FROM item_table WHERE user_id = :userId AND category_id = :categoryId\n"
+			+ "AND CAST (date as text) LIKE :dateString\n"
+			+ "GROUP By date_part ORDER BY date_part", nativeQuery = true)
+	List<DatePartAndCost> getMonthStatisticsByCategory(
+			@Param("userId") int userId,
+			@Param("dateString") String dateString,
+			@Param("categoryId") int categoryId);
 }
 
 /*

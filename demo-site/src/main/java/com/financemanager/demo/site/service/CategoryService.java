@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 
 import com.financemanager.demo.site.entity.Category;
 import com.financemanager.demo.site.entity.projects.ProjectCategoryAndCost;
-import com.financemanager.demo.site.exception.NoSuchCategoryException;
+import com.financemanager.demo.site.exception.CategoryNotFoundException;
 
 @Component
 public interface CategoryService {
@@ -17,7 +17,7 @@ public interface CategoryService {
 
     List<Category> findAll();
     
-    Category findById(Integer catId) throws NoSuchCategoryException;
+    Category findById(Integer catId) throws CategoryNotFoundException;
     
     List<ProjectCategoryAndCost> getCategoriesAndCost(Optional<Integer> year, Optional<Integer> month);
 }

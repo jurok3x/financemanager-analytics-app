@@ -80,8 +80,9 @@ public class ItemController {
 	}
 	//fix
 	@GetMapping("/statistics")
-	public List<DatePartAndCost> getMonthStatistics() {
+	public List<DatePartAndCost> getMonthStatistics(@RequestParam Optional<Integer> categoryId,
+			@RequestParam Optional<String> year) {
 		log.info("Handling get month statistics.");
-		return itemService.getMonthStatistics(null, null);
+		return itemService.getMonthStatistics(categoryId, year);
 	}
 }

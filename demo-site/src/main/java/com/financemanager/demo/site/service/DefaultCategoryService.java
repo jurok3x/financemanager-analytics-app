@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 
 import com.financemanager.demo.site.entity.Category;
 import com.financemanager.demo.site.entity.projects.ProjectCategoryAndCost;
-import com.financemanager.demo.site.exception.NoSuchCategoryException;
+import com.financemanager.demo.site.exception.CategoryNotFoundException;
 import com.financemanager.demo.site.repository.CategoryRepository;
 
 import lombok.AllArgsConstructor;
@@ -43,9 +43,9 @@ public List<Category> findAll() {
 }
 
 @Override
-public Category findById(Integer id) throws NoSuchCategoryException {
+public Category findById(Integer id) throws CategoryNotFoundException {
 	Category category = categoryRepository.findById(id)
-			.orElseThrow(() -> new NoSuchCategoryException("Category not found"));
+			.orElseThrow(() -> new CategoryNotFoundException("Category not found"));
 	return category;
 }
 

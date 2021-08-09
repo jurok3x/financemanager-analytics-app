@@ -30,6 +30,18 @@ public class RoleController {
 		log.info("Handling find all groups request");
 		return roleService.findAll();
 	}
+	
+	@GetMapping("/{name}")
+	public Role findRoleByName(@PathVariable String name) {
+		log.info("Handling find all groups request");
+		try {
+			return roleService.findByName(name);
+		} catch (IllegalStateException e) {		
+			log.info("Role not found.");
+			throw new IllegalStateException("Role not found.");
+		}
+	}
+	
 	@PostMapping
     public Role saveRole(@RequestBody Role role) {
         log.info("Handling save group: " + role);

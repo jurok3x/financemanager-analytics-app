@@ -78,7 +78,11 @@ public class DefaultItemService implements ItemService {
 
 	@Override
 	public List<DatePartAndCost> getMonthStatistics(Optional<Integer> categoryId, Optional<String> year) {
-		return itemRepository.getMonthStatistics(userService.getContextUser().getId());
+		String dateString = "%" + year.orElse("");
+		if(categoryId.isEmpty()) {
+			return itemRepository.getMonthStatistics(userService.getContextUser().getId(), dateString);
+		}
+		return itemRepository.getMonthStatisticsByCategory(userService.getContextUser().getId(), dateString, categoryId.get());
 	}
 	
 }

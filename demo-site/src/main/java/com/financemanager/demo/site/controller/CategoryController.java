@@ -3,6 +3,7 @@ package com.financemanager.demo.site.controller;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,9 +13,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
+
 import com.financemanager.demo.site.entity.Category;
 import com.financemanager.demo.site.entity.projects.ProjectCategoryAndCost;
-import com.financemanager.demo.site.exception.NoSuchCategoryException;
+import com.financemanager.demo.site.exception.CategoryNotFoundException;
 import com.financemanager.demo.site.service.CategoryService;
 import lombok.AllArgsConstructor;
 import lombok.extern.java.Log;
@@ -47,14 +50,15 @@ public class CategoryController {
     }
 	
 	@GetMapping("/{id}")
-	public Category findCategoryById(@PathVariable Integer id) {
+	public Category findCategoryById(@PathVariable Integer id) throws CategoryNotFoundException {
 		log.info("Handling find caegory with id = " + id);
 		try {
 			return categoryService.findById(id);
-		} catch (NoSuchCategoryException e) {
-			// TODO Auto-generated catch block
+		} catch (CategoryNotFoundException ex) {
+			
 			log.info("Category not found.");
-			return null;
+			throw new ResponseStatusException(
+			          HttpStatus.NOT_FOUND, "Category Not Found", ex);
 		} 
 	}
 	
