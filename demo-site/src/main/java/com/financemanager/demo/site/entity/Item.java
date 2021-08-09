@@ -41,5 +41,6 @@ public class Item {
 	private User user;
 	@Column(name="date")
 	private Date date;
+	
 }
 
