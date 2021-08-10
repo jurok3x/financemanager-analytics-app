@@ -6,6 +6,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.validation.constraints.NotEmpty;
 
 import lombok.Data;
 import lombok.Getter;
@@ -24,5 +25,6 @@ public class Role {
 	@Column(name="id")
 	private int id;
 	@Column(name="name")
+	@NotEmpty(message = "Name must not be empty")
 	private String name;
 }

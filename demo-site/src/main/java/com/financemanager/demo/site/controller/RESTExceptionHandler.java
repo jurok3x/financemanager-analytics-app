@@ -3,6 +3,8 @@ package com.financemanager.demo.site.controller;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
+import javax.validation.ConstraintViolationException;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -16,7 +18,7 @@ import com.financemanager.demo.site.exception.CategoryNotFoundException;
 @ControllerAdvice
 public class RESTExceptionHandler extends ResponseEntityExceptionHandler {
 
-	@ExceptionHandler(value = {IllegalStateException.class})
+	@ExceptionHandler(value = {IllegalStateException.class, IllegalArgumentException.class, ConstraintViolationException.class})
 	protected ResponseEntity<Object> handleConflict(
 			RuntimeException ex, WebRequest request) {
 		
