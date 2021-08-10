@@ -37,7 +37,7 @@ public class DefaultItemService implements ItemService {
 	@Override
 	public List<ItemDto> findAll(Optional<String> year, Optional<String> month,
 		Optional<Integer> limit, Optional<Integer> offset) {	
-		String dateString = "%" + year.orElse("") + ((month.isPresent()) ? ("-" + month.get()) : "");
+		String dateString = "%" + year.orElse("") + "-" + month.orElse("");
 		return itemRepository
 				.findByUserIdAndDate(userService.getContextUser().getId(), dateString,
 						limit.orElse(10), offset.orElse(0))
@@ -47,15 +47,15 @@ public class DefaultItemService implements ItemService {
 	@Override
 	public List<ItemDto> findByCategory(int categoryId, Optional<String> year, Optional<String> month,
 		Optional<Integer> limit, Optional<Integer> offset) {
-		String dateString = "%" + year.orElse("") + ((month.isPresent()) ? ("-" + month.get()) : "");
+		String dateString = "%" + year.orElse("") + "-" + month.orElse("");
 		return itemRepository.findByUserIdAndCategoryIdAndDate(userService.getContextUser().getId(), categoryId,
 				dateString, limit.orElse(10), offset.orElse(0))
 				.stream().map(itemConverter::fromItemToItemDto).collect(Collectors.toList());
 	}
-	
+
 	@Override
 	public Integer countItemsByCategory(int cetegoryId, Optional<String> year, Optional<String> month) {
-		String dateString = "%" + year.orElse("") + ((month.isPresent()) ? ("-" + month.get()) : "");
+		String dateString = "%" + year.orElse("") + "-" + month.orElse("");
 			return itemRepository.countByUserIdAndCategoryIdAndDate(userService.getContextUser().getId(),
 					cetegoryId, dateString);	
 	}
@@ -63,7 +63,7 @@ public class DefaultItemService implements ItemService {
 	@Override
 	public List<ProjectNameAndCountAndCost> getMostFrequentItems(Optional<Integer> categoryId, Optional<String> year, Optional<String> month,
 			Optional<Integer> limit, Optional<Integer> offset) {
-		String dateString = "%" + year.orElse("") + ((month.isPresent()) ? ("-" + month.get()) : "");
+		String dateString = "%" + year.orElse("") + "-" + month.orElse("");
 		if(categoryId.isEmpty()) {
 			return itemRepository.getMostFrequentItemsByDate(userService.getContextUser().getId(), dateString, limit.orElse(5), offset.orElse(0));
 		}
@@ -84,5 +84,4 @@ public class DefaultItemService implements ItemService {
 		}
 		return itemRepository.getMonthStatisticsByCategory(userService.getContextUser().getId(), dateString, categoryId.get());
 	}
-	
 }
