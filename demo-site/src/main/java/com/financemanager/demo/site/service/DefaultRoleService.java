@@ -1,11 +1,13 @@
 package com.financemanager.demo.site.service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
 import com.financemanager.demo.site.entity.Role;
+import com.financemanager.demo.site.exception.ResourceNotFoundException;
 import com.financemanager.demo.site.repository.RoleRepository;
 
 import lombok.AllArgsConstructor;
@@ -15,29 +17,32 @@ import lombok.AllArgsConstructor;
 public class DefaultRoleService implements RoleService {
 
 	private final RoleRepository roleRepository;
-	
+
 	@Override
 	public Role saveRole(Role role) {
 		return roleRepository.save(role);
-		
+
 	}
 
 	@Override
-	public void deleteRole(Integer groupId) {
-		roleRepository.deleteById(groupId);
+	public Role findRoleById(Integer id) throws ResourceNotFoundException{
+		return roleRepository.findById(id).orElseThrow(
+				()->new ResourceNotFoundException("Role with ID :" + id +" Not Found!"));
+	}
+
+	@Override
+	public void deleteRole(Integer roleId) {
+		roleRepository.deleteById(roleId);
 	}
 
 	@Override
 	public List<Role> findAll() {
-		return roleRepository.findAll()
-				.stream()
-				.collect(Collectors.toList());
+		return roleRepository.findAll().stream().collect(Collectors.toList());
 	}
 
 	@Override
-	public Role findByName(String name) throws IllegalStateException {
-		Role role = roleRepository.findByName(name).orElseThrow(() -> new IllegalStateException("Role not found."));
-		return role;
+	public Optional<Role> findByName(String name) {
+		return roleRepository.findByName(name);
 	}
 
 }

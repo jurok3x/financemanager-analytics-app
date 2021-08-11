@@ -6,15 +6,17 @@ import org.springframework.stereotype.Component;
 
 import com.financemanager.demo.site.dto.UserDto;
 import com.financemanager.demo.site.entity.User;
-import com.financemanager.demo.site.exception.ValidationException;
+import com.financemanager.demo.site.exception.ResourceNotFoundException;
 
 @Component
 public interface UserService {
-	User saveUser(User user) throws ValidationException;
+	User saveUser(User user);
 
     void deleteUser(Integer userId);
 
-    UserDto findByLogin(String login);
+    UserDto findByLogin(String login) throws ResourceNotFoundException;
+    
+    UserDto findById(Integer id) throws ResourceNotFoundException;
     
     User findByLoginAndPassword(String login, String password);
 

@@ -28,6 +28,14 @@ public interface ItemRepository extends JpaRepository<Item, Integer> {
 			@Param("offset") int offset);
 	
 	@Query(value = "SELECT * FROM item_table\n"
+			+ "WHERE user_id = :userId\n"
+			+ "AND CAST (date as text) LIKE :dateString\n"
+			+ "ORDER BY item_id", nativeQuery = true)
+	List<Item> findByUserIdAndDateAll(
+			@Param("userId") int userId,
+			@Param("dateString") String dateString);
+	
+	@Query(value = "SELECT * FROM item_table\n"
 			+ "WHERE user_id = :userId and category_id = :categoryId\n"
 			+ "AND CAST (date as text) LIKE :dateString\n"
 			+ "ORDER BY item_id OFFSET :offset ROWS\n"

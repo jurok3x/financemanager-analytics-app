@@ -1,37 +1,22 @@
 package com.financemanager.demo.site.exception;
 
-import java.time.ZonedDateTime;
+import java.time.LocalDateTime;
+import java.util.List;
 
 import org.springframework.http.HttpStatus;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@Getter
+@AllArgsConstructor
 public class APIException {
 
 	private final String message;
-	private final String link;
 	private final HttpStatus httpStatus;
-	private final ZonedDateTime timestamp;
-	
-	public APIException(String message, String link, HttpStatus httpStatus, ZonedDateTime timestamp) {
-		super();
-		this.message = message;
-		this.link = link;
-		this.httpStatus = httpStatus;
-		this.timestamp = timestamp;
-	}
-
-	public String getLink() {
-		return link;
-	}
-
-	public String getMessage() {
-		return message;
-	}
-	
-	public HttpStatus getHttpStatus() {
-		return httpStatus;
-	}
-	
-	public ZonedDateTime getTimestamp() {
-		return timestamp;
-	}
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm:ss")
+    private final LocalDateTime timestamp;
+	private final List<String> errors;
 }

@@ -8,12 +8,15 @@ import org.springframework.stereotype.Component;
 import com.financemanager.demo.site.dto.ItemDto;
 import com.financemanager.demo.site.entity.projects.DatePartAndCost;
 import com.financemanager.demo.site.entity.projects.ProjectNameAndCountAndCost;
+import com.financemanager.demo.site.exception.ResourceNotFoundException;
 
 @Component
 public interface ItemService {
 	ItemDto saveItem(ItemDto itemDto);
+	
+	ItemDto getItemById(Integer id) throws ResourceNotFoundException;
 
-    void deleteItem(Integer itemId);
+    void deleteItem(Integer id);
 
     List<ItemDto> findAll(Optional<String> year, Optional<String> month, Optional<Integer> limit, Optional<Integer> offset);
     

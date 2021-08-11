@@ -1,9 +1,13 @@
 package com.financemanager.demo.site.controller;
 
+import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.http.HttpStatus;
+import javax.validation.Valid;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.Pattern;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,17 +17,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.financemanager.demo.site.entity.Category;
 import com.financemanager.demo.site.entity.projects.ProjectCategoryAndCost;
-import com.financemanager.demo.site.exception.CategoryNotFoundException;
 import com.financemanager.demo.site.service.CategoryService;
 import lombok.AllArgsConstructor;
 import lombok.extern.java.Log;
 
 @RestController
-@RequestMapping("/categories")
+@RequestMapping("/api/categories")
 @AllArgsConstructor
 @Log
 public class CategoryController {
@@ -37,34 +40,35 @@ public class CategoryController {
 	}
 	
 	@PostMapping
-    public Category saveCategory(@RequestBody Category category) {
+    public ResponseEntity<?> saveCategory(@Valid @RequestBody Category category) {
         log.info("Handling save category: " + category);
-        return categoryService.saveCategory(category);
+        Category addedCategory = categoryService.saveCategory(category);
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(addedCategory.getId())
+                .toUri();
+        return ResponseEntity.created(location).build();
     }
 	
 	@DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteCategory(@PathVariable Integer id) {
+    public ResponseEntity<Void> deleteCategory(@PathVariable
+    		@Min(value = 1, message = "Id should be greater than 1") Integer id) {
         log.info("Handling delete category request: " + id);
-        categoryService.deleteCategory(id);
-        return ResponseEntity.ok().build();
+        Category category = categoryService.findById(id);
+        categoryService.deleteCategory(category.getId());
+        return ResponseEntity.noContent().build();
     }
 	
 	@GetMapping("/{id}")
-	public Category findCategoryById(@PathVariable Integer id) throws CategoryNotFoundException {
+	public Category findCategoryById(@PathVariable Integer id) {
 		log.info("Handling find caegory with id = " + id);
-		try {
-			return categoryService.findById(id);
-		} catch (CategoryNotFoundException ex) {
-			
-			log.info("Category not found.");
-			throw new ResponseStatusException(
-			          HttpStatus.NOT_FOUND, "Category Not Found", ex);
-		} 
+		return categoryService.findById(id);
 	}
 	
 	@GetMapping("/cost")
-	public List<ProjectCategoryAndCost> getCategoriesAndCost(@RequestParam Optional<Integer> year,
-			@RequestParam Optional<Integer> month) {
+	public List<ProjectCategoryAndCost> getCategoriesAndCost(
+			@RequestParam Optional<@Pattern(regexp = "^[0-9]{4}", message = "Incorect year") String> year,
+			@RequestParam Optional<@Pattern(regexp = "^[1-12]{1}", message = "Incorect month") String> month) {
 		log.info("Handling find caegories with their cost");
 		return categoryService.getCategoriesAndCost(year, month);
 	}

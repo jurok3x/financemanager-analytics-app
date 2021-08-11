@@ -1,6 +1,7 @@
 package com.financemanager.demo.site.service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +13,7 @@ import org.springframework.stereotype.Service;
 import com.financemanager.demo.site.dto.UserDto;
 import com.financemanager.demo.site.entity.Role;
 import com.financemanager.demo.site.entity.User;
-import com.financemanager.demo.site.exception.ValidationException;
+import com.financemanager.demo.site.exception.ResourceNotFoundException;
 import com.financemanager.demo.site.repository.UserRepository;
 
 import lombok.AllArgsConstructor;
@@ -27,12 +28,19 @@ public class DefaultUserService implements UserService{
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 	@Override
-	public User saveUser(User user) throws ValidationException {
-		validateUser(user);
-		Role role = roleService.findByName("ROLE_USER");
+	public User saveUser(User user) {
+		Role role = roleService.findByName("ROLE_USER").orElseThrow(
+				()->new ResourceNotFoundException("Role with Name ROLE_USER Not Found!"));
 		user.setRole(role);
 		user.setPassword(passwordEncoder.encode(user.getPassword()));
 		return userRepository.save(user);
+	}
+	
+	@Override
+	public UserDto findById(Integer id) throws ResourceNotFoundException{
+		User user = userRepository.findById(id).orElseThrow(
+				()->new ResourceNotFoundException("User with ID :" + id +" Not Found!"));	
+		return userConverter.fromUserToUserDto(user);
 	}
 
 	@Override
@@ -41,12 +49,10 @@ public class DefaultUserService implements UserService{
 	}
 
 	@Override
-	public UserDto findByLogin(String login) {
-		User user = userRepository.findByLogin(login);
-		if (user != null) {
-            return userConverter.fromUserToUserDto(user);
-        }
-		return null;
+	public UserDto findByLogin(String login) throws ResourceNotFoundException{
+		User user = userRepository.findByLogin(login).orElseThrow(
+				()->new ResourceNotFoundException("User with Login :" + login +" Not Found!"));
+		return userConverter.fromUserToUserDto(user);
 	}
 
 	@Override
@@ -55,14 +61,6 @@ public class DefaultUserService implements UserService{
                 .stream()
                 .map(userConverter::fromUserToUserDto)
                 .collect(Collectors.toList());
-	}
-	private void validateUser(User user) throws ValidationException{
-		if(user.equals(null)){
-			throw new ValidationException("Object user is null");
-		}
-		if (user.getLogin().isEmpty() || user.getLogin().equals(null)){
-			throw new ValidationException("Login is empty");
-		}
 	}
 
 	@Override
@@ -75,10 +73,10 @@ public class DefaultUserService implements UserService{
 
 	@Override
 	public User findByLoginAndPassword(String login, String password) {
-		User user = userRepository.findByLogin(login);
-		if (user != null) {
-			if(passwordEncoder.matches(password, user.getPassword()))
-				return user;
+		Optional<User> user = userRepository.findByLogin(login);
+		if (user.isPresent()) {
+			if(passwordEncoder.matches(password, user.get().getPassword()))
+				return user.get();
         }
 		return null;
 	}
@@ -92,6 +90,8 @@ public class DefaultUserService implements UserService{
 		} else {
 			username = principal.toString();
 		}
-		return userRepository.findByLogin(username);
+		return userRepository.findByLogin(username).orElseThrow(
+				()->new ResourceNotFoundException("User with Name :" + username +" Not Found!"));
 	}
+
 }

@@ -1,11 +1,5 @@
 package com.financemanager.demo.site.service;
 
-import static java.time.temporal.TemporalAdjusters.lastDayOfMonth;
-import static java.time.temporal.TemporalAdjusters.lastDayOfYear;
-
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -14,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.financemanager.demo.site.entity.Category;
 import com.financemanager.demo.site.entity.projects.ProjectCategoryAndCost;
-import com.financemanager.demo.site.exception.CategoryNotFoundException;
+import com.financemanager.demo.site.exception.ResourceNotFoundException;
 import com.financemanager.demo.site.repository.CategoryRepository;
 
 import lombok.AllArgsConstructor;
@@ -43,21 +37,15 @@ public List<Category> findAll() {
 }
 
 @Override
-public Category findById(Integer id) throws CategoryNotFoundException {
-	Category category = categoryRepository.findById(id)
-			.orElseThrow(() -> new CategoryNotFoundException("Category not found"));
-	return category;
+public Category findById(Integer id) {
+	return categoryRepository.findById(id).orElseThrow(
+			()->new ResourceNotFoundException("Category with ID :" + id + " Not Found!"));
 }
 
 @Override
-public List<ProjectCategoryAndCost> getCategoriesAndCost(Optional<Integer> year,
-		Optional<Integer> month) {
-	if(year.isEmpty()) {return categoryRepository.getCategoriesAndCost(userService.getContextUser().getId());}
-	LocalDate init = LocalDate.of(year.get(), (month.isPresent()) ? month.get() + 1 : 1, 1);
-	Date dateStart = Date.from(init.atStartOfDay(ZoneId.systemDefault()).toInstant());
-	Date dateEnd = Date.from(init.with((month.isPresent()) ? lastDayOfMonth() : lastDayOfYear()).atStartOfDay(ZoneId.systemDefault()).toInstant());
-	return categoryRepository.getCategoriesAndCostByDate(userService.getContextUser().getId(), dateStart, dateEnd);
+public List<ProjectCategoryAndCost> getCategoriesAndCost(Optional<String> year,
+		Optional<String> month) {
+	String dateString = "%" + year.orElse("") + "-" + month.orElse("");
+	return categoryRepository.getCategoriesAndCostByDate(userService.getContextUser().getId(), dateString);
 }
-
-
 }
