@@ -43,7 +43,13 @@ public Optional<Category> findById(Integer id) {
 @Override
 public List<ProjectCategoryAndCost> getCategoriesAndCost(Optional<String> year,
 		Optional<String> month) {
-	String dateString = "%" + year.orElse("") + "-" + month.orElse("");
+	String dateString = "%" + year.orElse("") + "-" +
+			month.map(monthString->{
+				if(monthString.length() == 1) {
+					monthString = "0" + monthString;
+				}
+				return monthString;
+			}).orElse("") + "%";
 	return categoryRepository.getCategoriesAndCostByDate(userService.getContextUser().getId(), dateString);
 }
 }

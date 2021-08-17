@@ -56,8 +56,8 @@ public class ItemController {
 	
 	@GetMapping
 	public ResponseEntity<CollectionModel<ItemModel>> findAll(
-			@RequestParam Optional<@Pattern(regexp = "^[0-9]{4}", message = "Incorect year") String> year,
-			@RequestParam Optional<@Pattern(regexp = "^[1-12]{1}", message = "Incorect month") String> month,
+			@RequestParam Optional<@Pattern(regexp = "[1-9]{1}[0-9]{3}", message = "Incorect year") String> year,
+			@RequestParam Optional<@Pattern(regexp = "[1-9]{1}|1[0-2]{1}", message = "Incorect month") String> month,
 			@RequestParam Optional<@Min(value = 1, message = "Minimum 1 item") Integer> limit,
 			@RequestParam Optional<@Min(value = 0, message = "Offset can not be less then 0") Integer> offset) {
 		log.info("Handling find items with year = " + year.orElse("All") + " and month = " + month.orElse("All"));
@@ -71,8 +71,8 @@ public class ItemController {
 	public ResponseEntity<CollectionModel<ItemModel>> findByCategoryId(
 			@PathVariable @Min(value = 1, message = "CategoryId must be greater than or equal to 1") 
 				@Max(value = 10, message = "CategoryId must be greater than or equal to 10") Integer categoryId,
-			@RequestParam Optional<@Pattern(regexp = "^[0-9]{4}", message = "Incorect year") String> year,
-			@RequestParam Optional<@Pattern(regexp = "^[1-12]{1}", message = "Incorect month") String> month,
+			@RequestParam Optional<@Pattern(regexp = "[1-9]{1}[0-9]{3}", message = "Incorect year") String> year,
+			@RequestParam Optional<@Pattern(regexp = "[1-9]{1}|1[0-2]{1}", message = "Incorect month") String> month,
 			@RequestParam Optional<@Min(value = 1, message = "Minimum 1 item") Integer> limit,
 			@RequestParam Optional<@Min(value = 0, message = "Offset can not be less then 0") Integer> offset) {
 		log.info("Handling find items in category  with id =  " + categoryId + ". With year = " + year.orElse("All") + " and month = " + month.orElse("All"));
@@ -83,21 +83,23 @@ public class ItemController {
 	}
 
 	@GetMapping("/count/category/{categoryId}")
-	public Integer countByCategoryAndDate(
+	public ResponseEntity<Integer> countByCategoryAndDate(
 			@PathVariable @Min(value = 1, message = "CategoryId must be greater than or equal to 1")
 				@Max(value = 10, message = "CategoryId must be greater than or equal to 10")Integer categoryId,
-			@RequestParam Optional<@Pattern(regexp = "^[0-9]{4}", message = "Incorect year") String> year,
-			@RequestParam Optional<@Pattern(regexp = "^[1-12]{1}", message = "Incorect month") String> month) {
+				@RequestParam Optional<@Pattern(regexp = "[1-9]{1}[0-9]{3}", message = "Incorect year") String> year,
+				@RequestParam Optional<@Pattern(regexp = "[1-9]{1}|1[0-2]{1}", message = "Incorect month") String> month) {
 		log.info("Handling get items count in category  with id = " + categoryId + ". With year = " + year.orElse("All") + " and month = " + month.orElse("All"));
-		return itemService.countItemsByCategory(categoryId, year, month);
+		return new ResponseEntity<>(
+				itemService.countItemsByCategory(categoryId, year, month),
+				HttpStatus.OK);
 	}
 	
 	@GetMapping("/popular")
 	public List<ProjectNameAndCountAndCost> getMostFrequentItems(
 			@RequestParam Optional<@Min(value = 1, message = "CategoryId must be greater than or equal to 1")
 				@Max(value = 10, message = "CategoryId must be greater than or equal to 10")Integer> categoryId,
-			@RequestParam Optional<@Pattern(regexp = "^[0-9]{4}", message = "Incorect year") String> year,
-			@RequestParam Optional<@Pattern(regexp = "^[1-12]{1}", message = "Incorect month") String> month,
+			@RequestParam Optional<@Pattern(regexp = "[1-9]{1}[0-9]{3}", message = "Incorect year") String> year,
+			@RequestParam Optional<@Pattern(regexp = "[1-9]{1}|1[0-2]{1}", message = "Incorect month") String> month,
 			@RequestParam Optional<@Min(value = 1, message = "Minimum 1 message") Integer> limit,
 			@RequestParam Optional<@Min(value = 0, message = "Offset can not be less then 0") Integer> offset) {
 		log.info("Handling find most popular items. With year = " + year.orElse("All") + " and month = " + month.orElse("All"));
@@ -114,8 +116,8 @@ public class ItemController {
 	public List<DatePartAndCost> getStatisticsByMonth(
 			@RequestParam Optional<@Min(value = 1, message = "CategoryId must be greater than or equal to 1")
 				@Max(value = 10, message = "CategoryId must be greater than or equal to 10") Integer> categoryId,
-			@RequestParam Optional<@Pattern(regexp = "^[0-9]{4}", message = "Incorect year") String> year) {
-		log.info("Handling get month statistics. With year = " + year.orElse("All") + "and categoryId = "
+			@RequestParam Optional<@Pattern(regexp = "[1-9]{1}[0-9]{3}", message = "Incorect year") String> year) {
+		log.info("Handling get month statistics. With year = " + year.orElse("All") + " and categoryId = "
 			+ ((categoryId.isPresent()) ? categoryId.get() : "All"));
 		return itemService.getStatisticsByMonth(categoryId, year);
 	}

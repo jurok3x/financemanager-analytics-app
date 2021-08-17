@@ -17,5 +17,5 @@ public interface CategoryRepository extends JpaRepository<Category, Integer> {
 			nativeQuery = true)
 	List<ProjectCategoryAndCost> getCategoriesAndCostByDate(
 			@Param("userId") int userId,
-			@Param("dateSting") String dateStart);
+			@Param("dateString") String dateString);
 }

@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.HttpStatus;
@@ -17,7 +18,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -39,7 +39,7 @@ public class UserController {
 	private final UserModelAssembler userAssembler;
 	
 	@GetMapping("/{id}")
-	public ResponseEntity<UserModel> findById(@RequestParam @Min(value = 1,
+	public ResponseEntity<UserModel> findById(@PathVariable @Min(value = 1,
 	message = "Id should be greater than 1") Integer id) throws ResourceNotFoundException {
 		log.info("Handling find with Id = " + id);
 		return userService.findById(id)
@@ -49,8 +49,8 @@ public class UserController {
 						()->new ResourceNotFoundException("User with ID :" + id +" Not Found!"));	
 	}
 	
-	@GetMapping
-	public ResponseEntity<UserModel> findByLogin(@RequestParam(required = true) String login) throws ResourceNotFoundException{
+	@GetMapping("/{login}")
+	public ResponseEntity<UserModel> findByLogin(@PathVariable @NotNull String login) throws ResourceNotFoundException{
 		log.info("Handling find with login = " + login);
 		return userService.findByLogin(login)
 				.map(userAssembler::toModel)
@@ -69,7 +69,7 @@ public class UserController {
 	}
 	
 	@GetMapping("/role/{id}")
-	public ResponseEntity<CollectionModel<UserModel>> findByRoleId(@RequestParam @Min(value = 1,
+	public ResponseEntity<CollectionModel<UserModel>> findByRoleId(@PathVariable @Min(value = 1,
 		message = "Id should be greater than 1") Integer id) {
 		log.info("Handling find all users with role = " + id + " request");
 		List<User> users = userService.findByRoleId(id);

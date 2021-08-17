@@ -35,12 +35,12 @@ public class ItemModelAssembler extends RepresentationModelAssemblerSupport<Item
 		itemModel.setPrice(entity.getPrice());
 		itemModel.setCategory(categoryAssembler.toModel(entity.getCategory()));
 		itemModel.setUser(userAssembler.toModel(entity.getUser()));
+		itemModel.setDate(entity.getDate());
 		
 		itemModel.add(linkTo(
 				methodOn(ItemController.class)
 				.findById(entity.getId()))
-				.withSelfRel());
-		
+				.withSelfRel());		
 		return itemModel;
 	}
 	

@@ -84,40 +84,23 @@ public interface ItemRepository extends JpaRepository<Item, Integer> {
 			+ "ORDER BY date_part", nativeQuery = true)
 	List<Integer> getAllYears(@Param("userId") int userId);
 	
-	@Query(value = "SELECT EXTRACT(MONTH from date), SUM(price) AS total\n"
-			+ "FROM item_table WHERE user_id = :userId\n"
-			+ "AND CAST (date as text) LIKE :dateString\n"
-			+ "GROUP By date_part ORDER BY date_part", nativeQuery = true)
+	@Query(value = "WITH months AS (SELECT * FROM generate_series(1, 12) AS t(n))\n"
+			+ "SELECT months.n as date_part, COALESCE(SUM(price), 0) AS total\n"
+			+ "FROM item_table RIGHT JOIN months ON EXTRACT(MONTH from date) = months.n\n"
+			+ "WHERE user_id = :userId AND CAST (date as text) LIKE :dateString\n"
+			+ "GROUP BY months.n ORDER BY months.n", nativeQuery = true)
 	List<DatePartAndCost> getMonthStatistics(
 			@Param("userId") int userId,
 			@Param("dateString") String dateString);
 	
-	@Query(value = "SELECT EXTRACT(MONTH from date), SUM(price) AS total\n"
-			+ "FROM item_table WHERE user_id = :userId AND category_id = :categoryId\n"
+	@Query(value = "WITH months AS (SELECT * FROM generate_series(1, 12) AS t(n))\n"
+			+ "SELECT months.n as date_part, COALESCE(SUM(price), 0) AS total\n"
+			+ "FROM item_table RIGHT JOIN months ON EXTRACT(MONTH from date) = months.n\n"
+			+ "WHERE user_id = :userId AND category_id = :categoryId\n"
 			+ "AND CAST (date as text) LIKE :dateString\n"
-			+ "GROUP By date_part ORDER BY date_part", nativeQuery = true)
+			+ "GROUP BY months.n ORDER BY months.n", nativeQuery = true)
 	List<DatePartAndCost> getMonthStatisticsByCategory(
 			@Param("userId") int userId,
 			@Param("dateString") String dateString,
 			@Param("categoryId") int categoryId);
 }
-
-/*
-WITH months AS (SELECT * FROM generate_series(1, 12) AS t(n)),
- categories AS (SELECT * FROM generate_series(1, 10) AS f(n))
-
-SELECT EXTRACT(year from date), months.n as date_part, categories.n AS category, COALESCE(SUM(price), 0) AS total
-FROM item_table
-RIGHT JOIN months ON EXTRACT(MONTH from date) = months.n
-RIGHT JOIN categories ON category_id = categories.n
-  AND user_id = 5  
-GROUP BY CUBE(EXTRACT(year from date), months.n, categories.n)
-ORDER By EXTRACT(year from date), months.n, categories.n;
-
- * SELECT EXTRACT(MONTH from date), SUM(price)
-FROM item_table
-WHERE user_id = 5 AND date BETWEEN '2020-01-01' AND '2021-01-01'
-GROUP By date_part
-ORDER BY date_part;
-
- */

@@ -61,8 +61,8 @@ public class CategoryController {
 	
 	@GetMapping("/cost")
 	public List<ProjectCategoryAndCost> getCategoriesAndCost(
-			@RequestParam Optional<@Pattern(regexp = "^[0-9]{4}", message = "Incorect year") String> year,
-			@RequestParam Optional<@Pattern(regexp = "^[1-12]{1}", message = "Incorect month") String> month) {
+			@RequestParam Optional<@Pattern(regexp = "[1-9]{1}[0-9]{3}", message = "Incorect year") String> year,
+			@RequestParam Optional<@Pattern(regexp = "[1-9]{1}|1[0-2]{1}", message = "Incorect month") String> month) {
 		log.info("Handling find caegories with their cost");
 		return categoryService.getCategoriesAndCost(year, month);
 	}

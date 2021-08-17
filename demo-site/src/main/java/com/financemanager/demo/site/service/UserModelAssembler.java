@@ -13,7 +13,7 @@ import com.financemanager.demo.site.model.UserModel;
 @Component
 public class UserModelAssembler extends RepresentationModelAssemblerSupport<User, UserModel> {
 
-	public UserModelAssembler(Class<?> controllerClass, Class<UserModel> resourceType) {
+	public UserModelAssembler() {
 		super(UserController.class, UserModel.class);
 	}
 	

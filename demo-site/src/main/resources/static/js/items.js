@@ -12,7 +12,7 @@ function siteNavigator(){
 	let year = d.getFullYear();
 //initialize the site: fetch categories, display items for current month, and define all the years in a list	
 	(async() => {
-		let response = await fetch("http://localhost:8083/items/years", {
+		let response = await fetch("http://localhost:8083/api/items/years", {
 		method: "GET"})
 		let years = await response.json();
 		let html = '<option value="0">Весь час</option>';
@@ -56,7 +56,7 @@ function siteNavigator(){
 }
 
 async function deleteItem(itemId) {
-	let response = await fetch("http://localhost:8083/items/" + itemId, {
+	let response = await fetch("http://localhost:8083/api/items/" + itemId, {
 		method: "DELETE"	 	  	
     });
 	displayItems();
@@ -108,7 +108,7 @@ async function addItem() {
 		return false;
 	}
 	let itemCategory = await getCategoryById(document.getElementById("categories").value);
-	const  response = await fetch("http://localhost:8083/items", {
+	const  response = await fetch("http://localhost:8083/api/items", {
 		method: "POST",
 		body: JSON.stringify({ name: itemName, price: itemPrice, category: itemCategory, date: itemDate }),
 		headers: {
@@ -121,9 +121,9 @@ async function addItem() {
 }
 
 async function mostPopularItems(catId){	
-	let url = "http://localhost:8083/items/popular?categoryId=" + catId;
+	let url = "http://localhost:8083/api/items/popular?categoryId=" + catId;
 	if(catId == 0){
-		url = "http://localhost:8083/items/popular";
+		url = "http://localhost:8083/api/items/popular";
 	}
 	let response = await fetch(url , {
 		method: "GET"});
@@ -142,12 +142,13 @@ async function mostPopularItems(catId){
 
 async function displayItems(){
 	//display all items for current date
-	let itemResponse = await fetch("http://localhost:8083/items" + "?year=" + siteCore.getYear() +
-			 "&month=" + siteCore.getMonth(), {
+	let link = "http://localhost:8083/api/items" + "?year=" + siteCore.getYear() +
+			 "&month=" + siteCore.getMonth();
+	let itemResponse = await fetch(link, {
 		method: "GET"});
 	let items = await itemResponse.json();
 	let itemHtml ='';
-	items.forEach ((item, index) => {
+	items._embedded.itemModelList.forEach((item, index) => {
 		console.log(item);
 		itemHtml += '<tr><td>' + (index + 1) + '</td>\n' +
 		'        <td>' + item.name + '</td>\n' +
@@ -161,9 +162,9 @@ async function displayItems(){
 	//display category count
 	let categories = await getAllCategories();
 	let categoryTable = '';
-	categories.forEach(category => {
+	categories._embedded.categoryModelList.forEach(category => {
 		categoryTable += '      <tr><td>' + category.name + '</td>' +
-		'	 <td>' + items.filter(item => item.category.id == category.id).length +
+		'	 <td>' + items._embedded.itemModelList.filter(item => item.category.id == category.id).length +
 		'</td></tr>';
 		}
 	);	
@@ -177,13 +178,13 @@ async function displayItems(){
 	document.getElementById("current_date").innerHTML = monthNames[siteCore.getMonth()] +
 	 ' ' + siteCore.getYear();
 	document.getElementById("total_price").innerHTML = "Загальні витрати за місяць: " + 
-	items.reduce((value, item) => value + item.price, 0).toFixed(2) + "грн";			
+	items._embedded.itemModelList.reduce((value, item) => value + item.price, 0).toFixed(2) + "грн";			
 }
 
 async function displayCategories() {
 	let html = '<option value="">Виберіть категорію:</option>';
 	let categories = await getAllCategories();
-	categories.forEach(category => {
+	categories._embedded.categoryModelList.forEach(category => {
 		html = html + '<option value="' + category.id + '">' + category.name + '</option>';	
 	});
 	document.getElementById("categoriesGraph").innerHTML = '<option value="0">Всі витрати</option>' + html.slice(45);
@@ -191,13 +192,13 @@ async function displayCategories() {
 }
 
 async function getAllCategories(){
-	let response = await fetch("http://localhost:8083/categories", {
+	let response = await fetch("http://localhost:8083/api/categories", {
 		method: "GET"});
 	return await response.json();
 }
 
 async function getCategoryById(catId){
-	let response = await fetch("http://localhost:8083/categories/" + catId, {
+	let response = await fetch("http://localhost:8083/api/categories/" + catId, {
 		method: "GET"});
 	return await response.json();
 }
@@ -258,7 +259,7 @@ let categoryDounut = new Chart(ctx2, {
 })
 
 async function updateGraph(){
-	let url = "http://localhost:8083/categories/cost?year=" + document.getElementById("yearGraph").value;
+	let url = "http://localhost:8083/api/categories/cost?year=" + document.getElementById("yearGraph").value;
 	if(document.getElementById("yearGraph").value == 0){
 		url = "http://localhost:8083/categories/cost";
 	}
@@ -277,7 +278,7 @@ function updateChart(chart,chartData){
 	});
 	chart.update();
 }
-updateChart();
+
 
 //async function updateDoughnut(){
 //	
