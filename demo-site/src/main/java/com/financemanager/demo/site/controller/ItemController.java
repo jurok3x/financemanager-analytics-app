@@ -56,7 +56,7 @@ public class ItemController {
 	
 	@GetMapping
 	public ResponseEntity<CollectionModel<ItemModel>> findAll(
-			@RequestParam Optional<@Pattern(regexp = "^[0-9]{4}", message = "Incorect year") String> year,
+			@RequestParam Optional<@Pattern(regexp = "^[0-9]{4}", message = "Incorect year!") String> year,
 			@RequestParam Optional<@Pattern(regexp = "^[1-12]{1}", message = "Incorect month") String> month,
 			@RequestParam Optional<@Min(value = 1, message = "Minimum 1 message") Integer> limit,
 			@RequestParam Optional<@Min(value = 0, message = "Offset can not be less then 0") Integer> offset) {
