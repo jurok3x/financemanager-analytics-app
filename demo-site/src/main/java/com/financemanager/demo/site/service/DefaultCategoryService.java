@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 
 import com.financemanager.demo.site.entity.Category;
 import com.financemanager.demo.site.entity.projects.ProjectCategoryAndCost;
-import com.financemanager.demo.site.exception.ResourceNotFoundException;
 import com.financemanager.demo.site.repository.CategoryRepository;
 
 import lombok.AllArgsConstructor;
@@ -37,9 +36,8 @@ public List<Category> findAll() {
 }
 
 @Override
-public Category findById(Integer id) {
-	return categoryRepository.findById(id).orElseThrow(
-			()->new ResourceNotFoundException("Category with ID :" + id + " Not Found!"));
+public Optional<Category> findById(Integer id) {
+	return categoryRepository.findById(id);
 }
 
 @Override

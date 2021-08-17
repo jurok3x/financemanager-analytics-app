@@ -6,7 +6,6 @@ import java.util.Optional;
 import org.springframework.stereotype.Component;
 
 import com.financemanager.demo.site.entity.Role;
-import com.financemanager.demo.site.exception.ResourceNotFoundException;
 
 @Component
 public interface RoleService {
@@ -17,7 +16,7 @@ public interface RoleService {
 
     List<Role> findAll();
 
-	Role findRoleById(Integer roleId) throws ResourceNotFoundException;
+	Optional<Role> findById(Integer roleId);
 
 	Optional<Role> findByName(String name);
 

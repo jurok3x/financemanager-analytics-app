@@ -2,7 +2,6 @@ package com.financemanager.demo.site.service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -10,7 +9,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.financemanager.demo.site.dto.UserDto;
 import com.financemanager.demo.site.entity.Role;
 import com.financemanager.demo.site.entity.User;
 import com.financemanager.demo.site.exception.ResourceNotFoundException;
@@ -23,10 +21,11 @@ import lombok.AllArgsConstructor;
 public class DefaultUserService implements UserService{
 
 	private final UserRepository userRepository;
-	private final UserConverter userConverter;
 	private final RoleService roleService;
+	
 	@Autowired
 	private PasswordEncoder passwordEncoder;
+	
 	@Override
 	public User saveUser(User user) {
 		Role role = roleService.findByName("ROLE_USER").orElseThrow(
@@ -37,10 +36,8 @@ public class DefaultUserService implements UserService{
 	}
 	
 	@Override
-	public UserDto findById(Integer id) throws ResourceNotFoundException{
-		User user = userRepository.findById(id).orElseThrow(
-				()->new ResourceNotFoundException("User with ID :" + id +" Not Found!"));	
-		return userConverter.fromUserToUserDto(user);
+	public Optional<User> findById(Integer id) {
+		return userRepository.findById(id);
 	}
 
 	@Override
@@ -49,36 +46,28 @@ public class DefaultUserService implements UserService{
 	}
 
 	@Override
-	public UserDto findByLogin(String login) throws ResourceNotFoundException{
-		User user = userRepository.findByLogin(login).orElseThrow(
-				()->new ResourceNotFoundException("User with Login :" + login +" Not Found!"));
-		return userConverter.fromUserToUserDto(user);
+	public Optional<User> findByLogin(String login){
+		return userRepository.findByLogin(login);
 	}
 
 	@Override
-	public List<UserDto> findAll() {
-		return userRepository.findAll()
-                .stream()
-                .map(userConverter::fromUserToUserDto)
-                .collect(Collectors.toList());
+	public List<User> findAll() {
+		return userRepository.findAll();
 	}
 
 	@Override
-	public List<UserDto> findByRoleId(Integer id) {
-		return  userRepository.findByRoleId(id)
-                .stream()
-                .map(userConverter::fromUserToUserDto)
-                .collect(Collectors.toList());
+	public List<User> findByRoleId(Integer id) {
+		return  userRepository.findByRoleId(id);
 	}
 
 	@Override
-	public User findByLoginAndPassword(String login, String password) {
+	public Optional<User> findByLoginAndPassword(String login, String password) {
 		Optional<User> user = userRepository.findByLogin(login);
 		if (user.isPresent()) {
 			if(passwordEncoder.matches(password, user.get().getPassword()))
-				return user.get();
+				return user;
         }
-		return null;
+		return Optional.empty();
 	}
 	
 	@Override

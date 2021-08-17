@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 
 import com.financemanager.demo.site.entity.Category;
 import com.financemanager.demo.site.entity.projects.ProjectCategoryAndCost;
-import com.financemanager.demo.site.exception.ResourceNotFoundException;
 
 @Component
 public interface CategoryService {
@@ -17,7 +16,7 @@ public interface CategoryService {
 
     List<Category> findAll();
     
-    Category findById(Integer catId) throws ResourceNotFoundException;
+    Optional<Category> findById(Integer catId);
     
     List<ProjectCategoryAndCost> getCategoriesAndCost(Optional<String> year, Optional<String> month);
 }

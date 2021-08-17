@@ -25,9 +25,8 @@ public class DefaultRoleService implements RoleService {
 	}
 
 	@Override
-	public Role findRoleById(Integer id) throws ResourceNotFoundException{
-		return roleRepository.findById(id).orElseThrow(
-				()->new ResourceNotFoundException("Role with ID :" + id +" Not Found!"));
+	public Optional<Role> findById(Integer id) throws ResourceNotFoundException{
+		return roleRepository.findById(id);
 	}
 
 	@Override

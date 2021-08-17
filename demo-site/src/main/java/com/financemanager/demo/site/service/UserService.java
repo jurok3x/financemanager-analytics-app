@@ -1,12 +1,11 @@
 package com.financemanager.demo.site.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Component;
 
-import com.financemanager.demo.site.dto.UserDto;
 import com.financemanager.demo.site.entity.User;
-import com.financemanager.demo.site.exception.ResourceNotFoundException;
 
 @Component
 public interface UserService {
@@ -14,15 +13,15 @@ public interface UserService {
 
     void deleteUser(Integer userId);
 
-    UserDto findByLogin(String login) throws ResourceNotFoundException;
+    Optional<User> findByLogin(String login);
     
-    UserDto findById(Integer id) throws ResourceNotFoundException;
+    Optional<User> findById(Integer id);
     
-    User findByLoginAndPassword(String login, String password);
+    Optional<User> findByLoginAndPassword(String login, String password);
 
-    List<UserDto> findAll();
+    List<User> findAll();
     
-    List<UserDto> findByRoleId(Integer id);
+    List<User> findByRoleId(Integer id);
     
     User getContextUser();
 }
