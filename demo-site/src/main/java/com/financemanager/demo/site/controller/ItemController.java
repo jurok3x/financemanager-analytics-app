@@ -56,9 +56,9 @@ public class ItemController {
 	
 	@GetMapping
 	public ResponseEntity<CollectionModel<ItemModel>> findAll(
-			@RequestParam Optional<@Pattern(regexp = "^[0-9]{4}", message = "Incorect year!") String> year,
+			@RequestParam Optional<@Pattern(regexp = "^[0-9]{4}", message = "Incorect year") String> year,
 			@RequestParam Optional<@Pattern(regexp = "^[1-12]{1}", message = "Incorect month") String> month,
-			@RequestParam Optional<@Min(value = 1, message = "Minimum 1 message") Integer> limit,
+			@RequestParam Optional<@Min(value = 1, message = "Minimum 1 item") Integer> limit,
 			@RequestParam Optional<@Min(value = 0, message = "Offset can not be less then 0") Integer> offset) {
 		log.info("Handling find items with year = " + year.orElse("All") + " and month = " + month.orElse("All"));
 		List<Item> items = itemService.findAll(year, month, limit, offset);
@@ -73,7 +73,7 @@ public class ItemController {
 				@Max(value = 10, message = "CategoryId must be greater than or equal to 10") Integer categoryId,
 			@RequestParam Optional<@Pattern(regexp = "^[0-9]{4}", message = "Incorect year") String> year,
 			@RequestParam Optional<@Pattern(regexp = "^[1-12]{1}", message = "Incorect month") String> month,
-			@RequestParam Optional<@Min(value = 1, message = "Minimum 1 message") Integer> limit,
+			@RequestParam Optional<@Min(value = 1, message = "Minimum 1 item") Integer> limit,
 			@RequestParam Optional<@Min(value = 0, message = "Offset can not be less then 0") Integer> offset) {
 		log.info("Handling find items in category  with id =  " + categoryId + ". With year = " + year.orElse("All") + " and month = " + month.orElse("All"));
 		List<Item> items = itemService.findByCategory(categoryId, year, month, limit, offset);
