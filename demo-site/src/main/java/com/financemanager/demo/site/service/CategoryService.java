@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 import com.financemanager.demo.site.entity.Category;
 import com.financemanager.demo.site.entity.projects.ProjectCategoryAndCost;
+import com.financemanager.demo.site.entity.projects.ProjectCategoryAndCount;
 
 @Component
 public interface CategoryService {
@@ -19,4 +20,6 @@ public interface CategoryService {
     Optional<Category> findById(Integer catId);
     
     List<ProjectCategoryAndCost> getCategoriesAndCost(Optional<String> year, Optional<String> month);
+    
+    List<ProjectCategoryAndCount> getCategoriesAndCount(Optional<String> year, Optional<String> month);
 }

@@ -24,6 +24,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.financemanager.demo.site.entity.Category;
 import com.financemanager.demo.site.entity.projects.ProjectCategoryAndCost;
+import com.financemanager.demo.site.entity.projects.ProjectCategoryAndCount;
 import com.financemanager.demo.site.exception.ResourceNotFoundException;
 import com.financemanager.demo.site.model.CategoryModel;
 import com.financemanager.demo.site.service.CategoryModelAssembler;
@@ -65,6 +66,14 @@ public class CategoryController {
 			@RequestParam Optional<@Pattern(regexp = "[1-9]{1}|1[0-2]{1}", message = "Incorect month") String> month) {
 		log.info("Handling find caegories with their cost");
 		return categoryService.getCategoriesAndCost(year, month);
+	}
+	
+	@GetMapping("/count")
+	public List<ProjectCategoryAndCount> getCategoriesAndCount(
+			@RequestParam Optional<@Pattern(regexp = "[1-9]{1}[0-9]{3}", message = "Incorect year") String> year,
+			@RequestParam Optional<@Pattern(regexp = "[1-9]{1}|1[0-2]{1}", message = "Incorect month") String> month) {
+		log.info("Handling find caegories with their count");
+		return categoryService.getCategoriesAndCount(year, month);
 	}
 	
 	@PostMapping

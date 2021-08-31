@@ -10,7 +10,6 @@ import javax.validation.constraints.NotNull;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -79,7 +78,7 @@ public class UserController {
 	}
 	
 	@PostMapping
-	public ResponseEntity<?> saveUser(@RequestBody @Validated User user) {
+	public ResponseEntity<?> saveUser(@Valid @RequestBody User user) {
 		log.info("Handling save user: " + user);
 		User addedUser = userService.saveUser(user);
 		URI location = ServletUriComponentsBuilder.fromCurrentRequest()

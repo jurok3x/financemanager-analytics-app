@@ -87,7 +87,7 @@ public interface ItemRepository extends JpaRepository<Item, Integer> {
 	@Query(value = "WITH months AS (SELECT * FROM generate_series(1, 12) AS t(n))\n"
 			+ "SELECT months.n as date_part, COALESCE(SUM(price), 0) AS total\n"
 			+ "FROM item_table RIGHT JOIN months ON EXTRACT(MONTH from date) = months.n\n"
-			+ "WHERE user_id = :userId AND CAST (date as text) LIKE :dateString\n"
+			+ "AND user_id = :userId AND CAST (date as text) LIKE :dateString\n"
 			+ "GROUP BY months.n ORDER BY months.n", nativeQuery = true)
 	List<DatePartAndCost> getMonthStatistics(
 			@Param("userId") int userId,
@@ -96,7 +96,7 @@ public interface ItemRepository extends JpaRepository<Item, Integer> {
 	@Query(value = "WITH months AS (SELECT * FROM generate_series(1, 12) AS t(n))\n"
 			+ "SELECT months.n as date_part, COALESCE(SUM(price), 0) AS total\n"
 			+ "FROM item_table RIGHT JOIN months ON EXTRACT(MONTH from date) = months.n\n"
-			+ "WHERE user_id = :userId AND category_id = :categoryId\n"
+			+ "AND user_id = :userId AND category_id = :categoryId\n"
 			+ "AND CAST (date as text) LIKE :dateString\n"
 			+ "GROUP BY months.n ORDER BY months.n", nativeQuery = true)
 	List<DatePartAndCost> getMonthStatisticsByCategory(

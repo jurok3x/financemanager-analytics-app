@@ -21,7 +21,10 @@ public class DefaultItemService implements ItemService {
 	@Override
 	public Item saveItem(Item item) {
 		item.setUser(userService.getContextUser());
-		return itemRepository.save(item);
+		System.out.print("Saving item " + item);
+		Item savedItem = itemRepository.save(item);
+		System.out.print("Saved item " + savedItem);
+		return savedItem;
 	}
 	
 

@@ -1,29 +1,84 @@
 const monthNames = ["Січень", "Лютий", "Березень", "Квітень", "Травень", "Червень",
 	"Липень", "Серпень", "Вересень", "Жовтень", "Листопад", "Грудень"];
+//initialize the site: fetch categories, display items for current month, and define all the years in a list
 let siteCore = siteNavigator(); //site
-displayCategories();
 daysList();
 displayItems();
 mostPopularItems(0);
+drawCategoryDoughnut();
+drawMonthChart();
 
 function siteNavigator(){
 	let d = new Date();
 	let month = d.getMonth();
 	let year = d.getFullYear();
-//initialize the site: fetch categories, display items for current month, and define all the years in a list	
+	const doughnutCtx = document.getElementById('categoryStatistic').getContext('2d');
+	const categoryDoughnut = new Chart(doughnutCtx, {
+	    type: 'doughnut',
+	    data: {
+	        datasets: [{
+	            label: 'Витрати',
+	            backgroundColor: [
+	                'rgba(255, 99, 132, 1)',
+	                'rgba(54, 162, 235, 1)',
+	                'rgba(255, 206, 86, 1)',
+	                'rgba(75, 192, 192, 1)',
+	                'rgba(153, 102, 255, 1)',
+	                'rgba(255, 159, 64, 1)',
+					'rgba(107, 142, 35, 1)',
+					'rgba(0, 255, 255, 1)',
+					'rgba(139, 0, 139, 1)',
+					'rgba(183, 183, 183, 1)'
+	            ],
+			hoverOffset: 4    
+	        }]
+	    },
+	});
+	const monthCtx = document.getElementById('monthStatistic').getContext('2d');
+	const monthChart = new Chart(monthCtx, {
+    data: {
+        datasets: [{
+            type: 'bar',
+		    label: 'Витрати по категоріям',
+            backgroundColor: 
+                'rgba(255, 99, 132, 0.2)',
+            borderColor: 
+                'rgba(255, 99, 132, 1)',
+            borderWidth: 1,
+		    order: 2
+        }, {
+			label: 'Загальні витрати',
+            type: 'line',
+			borderColor: 'rgb(75, 192, 192)',
+			backgroundColor: 'rgba(75, 192, 192, 0.2)',
+			fill: true,
+            order: 1
+	}]
+    },
+    options: {
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+	
 	(async() => {
 		let response = await fetch("http://localhost:8083/api/items/years", {
 		method: "GET"})
 		let years = await response.json();
-		let html = '<option value="0">Весь час</option>';
+		let html = '<option value="">Весь час</option>';
 		years.forEach(year =>{
 			html += '<option value="' + year + '">' + year + '</option>'
 		})
-			document.getElementById("yearGraph").innerHTML = html;
+			document.getElementById("yearsList").innerHTML = html;
 	})();
 	return {
 		getMonth: () => month,
 		getYear: () => year,
+		getCategoryDoughnut: () => categoryDoughnut,
+		getMonthChart: () => monthChart,
 		monthBack: () => {
 			month--;
 			if (month < 0) {
@@ -56,7 +111,7 @@ function siteNavigator(){
 }
 
 async function deleteItem(itemId) {
-	let response = await fetch("http://localhost:8083/api/items/" + itemId, {
+	const response = await fetch("http://localhost:8083/api/items/" + itemId, {
 		method: "DELETE"	 	  	
     });
 	displayItems();
@@ -72,18 +127,6 @@ function daysList() {
 	}
 	document.getElementById("days").innerHTML = html;
 };
-
-function formatDate(date) {
-	var d = new Date(date),
-		month = '' + (d.getMonth() + 1),
-		day = '' + d.getDate(),
-		year = d.getFullYear();
-	if (month.length < 2)
-		month = '0' + month;
-	if (day.length < 2)
-		day = '0' + day;
-	return d;
-}
 
 async function addItem() {
 	// fetch all entries from the form and check for null
@@ -108,7 +151,7 @@ async function addItem() {
 		return false;
 	}
 	let itemCategory = await getCategoryById(document.getElementById("categories").value);
-	const  response = await fetch("http://localhost:8083/api/items", {
+	const  response = await fetch("http://localhost:8083/api/items/", {
 		method: "POST",
 		body: JSON.stringify({ name: itemName, price: itemPrice, category: itemCategory, date: itemDate }),
 		headers: {
@@ -121,20 +164,17 @@ async function addItem() {
 }
 
 async function mostPopularItems(catId){	
-	let url = "http://localhost:8083/api/items/popular?categoryId=" + catId;
-	if(catId == 0){
-		url = "http://localhost:8083/api/items/popular";
-	}
-	let response = await fetch(url , {
+	let url = "http://localhost:8083/api/items/popular" + ((catId) ? ('?categoryId=' + catId) : '');
+	const response = await fetch(url , {
 		method: "GET"});
 	let items = await response.json();
 	let html = '';
 	for(let i = 0; i < items.length; i++){
 		let item = items[i];
-		html = html + '<tr><td>' + (i + 1) + '</td>\n' +
-		'        <td>' + item.name + '</td>\n' +
+		html = html + '<tr><th scope="row">' + (i + 1) + '</th>\n' +
+		'        <td>' + item.item_Name + '</td>\n' +
 		'        <td>' + item.value + '</td>\n' +
-		'        <td>' + item.total.toFixed(2) + '</td>\n' +
+		'        <td>' + item.total.toFixed(2) + '</td></tr>\n' +
 		'    </tr>';
 	}	
 	document.getElementById("mostPopular").getElementsByTagName("tbody")[0].innerHTML = html;
@@ -142,29 +182,37 @@ async function mostPopularItems(catId){
 
 async function displayItems(){
 	//display all items for current date
-	let link = "http://localhost:8083/api/items" + "?year=" + siteCore.getYear() +
-			 "&month=" + siteCore.getMonth();
-	let itemResponse = await fetch(link, {
+	const itemsUrl = "http://localhost:8083/api/items" + "?year=" + siteCore.getYear() +
+			 "&month=" + (siteCore.getMonth() + 1);
+	const itemResponse = await fetch(itemsUrl, {
 		method: "GET"});
-	let items = await itemResponse.json();
+	const responseJson = await itemResponse.json();
 	let itemHtml ='';
-	items._embedded.itemModelList.forEach((item, index) => {
-		console.log(item);
-		itemHtml += '<tr><td>' + (index + 1) + '</td>\n' +
-		'        <td>' + item.name + '</td>\n' +
-		'        <td>' + item.price + '</td>\n' +
-		'        <td>' + item.category.name + '</td>' +
-		'        <td>' + new Date(item.date).getDate() + '</td>' +
-		'        <td><button onclick="deleteItem(' + item.id + ')">Видалити</button></td></tr>';
-		});
-	document.getElementById("itemsList").getElementsByTagName("tbody")[0].innerHTML = (itemHtml);
-	
+	let totalPrice = "Витрат немає.";
+	if(Object.keys(responseJson)[0] == "_embedded"){
+		let items = responseJson._embedded.itemModelList;
+		items.forEach((item, index) => {
+			console.log(item);
+			itemHtml += '<tr><td>' + (index + 1) + '</td>\n' +
+			'        <td>' + item.name + '</td>\n' +
+			'        <td>' + item.price + '</td>\n' +
+			'        <td>' + item.category.name + '</td>' +
+			'        <td>' + new Date(item.date).getDate() + '</td>' +
+			'        <td><button onclick="deleteItem(' + item.id + ')">Видалити</button></td></tr>';
+			});
+		totalPrice = "Загальні витрати за місяць: " + 
+			items.reduce((value, item) => value + item.price, 0).toFixed(2) + "грн";
+	}
 	//display category count
-	let categories = await getAllCategories();
+	const categoryUrl = "http://localhost:8083/api/categories/count" + "?year=" + siteCore.getYear() +
+			 "&month=" + (siteCore.getMonth() + 1);
+	const categoriesResponce = await fetch(categoryUrl, {
+		method: "GET"});
+	const categoryAndCount = await categoriesResponce.json();
 	let categoryTable = '';
-	categories._embedded.categoryModelList.forEach(category => {
-		categoryTable += '      <tr><td>' + category.name + '</td>' +
-		'	 <td>' + items._embedded.itemModelList.filter(item => item.category.id == category.id).length +
+	categoryAndCount.forEach(entry => {
+		categoryTable += '      <tr><td>' + entry.category_Name + '</td>' +
+		'	 <td>' + entry.value +
 		'</td></tr>';
 		}
 	);	
@@ -174,27 +222,12 @@ async function displayItems(){
     $("#itemsList").trigger("update", [resort]);
 	
 	// add html
+	document.getElementById("total_price").innerHTML = totalPrice;
+	document.getElementById("itemsList").getElementsByTagName("tbody")[0].innerHTML = itemHtml;
 	document.getElementById("categoryList").getElementsByTagName("tbody")[0].innerHTML = categoryTable;
 	document.getElementById("current_date").innerHTML = monthNames[siteCore.getMonth()] +
 	 ' ' + siteCore.getYear();
-	document.getElementById("total_price").innerHTML = "Загальні витрати за місяць: " + 
-	items._embedded.itemModelList.reduce((value, item) => value + item.price, 0).toFixed(2) + "грн";			
-}
-
-async function displayCategories() {
-	let html = '<option value="">Виберіть категорію:</option>';
-	let categories = await getAllCategories();
-	categories._embedded.categoryModelList.forEach(category => {
-		html = html + '<option value="' + category.id + '">' + category.name + '</option>';	
-	});
-	document.getElementById("categoriesGraph").innerHTML = '<option value="0">Всі витрати</option>' + html.slice(45);
-	document.getElementById("categories").innerHTML = html;
-}
-
-async function getAllCategories(){
-	let response = await fetch("http://localhost:8083/api/categories", {
-		method: "GET"});
-	return await response.json();
+				
 }
 
 async function getCategoryById(catId){
@@ -203,90 +236,65 @@ async function getCategoryById(catId){
 	return await response.json();
 }
 
-let ctx = document.getElementById('monthStatistic').getContext('2d');
-let monthChart = new Chart(ctx, {
-    type: 'bar',
-    data: {
-        datasets: [{
-            label: 'Витрати',
-            backgroundColor: [
-                'rgba(255, 99, 132, 0.2)',
-                'rgba(54, 162, 235, 0.2)',
-                'rgba(255, 206, 86, 0.2)',
-                'rgba(75, 192, 192, 0.2)',
-                'rgba(153, 102, 255, 0.2)',
-                'rgba(255, 159, 64, 0.2)'
-            ],
-            borderColor: [
-                'rgba(255, 99, 132, 1)',
-                'rgba(54, 162, 235, 1)',
-                'rgba(255, 206, 86, 1)',
-                'rgba(75, 192, 192, 1)',
-                'rgba(153, 102, 255, 1)',
-                'rgba(255, 159, 64, 1)'
-            ],
-            borderWidth: 1
-        }]
-    },
-    options: {
-        scales: {
-            y: {
-                beginAtZero: true
-            }
-        }
-    }
-});
-
-let ctx2 = document.getElementById('categoryStatistic').getContext('2d');
-let categoryDounut = new Chart(ctx2, {
-    type: 'doughnut',
-    data: {
-		labels: [],
-        datasets: [{
-            label: 'Витрати',
-			data: [],
-            backgroundColor: [
-                'rgba(255, 99, 132, 1)',
-                'rgba(54, 162, 235, 1)',
-                'rgba(255, 206, 86, 1)',
-                'rgba(75, 192, 192, 1)',
-                'rgba(153, 102, 255, 1)',
-                'rgba(255, 159, 64, 1)'
-            ],
-		hoverOffset: 4    
-        }]
-    },
-})
-
-async function updateGraph(){
-	let url = "http://localhost:8083/api/categories/cost?year=" + document.getElementById("yearGraph").value;
-	if(document.getElementById("yearGraph").value == 0){
-		url = "http://localhost:8083/categories/cost";
+async function drawCategoryDoughnut(){
+	let year = document.getElementById("yearsList").value;
+	let url = "http://localhost:8083/api/categories/cost?year=" + year;
+	if(!year){
+		url = "http://localhost:8083/api/categories/cost";
 	}
-	let response = await fetch(url, {
+	const data = await getData(url);
+	const categoryDoughnut = siteCore.getCategoryDoughnut();
+	categoryDoughnut.data.labels = data.xLabels;
+	categoryDoughnut.data.datasets[0].data = data.yLabels;
+	categoryDoughnut.update();
+}
+
+async function drawMonthChart(){
+	const year = document.getElementById("yearsList").value;
+	let url = "http://localhost:8083/api/items/statistics";
+	if(year){
+		url += '?year=' + year;
+	}
+	const data = await getData(url);
+	const monthChart = siteCore.getMonthChart();
+	monthChart.data.labels = data.yLabels.map(entry =>{
+		return monthNames[entry - 1].substr(0, 3) + '.';
+	});
+	monthChart.data.datasets[1].data = data.xLabels;
+	monthChart.update();
+}
+
+async function drawCategoryBar(){
+	const year = document.getElementById("yearsList").value;
+	const catId = document.getElementById("categoryYearList").value;
+	let url = "http://localhost:8083/api/items/statistics";
+	if(year){
+		url += '?year=' + year;
+	}
+	if(catId){
+		url += ((url.indexOf("year") === -1) ? '?' : '&') + 'categoryId=' + catId;
+	}
+	const data = await getData(url);
+	const monthChart = siteCore.getMonthChart();
+	monthChart.data.datasets[0].data = data.xLabels;
+	monthChart.update();
+}
+
+async function getData(url){
+	const response = await fetch(url, {
 		method: "GET"});
 	let chartData = await response.json();
-	updateChart(categoryDounut,chartData);
-}
-
-function updateChart(chart,chartData){
-	chart.data.labels = [];
-	chart.data.datasets[0].data = [];
-	chartData.forEach(entry => {
-		chart.data.labels.push(entry.category_Name);
-		chart.data.datasets[0].data.push(entry.total);
-	});
-	chart.update();
+	let xLabels = [];
+	let yLabels = [];
+	let objKeys = Object.keys(chartData[0]);
+	chartData.forEach(entry =>{
+		xLabels.push(entry[objKeys[0]]);
+		yLabels.push(entry[objKeys[1]]);
+	})	
+	return {xLabels, yLabels}
 }
 
 
-//async function updateDoughnut(){
-//	
-//	document.getElementById("yearGraph")
-//	let response = await fetch("http://localhost:8083/items/statistics", {
-//		method: "GET"});
-//	let chartData = await response.json();
-//}
 
 
 $(function() {

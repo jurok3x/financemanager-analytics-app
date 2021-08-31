@@ -123,7 +123,7 @@ public class ItemController {
 	}
 	
 	@PostMapping
-	public ResponseEntity<?> saveItem(@RequestBody @Validated Item item) {
+	public ResponseEntity<?> saveItem(@Valid @RequestBody Item item) {
 		log.info("Handling save item: " + item);
 		Item addedItem =  itemService.saveItem(item);
 		URI location = ServletUriComponentsBuilder.fromCurrentRequest()

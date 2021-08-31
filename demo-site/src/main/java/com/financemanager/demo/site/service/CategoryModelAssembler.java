@@ -54,6 +54,10 @@ public class CategoryModelAssembler extends RepresentationModelAssemblerSupport<
 				methodOn(CategoryController.class)
 				.getCategoriesAndCost(Optional.empty(), Optional.empty()))
 				.withRel("all-categories-cost"));
+		categoriesModel.add(linkTo(
+				methodOn(CategoryController.class)
+				.getCategoriesAndCount(Optional.empty(), Optional.empty()))
+				.withRel("all-categories-count"));
 		return categoriesModel;
 	}
 
