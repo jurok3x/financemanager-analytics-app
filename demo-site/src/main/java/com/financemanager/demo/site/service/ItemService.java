@@ -13,6 +13,8 @@ import com.financemanager.demo.site.entity.projects.ProjectNameAndCountAndCost;
 public interface ItemService {
 	Item saveItem(Item item);
 	
+	List<Item> saveAllItems(List<Item> items);
+	
 	Optional<Item> findById(Integer id);
 
     void deleteItem(Integer id);

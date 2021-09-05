@@ -114,4 +114,10 @@ public class DefaultItemService implements ItemService {
 		return itemRepository.getMonthStatisticsByCategory(userService.getContextUser().getId(), dateString, categoryId.get());
 	}
 
+
+	@Override
+	public List<Item> saveAllItems(List<Item> items) {
+		return itemRepository.saveAll(items);
+	}
+
 }

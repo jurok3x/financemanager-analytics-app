@@ -133,6 +133,13 @@ public class ItemController {
 		return ResponseEntity.created(location).build();
 	}
 	
+	@PostMapping("/all")
+	public ResponseEntity<?> saveAllItems(@RequestBody List<Item> items) {
+		log.info("Handling save items");
+		List<Item> addedItems =  itemService.saveAllItems(items);
+		return ResponseEntity.ok().build();
+	}
+	
 	@PutMapping("/{id}")
 	public ResponseEntity<?> updateCategory(@PathVariable
 			@Min(value = 1, message = "Id should be greater than 1") Integer id,
