@@ -1,9 +1,0 @@
-MERGE INTO ITEMS(id, name, price, date, category_id, user_id) VALUES(1, 'Таксі', 122.9, '2022-05-22', 1, 1);
-MERGE INTO ITEMS(id, name, price, date, category_id, user_id) VALUES(2, 'Кетчуп', 22.9, '2022-01-21', 2, 1);
-MERGE INTO ITEMS(id, name, price, date, category_id, user_id) VALUES(3, 'Кетчуп', 22.9, '2022-02-22', 2, 1);
-MERGE INTO ITEMS(id, name, price, date, category_id, user_id) VALUES(4, 'Кетчуп', 22.9, '2022-06-23', 2, 1);
-MERGE INTO ITEMS(id, name, price, date, category_id, user_id) VALUES(5, 'Мезим', 45.9, '2022-06-01', 3, 1);
-MERGE INTO ITEMS(id, name, price, date, category_id, user_id) VALUES(6, 'Мезим', 45.9, '2022-03-23', 3, 1);
-MERGE INTO ITEMS(id, name, price, date, category_id, user_id) VALUES(7, 'Ножниці', 22.9, '2022-06-25', 4, 1);
-MERGE INTO ITEMS(id, name, price, date, category_id, user_id) VALUES(8, 'Ножниці', 22.9, '2022-04-29', 4, 1);
-MERGE INTO ITEMS(id, name, price, date, category_id, user_id) VALUES(9, 'Квартплата', 1800.9, '2021-06-26', 5, 1);

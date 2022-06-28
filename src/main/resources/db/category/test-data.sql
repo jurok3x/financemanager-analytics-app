@@ -1,5 +1,5 @@
-merge into categories(id, name) values(1, 'Транспорт');
-merge into categories(id, name) values(2, 'Їжа');
-merge into categories(id, name) values(3, 'Медицина');
-merge into categories(id, name) values(4, 'Товари');
-merge into categories(id, name) values(5, 'Проживання');
+merge into categories(id, name) values(1, 'Transport');
+merge into categories(id, name) values(2, 'Food');
+merge into categories(id, name) values(3, 'Medicine');
+merge into categories(id, name) values(4, 'Goods');
+merge into categories(id, name) values(5, 'Living');
