@@ -7,8 +7,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.financemanager.demo.site.entity.Item;
-import com.financemanager.demo.site.entity.projects.DatePartAndCost;
-import com.financemanager.demo.site.entity.projects.ProjectNameAndCountAndCost;
+import com.financemanager.demo.site.entity.projections.DatePartAndCost;
+import com.financemanager.demo.site.entity.projections.ProjectNameAndCountAndCost;
 
 public interface ItemRepository extends JpaRepository<Item, Integer> {
 	

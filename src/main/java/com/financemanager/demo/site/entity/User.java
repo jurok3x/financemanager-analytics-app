@@ -3,6 +3,8 @@ package com.financemanager.demo.site.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -18,7 +20,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "\"user_table\"")
+@Table(name = "\"users\"")
 @Data
 @NoArgsConstructor
 @Getter
@@ -34,10 +36,6 @@ public class User {
 	@NotEmpty(message = "Name must not be empty")
 	private String name;
 	
-	@Column(name="login")
-	@NotEmpty(message = "Login must not be empty")
-	private String login; 
-	
 	@Column(name="password")
 	@NotEmpty(message = "Password must not be empty")
 	private String password;
@@ -50,6 +48,7 @@ public class User {
 	@JoinColumn(name="\"role_id\"")
 	@OneToOne
 	@NotEmpty(message = "Role must not be empty")
+	@Enumerated(EnumType.ORDINAL)
 	private Role role;
 	
 }

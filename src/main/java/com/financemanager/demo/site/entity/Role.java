@@ -1,30 +1,28 @@
 package com.financemanager.demo.site.entity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.validation.constraints.NotEmpty;
-
-import lombok.Data;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 
-@Entity
-@Table(name = "\"role_table\"")
-@Data
-@NoArgsConstructor
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+
+import java.util.Arrays;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 @Getter
-@Setter
-public class Role {
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	@Column(name="id")
-	private int id;
-	@Column(name="name")
-	@NotEmpty(message = "Name must not be empty")
-	private String name;
+@RequiredArgsConstructor
+public enum Role {
+    
+    USER(Arrays.asList(Permission.USER_READ).stream().collect(Collectors.toSet())),
+    ADMIN(Arrays.asList(Permission.USER_READ).stream().collect(Collectors.toSet()));
+    
+    public Set<SimpleGrantedAuthority> getGrantedAuthorities() {
+        Set<SimpleGrantedAuthority> userPermissions = getPermissions().stream()
+                .map(permission -> new SimpleGrantedAuthority(permission.getPermission())).collect(Collectors.toSet());
+        userPermissions.add(new SimpleGrantedAuthority("ROLE_" + this.name()));
+        return userPermissions;
+    }
+    
+    private final Set<Permission> permissions;
+
 }

@@ -21,7 +21,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "\"item_table\"")
+@Table(name = "\"items\"")
 @Data
 @NoArgsConstructor
 @Getter
@@ -29,9 +29,9 @@ import lombok.Setter;
 public class Item {
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name="item_id")
+	@Column(name="id")
 	private int id;
-	@Column(name="item_name")
+	@Column(name="name")
 	@NotEmpty(message = "Name must not be empty")
 	private String name;
 	@Column(name="price")

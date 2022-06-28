@@ -7,8 +7,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.financemanager.demo.site.entity.Category;
-import com.financemanager.demo.site.entity.projects.ProjectCategoryAndCost;
-import com.financemanager.demo.site.entity.projects.ProjectCategoryAndCount;
+import com.financemanager.demo.site.entity.projections.ProjectCategoryAndCost;
+import com.financemanager.demo.site.entity.projections.ProjectCategoryAndCount;
 
 public interface CategoryRepository extends JpaRepository<Category, Integer> {
 	

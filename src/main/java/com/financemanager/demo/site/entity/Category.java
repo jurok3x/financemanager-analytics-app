@@ -22,14 +22,13 @@ import lombok.Setter;
 public class Category implements Comparable<Category>{
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name="category_id")
+	@Column(name="id")
 	private int id;
-	@Column(name="category_name")
+	@Column(name="name")
 	@NotEmpty(message = "Name must not be empty")
 	private String name;
 	@Override
 	public int compareTo(Category category) {
-		// TODO Auto-generated method stub
 		return this.id - category.getId();
 	}
 }
