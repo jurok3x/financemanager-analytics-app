@@ -1,0 +1,12 @@
+merge into months(id, name) values (1, 'January');
+merge into months(id, name) values (2, 'February');
+merge into months(id, name) values (3, 'March');
+merge into months(id, name) values (4, 'April');
+merge into months(id, name) values (5, 'May');
+merge into months(id, name) values (6, 'June');
+merge into months(id, name) values (7, 'July');
+merge into months(id, name) values (8, 'August');
+merge into months(id, name) values (9, 'September');
+merge into months(id, name) values (10, 'October');
+merge into months(id, name) values (11, 'November');
+merge into months(id, name) values (12, 'December');
