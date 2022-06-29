@@ -8,12 +8,12 @@ import java.util.stream.Collectors;
 import javax.validation.ConstraintViolationException;
 
 import com.yurii.financeanalytics.exception.APIException;
-import com.yurii.financeanalytics.exception.ResourceNotFoundException;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
@@ -27,124 +27,139 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @ControllerAdvice
 public class RESTExceptionHandler extends ResponseEntityExceptionHandler {
 
-	@ExceptionHandler(value = { ResourceNotFoundException.class })
-	protected ResponseEntity<Object> handleResourceNotFoundException(ResourceNotFoundException ex, WebRequest request) {
+    private static final String METHOD_NOT_FOUND_INFO = "Could not find the %s method for URL %s";
+    private static final String UNSUPPORTED_MEDIA_TYPE_INFO = " Media type is not supported. Supported media types are ";
+    private static final String MISSING_PARAMETER_INFO = "%s parameter is missing";
+    private static final String MISSING_REQUEST_PARAMETERS_ERROR = "Missing Parameters";
+    private static final String CONSTRAINT_VIOLATIONS_ERROR = "Constraint Violations";
+    private static final String TYPE_MISMATCH_ERROR = "Type Mismatch";
+    private static final String VALIDATION_ERRORS = "Validation Errors";
+    private static final String MALFORMED_JSON_ERROR = "Malformed JSON request";
+    private static final String NO_ACCES_ERROR = "You dont' have rights to acces this resource";
+    private static final String ERROR_OCCURRED = "Error occurred";
+    private static final String METHOD_NOT_FOUND_ERROR = "Method Not Found";
+    private static final String UNSUPPORTED_MEDIA_TYPE_ERROR = "Unsupported Media Type";
+    
+    
+    @Override
+    protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex,
+            HttpHeaders headers, HttpStatus status, WebRequest request) {
 
-		List<String> details = new ArrayList<String>();
-		details.add(ex.getMessage());
+        List<String> details = new ArrayList<String>();
+        details.add(ex.getMessage());
 
-		APIException apiException = new APIException("Resource Not Found", HttpStatus.BAD_REQUEST,
-				LocalDateTime.now(), details);
+        APIException apiException = new APIException(MALFORMED_JSON_ERROR, HttpStatus.BAD_REQUEST,
+                LocalDateTime.now(), details);
 
-		return ResponseEntityBuilder.build(apiException);
-	}
-	
-	@Override
-	protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex,
-			HttpHeaders headers, HttpStatus status, WebRequest request) {
+        return ResponseEntityBuilder.build(apiException);
+    }
 
-		List<String> details = new ArrayList<String>();
-		details.add(ex.getMessage());
+    @Override
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
+            HttpHeaders headers, HttpStatus status, WebRequest request) {
 
-		APIException apiException = new APIException("Malformed JSON request", HttpStatus.BAD_REQUEST,
-				LocalDateTime.now(), details);
+        List<String> details = new ArrayList<String>();
+        details = ex.getBindingResult().getFieldErrors().stream()
+                .map(error -> error.getObjectName() + " : " + error.getDefaultMessage()).collect(Collectors.toList());
 
-		return ResponseEntityBuilder.build(apiException);
-	}
+        APIException apiException = new APIException(VALIDATION_ERRORS, HttpStatus.BAD_REQUEST,
+                LocalDateTime.now(), details);
 
-	@Override
-	protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
-			HttpHeaders headers, HttpStatus status, WebRequest request) {
+        return ResponseEntityBuilder.build(apiException);
+    }
 
-		List<String> details = new ArrayList<String>();
-		details = ex.getBindingResult().getFieldErrors().stream()
-				.map(error -> error.getObjectName() + " : " + error.getDefaultMessage()).collect(Collectors.toList());
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    protected ResponseEntity<Object> handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException ex,
+            WebRequest request) {
 
-		APIException apiException = new APIException("Validation Errors", HttpStatus.BAD_REQUEST,
-				LocalDateTime.now(), details);
+        List<String> details = new ArrayList<String>();
+        details.add(ex.getMessage());
 
-		return ResponseEntityBuilder.build(apiException);
-	}
+        APIException apiException = new APIException(TYPE_MISMATCH_ERROR, HttpStatus.BAD_REQUEST, LocalDateTime.now(),
+                details);
 
-	@ExceptionHandler(MethodArgumentTypeMismatchException.class)
-	protected ResponseEntity<Object> handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException ex,
-			WebRequest request) {
+        return ResponseEntityBuilder.build(apiException);
+    }
 
-		List<String> details = new ArrayList<String>();
-		details.add(ex.getMessage());
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<?> handleConstraintViolationException(Exception ex, WebRequest request) {
 
-		APIException apiException = new APIException("Type Mismatch", HttpStatus.BAD_REQUEST, LocalDateTime.now(),
-				details);
+        List<String> details = new ArrayList<String>();
+        details.add(ex.getMessage());
 
-		return ResponseEntityBuilder.build(apiException);
-	}
+        APIException apiException = new APIException(CONSTRAINT_VIOLATIONS_ERROR, HttpStatus.BAD_REQUEST,
+                LocalDateTime.now(), details);
 
-	@ExceptionHandler(ConstraintViolationException.class)
-	public ResponseEntity<?> handleConstraintViolationException(Exception ex, WebRequest request) {
+        return ResponseEntityBuilder.build(apiException);
+    }
 
-		List<String> details = new ArrayList<String>();
-		details.add(ex.getMessage());
+    @Override
+    protected ResponseEntity<Object> handleMissingServletRequestParameter(MissingServletRequestParameterException ex,
+            HttpHeaders headers, HttpStatus status, WebRequest request) {
 
-		APIException apiException = new APIException("Constraint Violations", HttpStatus.BAD_REQUEST,
-				LocalDateTime.now(), details);
+        List<String> details = new ArrayList<String>();
+        details.add(String.format(MISSING_PARAMETER_INFO, ex.getParameterName()));
 
-		return ResponseEntityBuilder.build(apiException);
-	}
+        APIException apiException = new APIException(MISSING_REQUEST_PARAMETERS_ERROR, HttpStatus.BAD_REQUEST,
+                LocalDateTime.now(), details);
 
-	@Override
-	protected ResponseEntity<Object> handleMissingServletRequestParameter(MissingServletRequestParameterException ex,
-			HttpHeaders headers, HttpStatus status, WebRequest request) {
+        return ResponseEntityBuilder.build(apiException);
+    }
 
-		List<String> details = new ArrayList<String>();
-		details.add(ex.getParameterName() + " parameter is missing");
+    @Override
+    protected ResponseEntity<Object> handleHttpMediaTypeNotSupported(HttpMediaTypeNotSupportedException ex,
+            HttpHeaders headers, HttpStatus status, WebRequest request) {
 
-		APIException apiException = new APIException("Missing Parameters", HttpStatus.BAD_REQUEST,
-				LocalDateTime.now(), details);
+        List<String> details = new ArrayList<String>();
+        StringBuilder builder = new StringBuilder();
+        builder.append(ex.getContentType());
+        builder.append(UNSUPPORTED_MEDIA_TYPE_INFO);
+        ex.getSupportedMediaTypes().forEach(t -> builder.append(t).append(", "));
 
-		return ResponseEntityBuilder.build(apiException);
-	}
+        details.add(builder.toString());
 
-	@Override
-	protected ResponseEntity<Object> handleHttpMediaTypeNotSupported(HttpMediaTypeNotSupportedException ex,
-			HttpHeaders headers, HttpStatus status, WebRequest request) {
+        APIException apiException = new APIException(UNSUPPORTED_MEDIA_TYPE_ERROR, HttpStatus.UNSUPPORTED_MEDIA_TYPE,
+                LocalDateTime.now(), details);
 
-		List<String> details = new ArrayList<String>();
-		StringBuilder builder = new StringBuilder();
-		builder.append(ex.getContentType());
-		builder.append(" media type is not supported. Supported media types are ");
-		ex.getSupportedMediaTypes().forEach(t -> builder.append(t).append(", "));
+        return ResponseEntityBuilder.build(apiException);
+    }
 
-		details.add(builder.toString());
+    @Override
+    protected ResponseEntity<Object> handleNoHandlerFoundException(NoHandlerFoundException ex, HttpHeaders headers,
+            HttpStatus status, WebRequest request) {
 
-		APIException apiException = new APIException("Unsupported Media Type", HttpStatus.UNSUPPORTED_MEDIA_TYPE,
-				LocalDateTime.now(), details);
+        List<String> details = new ArrayList<String>();
+        details.add(String.format(METHOD_NOT_FOUND_INFO, ex.getHttpMethod(), ex.getRequestURL()));
 
-		return ResponseEntityBuilder.build(apiException);
-	}
+        APIException apiException = new APIException(METHOD_NOT_FOUND_ERROR, HttpStatus.NOT_FOUND,
+                LocalDateTime.now(), details);
 
-	@Override
-	protected ResponseEntity<Object> handleNoHandlerFoundException(NoHandlerFoundException ex, HttpHeaders headers,
-			HttpStatus status, WebRequest request) {
+        return ResponseEntityBuilder.build(apiException);
 
-		List<String> details = new ArrayList<String>();
-		details.add(String.format("Could not find the %s method for URL %s", ex.getHttpMethod(), ex.getRequestURL()));
+    }
+    
+    @ExceptionHandler({ AccessDeniedException.class })
+    public ResponseEntity<Object> handleAccessDeniedException(
+      Exception ex, HttpHeaders headers,
+        HttpStatus status, WebRequest request) {
+        List<String> details = new ArrayList<String>();
+        details.add(NO_ACCES_ERROR);
+        
+        APIException apiException = new APIException(NO_ACCES_ERROR, HttpStatus.FORBIDDEN,
+                LocalDateTime.now(), details);
 
-		APIException apiException = new APIException("Method Not Found", HttpStatus.NOT_FOUND,
-				LocalDateTime.now(), details);
+        return ResponseEntityBuilder.build(apiException);
+    }
 
-		return ResponseEntityBuilder.build(apiException);
+    @ExceptionHandler({ Exception.class })
+    public ResponseEntity<Object> handleAll(Exception ex, WebRequest request) {
 
-	}
+        List<String> details = new ArrayList<String>();
+        details.add(ex.getLocalizedMessage());
 
-	@ExceptionHandler({ Exception.class })
-	public ResponseEntity<Object> handleAll(Exception ex, WebRequest request) {
+        APIException apiException = new APIException(ERROR_OCCURRED, HttpStatus.BAD_REQUEST,
+                LocalDateTime.now(), details);
 
-		List<String> details = new ArrayList<String>();
-		details.add(ex.getLocalizedMessage());
-
-		APIException apiException = new APIException("Error occurred", HttpStatus.BAD_REQUEST,
-				LocalDateTime.now(), details);
-
-		return ResponseEntityBuilder.build(apiException);
-	}
+        return ResponseEntityBuilder.build(apiException);
+    }
 }

@@ -17,7 +17,7 @@ import org.springframework.web.filter.GenericFilterBean;
 import static org.springframework.util.StringUtils.hasText;
 
 import com.yurii.financeanalytics.entity.CustomUserDetails;
-import com.yurii.financeanalytics.service.CustomUserDetailsService;
+import com.yurii.financeanalytics.service.impl.CustomUserDetailsService;
 
 @Component
 public class JwtFilter extends GenericFilterBean {

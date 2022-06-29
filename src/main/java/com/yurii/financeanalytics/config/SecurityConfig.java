@@ -13,7 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.yurii.financeanalytics.config.jwt.JwtFilter;
-import com.yurii.financeanalytics.service.CustomUserDetailsService;
+import com.yurii.financeanalytics.service.impl.CustomUserDetailsService;
 
 import lombok.RequiredArgsConstructor;
 

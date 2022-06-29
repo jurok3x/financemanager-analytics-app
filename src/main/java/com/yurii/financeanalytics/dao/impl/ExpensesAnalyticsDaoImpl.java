@@ -1,6 +1,7 @@
 package com.yurii.financeanalytics.dao.impl;
 
 import com.yurii.financeanalytics.dao.ExpensesAnalyticsDao;
+import com.yurii.financeanalytics.entity.CategoryExpensesAnalyticsView;
 import com.yurii.financeanalytics.entity.ExpensesAnalyticsView;
 
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,7 @@ import java.util.List;
 public class ExpensesAnalyticsDaoImpl implements ExpensesAnalyticsDao{
     
     private final RowMapper<ExpensesAnalyticsView> analyticsViewMapper;
+    private final RowMapper<CategoryExpensesAnalyticsView> categoryAnalyticsViewMapper;
     private final NamedParameterJdbcTemplate template;
     
     @Value(value = "${get.category_analytics}")
@@ -32,16 +34,16 @@ public class ExpensesAnalyticsDaoImpl implements ExpensesAnalyticsDao{
     private String activeYearsQuery;
 
     @Override
-    public List<ExpensesAnalyticsView> getCategoriesAnalytics(Integer userId, Integer month, Integer year) {
+    public List<CategoryExpensesAnalyticsView> getAnalyticsByCategories(Integer userId, Integer month, Integer year) {
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("user_id", userId);
         params.addValue("month", month);
         params.addValue("year", year);
-        return template.query(categoryAnalyticsQuery, params, analyticsViewMapper);
+        return template.query(categoryAnalyticsQuery, params, categoryAnalyticsViewMapper);
     }
 
     @Override
-    public List<ExpensesAnalyticsView> getPopularItemsAnalytics(Integer userId, Integer categoryId, Integer month, Integer year,
+    public List<ExpensesAnalyticsView> getPopularExpensesAnalytics(Integer userId, Integer categoryId, Integer month, Integer year,
             Integer offset, Integer limit) {
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("user_id", userId);

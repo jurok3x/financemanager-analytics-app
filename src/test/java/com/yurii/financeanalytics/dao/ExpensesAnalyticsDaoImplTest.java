@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import com.yurii.financeanalytics.configuration.TestDBConfiguration;
 import com.yurii.financeanalytics.dao.impl.ExpensesAnalyticsDaoImpl;
+import com.yurii.financeanalytics.entity.CategoryExpensesAnalyticsView;
 import com.yurii.financeanalytics.entity.ExpensesAnalyticsView;
 
 import org.junit.jupiter.api.Test;
@@ -20,51 +21,51 @@ class ExpensesAnalyticsDaoImplTest {
     private ExpensesAnalyticsDao analyticsDao;
 
     @Test
-    void returnCorrectCategoryCountAllTime() {
-        List<ExpensesAnalyticsView> expectedList = Arrays.asList(
-                new ExpensesAnalyticsView("Transport", 1, 122.9),
-                new ExpensesAnalyticsView("Food", 3, 68.7),
-                new ExpensesAnalyticsView("Medicine", 2, 91.8),
-                new ExpensesAnalyticsView("Goods", 2, 45.8),
-                new ExpensesAnalyticsView("Living", 1, 1800.9)
+    void returnCorrectCategoryAnalyticsAllTime() {
+        List<CategoryExpensesAnalyticsView> expectedList = Arrays.asList(
+                new CategoryExpensesAnalyticsView("Transport", 1, 122.9),
+                new CategoryExpensesAnalyticsView("Food", 3, 68.7),
+                new CategoryExpensesAnalyticsView("Medicine", 2, 91.8),
+                new CategoryExpensesAnalyticsView("Goods", 2, 45.8),
+                new CategoryExpensesAnalyticsView("Living", 1, 1800.9)
                 );
-        assertEquals(expectedList, analyticsDao.getCategoriesAnalytics(1, null, null));
+        assertEquals(expectedList, analyticsDao.getAnalyticsByCategories(1, null, null));
     }
     
     @Test
-    void returnCorrectCategoryCountAllByMonth() {
-        List<ExpensesAnalyticsView> expectedList = Arrays.asList(
-                new ExpensesAnalyticsView("Transport", 0, 0.0),
-                new ExpensesAnalyticsView("Food", 1, 22.9),
-                new ExpensesAnalyticsView("Medicine", 1, 45.9),
-                new ExpensesAnalyticsView("Goods", 1, 22.9),
-                new ExpensesAnalyticsView("Living", 1, 1800.9)
+    void returnCorrectCategoryAnalyticsByMonth() {
+        List<CategoryExpensesAnalyticsView> expectedList = Arrays.asList(
+                new CategoryExpensesAnalyticsView("Transport", 0, 0.0),
+                new CategoryExpensesAnalyticsView("Food", 1, 22.9),
+                new CategoryExpensesAnalyticsView("Medicine", 1, 45.9),
+                new CategoryExpensesAnalyticsView("Goods", 1, 22.9),
+                new CategoryExpensesAnalyticsView("Living", 1, 1800.9)
                 );
-        assertEquals(expectedList, analyticsDao.getCategoriesAnalytics(1, 6, null));
+        assertEquals(expectedList, analyticsDao.getAnalyticsByCategories(1, 6, null));
     }
     
     @Test
-    void returnCorrectCategoryCountAllByYear() {
-        List<ExpensesAnalyticsView> expectedList = Arrays.asList(
-                new ExpensesAnalyticsView("Transport", 0, 0.0),
-                new ExpensesAnalyticsView("Food", 0, 0.0),
-                new ExpensesAnalyticsView("Medicine", 0, 0.0),
-                new ExpensesAnalyticsView("Goods", 0, 0.0),
-                new ExpensesAnalyticsView("Living", 1, 1800.9)
+    void returnCorrectCategoryAnalyticsByYear() {
+        List<CategoryExpensesAnalyticsView> expectedList = Arrays.asList(
+                new CategoryExpensesAnalyticsView("Transport", 0, 0.0),
+                new CategoryExpensesAnalyticsView("Food", 0, 0.0),
+                new CategoryExpensesAnalyticsView("Medicine", 0, 0.0),
+                new CategoryExpensesAnalyticsView("Goods", 0, 0.0),
+                new CategoryExpensesAnalyticsView("Living", 1, 1800.9)
                 );
-        assertEquals(expectedList, analyticsDao.getCategoriesAnalytics(1, null, 2021));
+        assertEquals(expectedList, analyticsDao.getAnalyticsByCategories(1, null, 2021));
     }
     
     @Test
-    void returnCorrectCategoryCountAllByMonthAndYear() {
-        List<ExpensesAnalyticsView> expectedList = Arrays.asList(
-                new ExpensesAnalyticsView("Transport", 0, 0.0),
-                new ExpensesAnalyticsView("Food", 1, 22.9),
-                new ExpensesAnalyticsView("Medicine", 1, 45.9),
-                new ExpensesAnalyticsView("Goods", 1, 22.9),
-                new ExpensesAnalyticsView("Living", 0, 0.0)
+    void returnCorrectCategoryAnalyticsByMonthAndYear() {
+        List<CategoryExpensesAnalyticsView> expectedList = Arrays.asList(
+                new CategoryExpensesAnalyticsView("Transport", 0, 0.0),
+                new CategoryExpensesAnalyticsView("Food", 1, 22.9),
+                new CategoryExpensesAnalyticsView("Medicine", 1, 45.9),
+                new CategoryExpensesAnalyticsView("Goods", 1, 22.9),
+                new CategoryExpensesAnalyticsView("Living", 0, 0.0)
                 );
-        assertEquals(expectedList, analyticsDao.getCategoriesAnalytics(1, 6, 2022));
+        assertEquals(expectedList, analyticsDao.getAnalyticsByCategories(1, 6, 2022));
     }
     
     @Test
@@ -76,7 +77,7 @@ class ExpensesAnalyticsDaoImplTest {
                 new ExpensesAnalyticsView("Room", 1, 1800.9),
                 new ExpensesAnalyticsView("Taxy", 1, 122.9)
                 );
-        assertEquals(expectedList, analyticsDao.getPopularItemsAnalytics(1, null, null, null, 0, 5));
+        assertEquals(expectedList, analyticsDao.getPopularExpensesAnalytics(1, null, null, null, 0, 5));
     }
     
     @Test
@@ -84,7 +85,7 @@ class ExpensesAnalyticsDaoImplTest {
         List<ExpensesAnalyticsView> expectedList = Arrays.asList(
                 new ExpensesAnalyticsView("Taxy", 1, 122.9)
                 );
-        assertEquals(expectedList, analyticsDao.getPopularItemsAnalytics(1, 1, null, null, 0, 5));
+        assertEquals(expectedList, analyticsDao.getPopularExpensesAnalytics(1, 1, null, null, 0, 5));
     }
     
     @Test
@@ -94,7 +95,7 @@ class ExpensesAnalyticsDaoImplTest {
                 new ExpensesAnalyticsView("Scissors", 1, 22.9),
                 new ExpensesAnalyticsView("Ketchup", 1, 22.9)
                 );
-        assertEquals(expectedList, analyticsDao.getPopularItemsAnalytics(1, null, 6, 2022, 0, 5));
+        assertEquals(expectedList, analyticsDao.getPopularExpensesAnalytics(1, null, 6, 2022, 0, 5));
     }
 
 }
