@@ -1,10 +1,8 @@
 package com.yurii.financeanalytics.entity;
 
 import java.util.Collection;
-import java.util.Collections;
 
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 public class CustomUserDetails implements UserDetails {
@@ -13,21 +11,22 @@ public class CustomUserDetails implements UserDetails {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	private Integer id;
 	private String email;
     private String password;
     private Collection<? extends GrantedAuthority> grantedAuthorities;
     
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		// TODO Auto-generated method stub
 		return grantedAuthorities;
 	}
 	
 	public static CustomUserDetails fromUserToCustomUserDetails(User user) {
 		CustomUserDetails userDetails = new CustomUserDetails();
+		userDetails.id = user.getId();
 		userDetails.email = user.getEmail();
 		userDetails.password = user.getPassword();
-		userDetails.grantedAuthorities = Collections.singletonList(new SimpleGrantedAuthority(user.getRole().name()));
+		userDetails.grantedAuthorities = user.getRole().getGrantedAuthorities();
 		return userDetails;
 	}
 
@@ -60,5 +59,9 @@ public class CustomUserDetails implements UserDetails {
 	public boolean isEnabled() {
 		return true;
 	}
+	
+	public Integer getId() {
+        return this.id;
+    }
 
 }

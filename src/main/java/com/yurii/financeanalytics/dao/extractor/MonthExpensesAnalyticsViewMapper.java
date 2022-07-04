@@ -1,6 +1,6 @@
 package com.yurii.financeanalytics.dao.extractor;
 
-import com.yurii.financeanalytics.entity.MonthExpensesAnalyticsView;
+import com.yurii.financeanalytics.entity.view.MonthExpensesAnalyticsView;
 
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;

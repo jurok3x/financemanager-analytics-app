@@ -13,7 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.yurii.financeanalytics.config.jwt.JwtFilter;
-import com.yurii.financeanalytics.service.CustomUserDetailsService;
+import com.yurii.financeanalytics.service.impl.CustomUserDetailsService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -48,11 +48,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 	.authorizeRequests()
-                	.antMatchers("/api/auth", "/users/fail").not().fullyAuthenticated()
-                	.antMatchers("/users/admin/get").hasRole("ADMIN")
-                	.antMatchers("/users/user/get").hasAnyRole("ADMIN","USER")
-                	.antMatchers("/").permitAll()
-                	.antMatchers("/api/items/all").permitAll()
+                	.antMatchers("/api/auth/login").not().fullyAuthenticated()
+                	.antMatchers("/webjars/**","/swagger-ui/**","/swagger-ui.html","/v3/api-docs/**",
+                            "/swagger-resources/**","/v2/api-docs/**", "/swagger.json").permitAll()
                 	.anyRequest().authenticated()
                 	.and()
                     .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);               	

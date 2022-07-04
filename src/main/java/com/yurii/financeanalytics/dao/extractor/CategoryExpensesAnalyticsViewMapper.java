@@ -1,6 +1,6 @@
 package com.yurii.financeanalytics.dao.extractor;
 
-import com.yurii.financeanalytics.entity.view.ExpensesAnalyticsView;
+import com.yurii.financeanalytics.entity.view.CategoryExpensesAnalyticsView;
 
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
@@ -9,11 +9,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 @Component
-public class ExpensesAnalyticsViewMapper implements RowMapper<ExpensesAnalyticsView> {
+public class CategoryExpensesAnalyticsViewMapper implements RowMapper<CategoryExpensesAnalyticsView> {
 
     @Override
-    public ExpensesAnalyticsView mapRow(ResultSet rs, int rowNum) throws SQLException {
-        ExpensesAnalyticsView view = new ExpensesAnalyticsView();
+    public CategoryExpensesAnalyticsView mapRow(ResultSet rs, int rowNum) throws SQLException {
+        CategoryExpensesAnalyticsView view = new CategoryExpensesAnalyticsView();
         view.setName(rs.getString("name"));
         view.setCount(rs.getInt("count"));
         view.setSum(rs.getDouble("sum"));

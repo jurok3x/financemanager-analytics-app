@@ -1,5 +1,6 @@
 package com.yurii.financeanalytics.configuration;
 
+import com.yurii.financeanalytics.dao.extractor.CategoryExpensesAnalyticsViewMapper;
 import com.yurii.financeanalytics.dao.extractor.ExpensesAnalyticsViewMapper;
 import com.yurii.financeanalytics.dao.extractor.MonthExpensesAnalyticsViewMapper;
 import com.yurii.financeanalytics.dao.extractor.UserRowMapper;
@@ -14,7 +15,8 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import javax.sql.DataSource;
 
 @TestConfiguration
-@Import(value = { UserRowMapper.class, ExpensesAnalyticsViewMapper.class, MonthExpensesAnalyticsViewMapper.class })
+@Import(value = { UserRowMapper.class, ExpensesAnalyticsViewMapper.class,
+        CategoryExpensesAnalyticsViewMapper.class, MonthExpensesAnalyticsViewMapper.class })
 public class TestDBConfiguration {
     
     @Bean
