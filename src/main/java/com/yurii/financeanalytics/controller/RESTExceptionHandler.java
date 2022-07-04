@@ -36,11 +36,9 @@ public class RESTExceptionHandler extends ResponseEntityExceptionHandler {
     private static final String VALIDATION_ERRORS = "Validation Errors";
     private static final String MALFORMED_JSON_ERROR = "Malformed JSON request";
     private static final String NO_ACCES_ERROR = "You dont' have rights to acces this resource";
-    private static final String ERROR_OCCURRED = "Error occurred";
     private static final String METHOD_NOT_FOUND_ERROR = "Method Not Found";
     private static final String UNSUPPORTED_MEDIA_TYPE_ERROR = "Unsupported Media Type";
-    
-    
+
     @Override
     protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex,
             HttpHeaders headers, HttpStatus status, WebRequest request) {
@@ -48,8 +46,8 @@ public class RESTExceptionHandler extends ResponseEntityExceptionHandler {
         List<String> details = new ArrayList<String>();
         details.add(ex.getMessage());
 
-        APIException apiException = new APIException(MALFORMED_JSON_ERROR, HttpStatus.BAD_REQUEST,
-                LocalDateTime.now(), details);
+        APIException apiException = new APIException(MALFORMED_JSON_ERROR, HttpStatus.BAD_REQUEST, LocalDateTime.now(),
+                details);
 
         return ResponseEntityBuilder.build(apiException);
     }
@@ -62,8 +60,8 @@ public class RESTExceptionHandler extends ResponseEntityExceptionHandler {
         details = ex.getBindingResult().getFieldErrors().stream()
                 .map(error -> error.getObjectName() + " : " + error.getDefaultMessage()).collect(Collectors.toList());
 
-        APIException apiException = new APIException(VALIDATION_ERRORS, HttpStatus.BAD_REQUEST,
-                LocalDateTime.now(), details);
+        APIException apiException = new APIException(VALIDATION_ERRORS, HttpStatus.BAD_REQUEST, LocalDateTime.now(),
+                details);
 
         return ResponseEntityBuilder.build(apiException);
     }
@@ -131,35 +129,23 @@ public class RESTExceptionHandler extends ResponseEntityExceptionHandler {
         List<String> details = new ArrayList<String>();
         details.add(String.format(METHOD_NOT_FOUND_INFO, ex.getHttpMethod(), ex.getRequestURL()));
 
-        APIException apiException = new APIException(METHOD_NOT_FOUND_ERROR, HttpStatus.NOT_FOUND,
-                LocalDateTime.now(), details);
+        APIException apiException = new APIException(METHOD_NOT_FOUND_ERROR, HttpStatus.NOT_FOUND, LocalDateTime.now(),
+                details);
 
         return ResponseEntityBuilder.build(apiException);
 
     }
-    
+
     @ExceptionHandler({ AccessDeniedException.class })
-    public ResponseEntity<Object> handleAccessDeniedException(
-      Exception ex, HttpHeaders headers,
-        HttpStatus status, WebRequest request) {
+    public ResponseEntity<Object> handleAccessDeniedException(AccessDeniedException ex, HttpHeaders headers,
+            HttpStatus status, WebRequest request) {
         List<String> details = new ArrayList<String>();
         details.add(NO_ACCES_ERROR);
-        
-        APIException apiException = new APIException(NO_ACCES_ERROR, HttpStatus.FORBIDDEN,
-                LocalDateTime.now(), details);
+
+        APIException apiException = new APIException(NO_ACCES_ERROR, HttpStatus.FORBIDDEN, LocalDateTime.now(),
+                details);
 
         return ResponseEntityBuilder.build(apiException);
     }
 
-    @ExceptionHandler({ Exception.class })
-    public ResponseEntity<Object> handleAll(Exception ex, WebRequest request) {
-
-        List<String> details = new ArrayList<String>();
-        details.add(ex.getLocalizedMessage());
-
-        APIException apiException = new APIException(ERROR_OCCURRED, HttpStatus.BAD_REQUEST,
-                LocalDateTime.now(), details);
-
-        return ResponseEntityBuilder.build(apiException);
-    }
 }

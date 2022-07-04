@@ -13,8 +13,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public enum Role {
     
-    USER(Arrays.asList(Permission.USER_READ).stream().collect(Collectors.toSet())),
-    ADMIN(Arrays.asList(Permission.USER_READ).stream().collect(Collectors.toSet()));
+    USER(Arrays.asList(Permission.USER_READ, Permission.UTILS_READ).stream().collect(Collectors.toSet())),
+    ADMIN(Arrays.asList(Permission.USER_READ, Permission.UTILS_READ).stream().collect(Collectors.toSet()));
     
     public Set<SimpleGrantedAuthority> getGrantedAuthorities() {
         Set<SimpleGrantedAuthority> userPermissions = getPermissions().stream()

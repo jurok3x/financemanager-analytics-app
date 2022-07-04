@@ -13,18 +13,19 @@ public class CustomUserDetails implements UserDetails {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	private Integer id;
 	private String email;
     private String password;
     private Collection<? extends GrantedAuthority> grantedAuthorities;
     
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		// TODO Auto-generated method stub
 		return grantedAuthorities;
 	}
 	
 	public static CustomUserDetails fromUserToCustomUserDetails(User user) {
 		CustomUserDetails userDetails = new CustomUserDetails();
+		userDetails.id = user.getId();
 		userDetails.email = user.getEmail();
 		userDetails.password = user.getPassword();
 		userDetails.grantedAuthorities = Collections.singletonList(new SimpleGrantedAuthority(user.getRole().name()));
@@ -60,5 +61,9 @@ public class CustomUserDetails implements UserDetails {
 	public boolean isEnabled() {
 		return true;
 	}
+	
+	public Integer getId() {
+        return this.id;
+    }
 
 }
