@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import javax.validation.ConstraintViolationException;
 
 import com.yurii.financeanalytics.exception.APIException;
+import com.yurii.financeanalytics.utils.ResponseEntityBuilder;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;

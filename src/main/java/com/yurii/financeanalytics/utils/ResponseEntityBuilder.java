@@ -1,4 +1,4 @@
-package com.yurii.financeanalytics.controller;
+package com.yurii.financeanalytics.utils;
 
 import com.yurii.financeanalytics.exception.APIException;
 

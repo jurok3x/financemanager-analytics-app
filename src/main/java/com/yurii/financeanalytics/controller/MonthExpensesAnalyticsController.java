@@ -16,9 +16,12 @@ import javax.validation.constraints.Min;
 
 import java.util.List;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+
 @RestController
 @RequestMapping("api/analytics/expenses/month")
 @AllArgsConstructor
+@SecurityRequirement(name = "bearerAuth")
 public class MonthExpensesAnalyticsController {
     
     private static final String INCORRECT_ID = "Id must be greater than or equal to 1";

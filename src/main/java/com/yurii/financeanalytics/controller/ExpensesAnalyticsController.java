@@ -18,9 +18,12 @@ import javax.validation.constraints.Min;
 
 import java.util.List;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+
 @RestController
 @RequestMapping("api/analytics/expenses")
 @AllArgsConstructor
+@SecurityRequirement(name = "bearerAuth")
 public class ExpensesAnalyticsController {
     
     private static final String INCORRECT_ID = "Id must be greater than or equal to 1";
@@ -35,7 +38,7 @@ public class ExpensesAnalyticsController {
             @RequestParam @Min(value = 1, message = INCORRECT_ID) Integer userId,
             @RequestParam(required = false) Integer year,
             @RequestParam(required = false) @Min(value = 1, message = INCORRECT_MONTH)
-                @Max(value = 1, message = INCORRECT_MONTH) Integer month) {
+                @Max(value = 12, message = INCORRECT_MONTH) Integer month) {
                 return ResponseEntity.ok().body(analyticsService.getAnalyticsByCategories(userId, month, year));
     }
     
@@ -45,7 +48,7 @@ public class ExpensesAnalyticsController {
             @RequestParam @Min(value = 1, message = INCORRECT_ID) Integer userId,
             @RequestParam(required = false) @Min(value = 1, message = INCORRECT_ID) Integer categoryId,
             @RequestParam(required = false) Integer year,
-            @RequestParam(required = false) @Min(value = 1, message = INCORRECT_MONTH) @Max(value = 1, message = INCORRECT_MONTH) Integer month,
+            @RequestParam(required = false) @Min(value = 1, message = INCORRECT_MONTH) @Max(value = 12, message = INCORRECT_MONTH) Integer month,
             @RequestParam(required = false) @Min(value = 1, message = INCORRECT_OFFSET) Integer offset,
             @RequestParam(required = false) @Min(value = 0, message = INCORRECT_LIMIT) Integer limit) {
                 return ResponseEntity.ok().body(analyticsService.getPopularExpensesAnalytics(userId, categoryId, month, year, offset, limit));
