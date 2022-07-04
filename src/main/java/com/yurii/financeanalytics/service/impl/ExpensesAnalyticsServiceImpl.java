@@ -1,8 +1,8 @@
 package com.yurii.financeanalytics.service.impl;
 
 import com.yurii.financeanalytics.dao.ExpensesAnalyticsDao;
-import com.yurii.financeanalytics.entity.CategoryExpensesAnalyticsView;
-import com.yurii.financeanalytics.entity.ExpensesAnalyticsView;
+import com.yurii.financeanalytics.entity.view.CategoryExpensesAnalyticsView;
+import com.yurii.financeanalytics.entity.view.ExpensesAnalyticsView;
 import com.yurii.financeanalytics.service.ExpensesAnalyticsService;
 
 import lombok.AllArgsConstructor;

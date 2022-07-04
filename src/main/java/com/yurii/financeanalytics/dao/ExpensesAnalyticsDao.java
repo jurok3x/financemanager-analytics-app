@@ -1,7 +1,7 @@
 package com.yurii.financeanalytics.dao;
 
-import com.yurii.financeanalytics.entity.CategoryExpensesAnalyticsView;
-import com.yurii.financeanalytics.entity.ExpensesAnalyticsView;
+import com.yurii.financeanalytics.entity.view.CategoryExpensesAnalyticsView;
+import com.yurii.financeanalytics.entity.view.ExpensesAnalyticsView;
 
 import java.util.List;
 

@@ -1,7 +1,7 @@
 package com.yurii.financeanalytics.controller;
 
-import com.yurii.financeanalytics.entity.CategoryExpensesAnalyticsView;
-import com.yurii.financeanalytics.entity.ExpensesAnalyticsView;
+import com.yurii.financeanalytics.entity.view.CategoryExpensesAnalyticsView;
+import com.yurii.financeanalytics.entity.view.ExpensesAnalyticsView;
 import com.yurii.financeanalytics.service.ExpensesAnalyticsService;
 
 import lombok.AllArgsConstructor;
@@ -30,7 +30,7 @@ public class ExpensesAnalyticsController {
     private ExpensesAnalyticsService analyticsService;
     
     @GetMapping("/category")
-    @PreAuthorize("#userId == authentication.principal.id")
+    @PreAuthorize("#userId == authentication.principal.id && hasAuthority('analytics:read')")
     public ResponseEntity<List<CategoryExpensesAnalyticsView>> getCategoryAnalytics(
             @RequestParam @Min(value = 1, message = INCORRECT_ID) Integer userId,
             @RequestParam(required = false) Integer year,
@@ -40,7 +40,7 @@ public class ExpensesAnalyticsController {
     }
     
     @GetMapping("/popular")
-    @PreAuthorize("#userId == authentication.principal.id")// hasAuthority('utils:read') && #userId == authentication.principal.id
+    @PreAuthorize("#userId == authentication.principal.id && hasAuthority('analytics:read')")
     public ResponseEntity<List<ExpensesAnalyticsView>> getMostPopularExpenses(
             @RequestParam @Min(value = 1, message = INCORRECT_ID) Integer userId,
             @RequestParam(required = false) @Min(value = 1, message = INCORRECT_ID) Integer categoryId,

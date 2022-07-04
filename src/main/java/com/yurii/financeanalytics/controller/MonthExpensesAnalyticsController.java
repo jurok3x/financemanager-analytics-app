@@ -1,6 +1,6 @@
 package com.yurii.financeanalytics.controller;
 
-import com.yurii.financeanalytics.entity.MonthExpensesAnalyticsView;
+import com.yurii.financeanalytics.entity.view.MonthExpensesAnalyticsView;
 import com.yurii.financeanalytics.service.MonthExpensesAnalyticsService;
 
 import lombok.AllArgsConstructor;
@@ -25,7 +25,7 @@ public class MonthExpensesAnalyticsController {
     private MonthExpensesAnalyticsService analyticsService;
     
     @GetMapping
-    @PreAuthorize("#userId == authentication.principal.id")
+    @PreAuthorize("#userId == authentication.principal.id && hasAuthority('analytics:read')")
     public ResponseEntity<List<MonthExpensesAnalyticsView>> getMonthAnalytics(
             @RequestParam @Min(value = 1, message = INCORRECT_ID) Integer userId,
             @RequestParam(required = false) @Min(value = 1, message = INCORRECT_ID) Integer categoryId,

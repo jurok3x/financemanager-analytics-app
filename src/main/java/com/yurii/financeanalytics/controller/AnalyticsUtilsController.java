@@ -24,7 +24,7 @@ public class AnalyticsUtilsController {
     private AnalyticsUtilsService utilsService;
     
     @GetMapping("/active-years/{userId}")
-    @PreAuthorize("#userId == authentication.principal.id") // #userId == authentication.principal.id hasAuthority('utils:read')
+    @PreAuthorize("#userId == authentication.principal.id && hasAuthority('utils:read')") 
     public ResponseEntity<List<Integer>> getAllActiveYears(
             @PathVariable @Min(value = 1, message = INCORRECT_ID) Integer userId) {
         return ResponseEntity.ok().body(utilsService.getActiveYears(userId));

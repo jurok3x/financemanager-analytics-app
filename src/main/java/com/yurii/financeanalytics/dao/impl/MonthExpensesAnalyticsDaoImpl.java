@@ -1,7 +1,7 @@
 package com.yurii.financeanalytics.dao.impl;
 
 import com.yurii.financeanalytics.dao.MonthExpensesAnalyticsDao;
-import com.yurii.financeanalytics.entity.MonthExpensesAnalyticsView;
+import com.yurii.financeanalytics.entity.view.MonthExpensesAnalyticsView;
 
 import lombok.RequiredArgsConstructor;
 

@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import com.yurii.financeanalytics.configuration.TestDBConfiguration;
 import com.yurii.financeanalytics.dao.impl.MonthExpensesAnalyticsDaoImpl;
-import com.yurii.financeanalytics.entity.MonthExpensesAnalyticsView;
+import com.yurii.financeanalytics.entity.view.MonthExpensesAnalyticsView;
 
 import java.util.Arrays;
 import org.junit.jupiter.api.Test;

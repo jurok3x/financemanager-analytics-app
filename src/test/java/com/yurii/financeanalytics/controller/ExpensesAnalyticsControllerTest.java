@@ -9,8 +9,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.yurii.financeanalytics.entity.CategoryExpensesAnalyticsView;
-import com.yurii.financeanalytics.entity.ExpensesAnalyticsView;
+import com.yurii.financeanalytics.entity.view.CategoryExpensesAnalyticsView;
+import com.yurii.financeanalytics.entity.view.ExpensesAnalyticsView;
 import com.yurii.financeanalytics.service.ExpensesAnalyticsService;
 
 import org.junit.jupiter.api.AfterEach;

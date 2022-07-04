@@ -9,7 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.yurii.financeanalytics.entity.MonthExpensesAnalyticsView;
+import com.yurii.financeanalytics.entity.view.MonthExpensesAnalyticsView;
 import com.yurii.financeanalytics.service.MonthExpensesAnalyticsService;
 
 import org.junit.jupiter.api.AfterEach;

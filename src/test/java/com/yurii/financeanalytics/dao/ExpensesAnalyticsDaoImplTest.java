@@ -4,8 +4,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import com.yurii.financeanalytics.configuration.TestDBConfiguration;
 import com.yurii.financeanalytics.dao.impl.ExpensesAnalyticsDaoImpl;
-import com.yurii.financeanalytics.entity.CategoryExpensesAnalyticsView;
-import com.yurii.financeanalytics.entity.ExpensesAnalyticsView;
+import com.yurii.financeanalytics.entity.view.CategoryExpensesAnalyticsView;
+import com.yurii.financeanalytics.entity.view.ExpensesAnalyticsView;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

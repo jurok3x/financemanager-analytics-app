@@ -6,7 +6,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import com.yurii.financeanalytics.dao.MonthExpensesAnalyticsDao;
-import com.yurii.financeanalytics.entity.MonthExpensesAnalyticsView;
+import com.yurii.financeanalytics.entity.view.MonthExpensesAnalyticsView;
 import com.yurii.financeanalytics.service.impl.MonthExpensesAnalyticsServiceImpl;
 
 import org.junit.jupiter.api.AfterEach;

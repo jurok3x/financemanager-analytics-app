@@ -1,4 +1,4 @@
-package com.yurii.financeanalytics.entity;
+package com.yurii.financeanalytics.entity.view;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
