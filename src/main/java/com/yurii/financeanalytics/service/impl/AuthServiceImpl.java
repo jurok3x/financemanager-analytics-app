@@ -26,11 +26,11 @@ public class AuthServiceImpl implements AuthService {
     
     @Override
     public AuthResponse login(AuthRequest request) {
-        User user = userDao.findByEmail(request.getLogin()).orElseThrow(() -> new BadCredentialsException(
-                String.format(USER_EMAIL_NOT_FOUND_ERROR, request.getLogin())));
+        User user = userDao.findByEmail(request.getEmail()).orElseThrow(() -> new BadCredentialsException(
+                String.format(USER_EMAIL_NOT_FOUND_ERROR, request.getEmail())));
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new BadCredentialsException(
-                    String.format(WRONG_PASSWORD_ERROR, request.getLogin()));
+                    String.format(WRONG_PASSWORD_ERROR, request.getEmail()));
         }
         return new AuthResponse(jwtProvider.generateToken(user.getEmail()), TOKEN_TYPE);
     }
