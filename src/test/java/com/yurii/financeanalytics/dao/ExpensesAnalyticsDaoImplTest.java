@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import com.yurii.financeanalytics.configuration.TestDBConfiguration;
 import com.yurii.financeanalytics.dao.impl.ExpensesAnalyticsDaoImpl;
+import com.yurii.financeanalytics.entity.payload.DatePart;
 import com.yurii.financeanalytics.entity.view.CategoryExpensesAnalyticsView;
 import com.yurii.financeanalytics.entity.view.ExpensesAnalyticsView;
 
@@ -29,7 +30,7 @@ class ExpensesAnalyticsDaoImplTest {
                 new CategoryExpensesAnalyticsView("Goods", 2, 45.8),
                 new CategoryExpensesAnalyticsView("Living", 1, 1800.9)
                 );
-        assertEquals(expectedList, analyticsDao.getAnalyticsByCategories(1, null, null));
+        assertEquals(expectedList, analyticsDao.getAnalyticsByCategories(1, new DatePart()));
     }
     
     @Test
@@ -41,7 +42,7 @@ class ExpensesAnalyticsDaoImplTest {
                 new CategoryExpensesAnalyticsView("Goods", 1, 22.9),
                 new CategoryExpensesAnalyticsView("Living", 1, 1800.9)
                 );
-        assertEquals(expectedList, analyticsDao.getAnalyticsByCategories(1, 6, null));
+        assertEquals(expectedList, analyticsDao.getAnalyticsByCategories(1, new DatePart(6, null)));
     }
     
     @Test
@@ -53,7 +54,7 @@ class ExpensesAnalyticsDaoImplTest {
                 new CategoryExpensesAnalyticsView("Goods", 0, 0.0),
                 new CategoryExpensesAnalyticsView("Living", 1, 1800.9)
                 );
-        assertEquals(expectedList, analyticsDao.getAnalyticsByCategories(1, null, 2021));
+        assertEquals(expectedList, analyticsDao.getAnalyticsByCategories(1, new DatePart(null, 2021)));
     }
     
     @Test
@@ -65,7 +66,7 @@ class ExpensesAnalyticsDaoImplTest {
                 new CategoryExpensesAnalyticsView("Goods", 1, 22.9),
                 new CategoryExpensesAnalyticsView("Living", 0, 0.0)
                 );
-        assertEquals(expectedList, analyticsDao.getAnalyticsByCategories(1, 6, 2022));
+        assertEquals(expectedList, analyticsDao.getAnalyticsByCategories(1, new DatePart(6, 2022)));
     }
     
     @Test
@@ -77,7 +78,7 @@ class ExpensesAnalyticsDaoImplTest {
                 new ExpensesAnalyticsView("Room", 1, 1800.9),
                 new ExpensesAnalyticsView("Taxy", 1, 122.9)
                 );
-        assertEquals(expectedList, analyticsDao.getPopularExpensesAnalytics(1, null, null, null, 0, 5));
+        assertEquals(expectedList, analyticsDao.getPopularExpensesAnalytics(1, null, new DatePart(), 5));
     }
     
     @Test
@@ -85,7 +86,7 @@ class ExpensesAnalyticsDaoImplTest {
         List<ExpensesAnalyticsView> expectedList = Arrays.asList(
                 new ExpensesAnalyticsView("Taxy", 1, 122.9)
                 );
-        assertEquals(expectedList, analyticsDao.getPopularExpensesAnalytics(1, 1, null, null, 0, 5));
+        assertEquals(expectedList, analyticsDao.getPopularExpensesAnalytics(1, 1, new DatePart(), 5));
     }
     
     @Test
@@ -95,7 +96,7 @@ class ExpensesAnalyticsDaoImplTest {
                 new ExpensesAnalyticsView("Scissors", 1, 22.9),
                 new ExpensesAnalyticsView("Ketchup", 1, 22.9)
                 );
-        assertEquals(expectedList, analyticsDao.getPopularExpensesAnalytics(1, null, 6, 2022, 0, 5));
+        assertEquals(expectedList, analyticsDao.getPopularExpensesAnalytics(1, null, new DatePart(6, 2022), 5));
     }
 
 }

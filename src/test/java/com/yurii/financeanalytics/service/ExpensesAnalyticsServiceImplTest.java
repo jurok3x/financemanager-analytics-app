@@ -6,6 +6,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import com.yurii.financeanalytics.dao.ExpensesAnalyticsDao;
+import com.yurii.financeanalytics.entity.payload.DatePart;
 import com.yurii.financeanalytics.entity.view.CategoryExpensesAnalyticsView;
 import com.yurii.financeanalytics.entity.view.ExpensesAnalyticsView;
 import com.yurii.financeanalytics.service.impl.ExpensesAnalyticsServiceImpl;
@@ -33,18 +34,19 @@ class ExpensesAnalyticsServiceImplTest {
     @Test
     void whenGetCategoryAnalytics_thenReturnCorrectList() {
         List<CategoryExpensesAnalyticsView> expectedList = getCategoryAnalytics();
-        given(analyticsDao.getAnalyticsByCategories(Mockito.anyInt(), Mockito.anyInt(), Mockito.anyInt())).willReturn(expectedList);
-        assertEquals(expectedList, analyticsService.getAnalyticsByCategories(1, 12, 2022));
-        verify(analyticsDao).getAnalyticsByCategories(1, 12, 2022);
+        given(analyticsDao.getAnalyticsByCategories(Mockito.anyInt(), Mockito.any(DatePart.class))).willReturn(expectedList);
+        assertEquals(expectedList, analyticsService.getAnalyticsByCategories(1, new DatePart(12, 2022)));
+        verify(analyticsDao).getAnalyticsByCategories(Mockito.anyInt(), Mockito.any(DatePart.class));
     }
     
     @Test
     void whenGetPopularExpenses_thenReturnCorrectList() {
         List<ExpensesAnalyticsView> expectedList = getPopularExpensesAnalytics();
-        given(analyticsDao.getPopularExpensesAnalytics(Mockito.anyInt(), Mockito.any(), Mockito.anyInt(),
-                Mockito.anyInt(), Mockito.anyInt(), Mockito.anyInt())).willReturn(expectedList);
-        assertEquals(expectedList, analyticsService.getPopularExpensesAnalytics(1, null, 12, 2022, 0, 5));
-        verify(analyticsDao).getPopularExpensesAnalytics(1, null, 12, 2022, 0, 5);
+        given(analyticsDao.getPopularExpensesAnalytics(Mockito.anyInt(), Mockito.any(), Mockito.any(DatePart.class),
+                Mockito.anyInt())).willReturn(expectedList);
+        assertEquals(expectedList, analyticsService.getPopularExpensesAnalytics(1, null, new DatePart(12, 2022), 5));
+        verify(analyticsDao).getPopularExpensesAnalytics(Mockito.anyInt(), Mockito.any(), Mockito.any(DatePart.class),
+                Mockito.anyInt());
     }
     
     @AfterEach

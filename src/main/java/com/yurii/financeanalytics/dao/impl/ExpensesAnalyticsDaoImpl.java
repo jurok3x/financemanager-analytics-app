@@ -1,6 +1,7 @@
 package com.yurii.financeanalytics.dao.impl;
 
 import com.yurii.financeanalytics.dao.ExpensesAnalyticsDao;
+import com.yurii.financeanalytics.entity.payload.DatePart;
 import com.yurii.financeanalytics.entity.view.CategoryExpensesAnalyticsView;
 import com.yurii.financeanalytics.entity.view.ExpensesAnalyticsView;
 
@@ -34,23 +35,21 @@ public class ExpensesAnalyticsDaoImpl implements ExpensesAnalyticsDao{
     private String activeYearsQuery;
 
     @Override
-    public List<CategoryExpensesAnalyticsView> getAnalyticsByCategories(Integer userId, Integer month, Integer year) {
+    public List<CategoryExpensesAnalyticsView> getAnalyticsByCategories(Integer userId, DatePart datePart) {
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("user_id", userId);
-        params.addValue("month", month);
-        params.addValue("year", year);
+        params.addValue("month", datePart.getMonth());
+        params.addValue("year", datePart.getYear());
         return template.query(categoryAnalyticsQuery, params, categoryAnalyticsViewMapper);
     }
 
     @Override
-    public List<ExpensesAnalyticsView> getPopularExpensesAnalytics(Integer userId, Integer categoryId, Integer month, Integer year,
-            Integer offset, Integer limit) {
+    public List<ExpensesAnalyticsView> getPopularExpensesAnalytics(Integer userId, Integer categoryId, DatePart datePart, Integer limit) {
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("user_id", userId);
         params.addValue("category_id", categoryId);
-        params.addValue("month", month);
-        params.addValue("year", year);
-        params.addValue("offset", offset);
+        params.addValue("month", datePart.getMonth());
+        params.addValue("year", datePart.getYear());
         params.addValue("limit", limit);
         return template.query(popularItemsAnalyticsQuery, params, analyticsViewMapper);
     }

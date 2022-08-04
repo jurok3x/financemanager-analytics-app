@@ -9,6 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.yurii.financeanalytics.entity.payload.DatePart;
 import com.yurii.financeanalytics.entity.view.CategoryExpensesAnalyticsView;
 import com.yurii.financeanalytics.entity.view.ExpensesAnalyticsView;
 import com.yurii.financeanalytics.service.ExpensesAnalyticsService;
@@ -46,7 +47,7 @@ class ExpensesAnalyticsControllerTest {
     void whenGetCategoryAnalytics_thenReturnStatus200() throws Exception {
         mapper = new ObjectMapper();
         List<CategoryExpensesAnalyticsView> expectedList = getCategoryAnalytics();
-        given(analyticsService.getAnalyticsByCategories(Mockito.anyInt(), Mockito.anyInt(), Mockito.anyInt())).willReturn(expectedList);
+        given(analyticsService.getAnalyticsByCategories(Mockito.anyInt(), Mockito.any(DatePart.class))).willReturn(expectedList);
         ResultActions result = mvc.perform(get("/api/analytics/expenses/category")
                 .param("userId", "2")
                 .param("month", "2")
@@ -56,28 +57,28 @@ class ExpensesAnalyticsControllerTest {
         
         String resultString = result.andReturn().getResponse().getContentAsString();
         assertEquals(mapper.writeValueAsString(expectedList), resultString);
-        verify(analyticsService).getAnalyticsByCategories(2, 2, 2020);
+        verify(analyticsService).getAnalyticsByCategories(Mockito.anyInt(), Mockito.any(DatePart.class));
     }
     
     @Test
     void whenGetPopularExpensesAnalytics_thenReturnStatus200() throws Exception {
         mapper = new ObjectMapper();
         List<ExpensesAnalyticsView> expectedList = getPopularExpensesAnalytics();
-        given(analyticsService.getPopularExpensesAnalytics(Mockito.anyInt(), Mockito.anyInt(), Mockito.anyInt(), Mockito.anyInt(),
-                Mockito.anyInt(), Mockito.anyInt())).willReturn(expectedList);
+        given(analyticsService.getPopularExpensesAnalytics(Mockito.anyInt(), Mockito.anyInt(), Mockito.any(DatePart.class),
+                Mockito.anyInt())).willReturn(expectedList);
         ResultActions result = mvc.perform(get("/api/analytics/expenses/popular")
                 .param("userId", "2")
                 .param("categoryId", "2")
                 .param("month", "2")
                 .param("year", "2020")
-                .param("limit", "5")
-                .param("offset", "1"))
+                .param("limit", "5"))
         .andExpect(status().isOk())
         .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
         
         String resultString = result.andReturn().getResponse().getContentAsString();
         assertEquals(mapper.writeValueAsString(expectedList), resultString);
-        verify(analyticsService).getPopularExpensesAnalytics(2, 2, 2, 2020, 1, 5);
+        verify(analyticsService).getPopularExpensesAnalytics(Mockito.anyInt(), Mockito.anyInt(), Mockito.any(DatePart.class),
+                Mockito.anyInt());
     }
     
     @AfterEach
