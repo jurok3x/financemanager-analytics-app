@@ -1,11 +1,15 @@
 package com.yurii.financeanalytics.controller;
 
+import com.yurii.financeanalytics.entity.payload.DatePart;
 import com.yurii.financeanalytics.entity.view.CategoryExpensesAnalyticsView;
 import com.yurii.financeanalytics.entity.view.ExpensesAnalyticsView;
 import com.yurii.financeanalytics.service.ExpensesAnalyticsService;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,36 +26,40 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 @RestController
 @RequestMapping("api/analytics/expenses")
-@AllArgsConstructor
+@RequiredArgsConstructor
+@Slf4j
+@PropertySource(value = {"classpath:/messages/info.properties"})
 @SecurityRequirement(name = "bearerAuth")
 public class ExpensesAnalyticsController {
     
-    private static final String INCORRECT_ID = "Id must be greater than or equal to 1";
-    private static final String INCORRECT_MONTH = "Incorrect month";
-    private static final String INCORRECT_LIMIT = "Incorrect limit";
-    private static final String INCORRECT_OFFSET = "Incorrect offset";
-    private ExpensesAnalyticsService analyticsService;
+    private final ExpensesAnalyticsService analyticsService;
+    
+    @Value("category_analytics.info")
+    private String categoryAnalyticsInfo;
+    @Value("popular_analytics.info")
+    private String popularAnalyticsInfo;
     
     @GetMapping("/category")
     @PreAuthorize("#userId == authentication.principal.id && hasAuthority('analytics:read')")
     public ResponseEntity<List<CategoryExpensesAnalyticsView>> getCategoryAnalytics(
-            @RequestParam @Min(value = 1, message = INCORRECT_ID) Integer userId,
+            @RequestParam Integer userId,
             @RequestParam(required = false) Integer year,
-            @RequestParam(required = false) @Min(value = 1, message = INCORRECT_MONTH)
-                @Max(value = 12, message = INCORRECT_MONTH) Integer month) {
-                return ResponseEntity.ok().body(analyticsService.getAnalyticsByCategories(userId, month, year));
+            @RequestParam(required = false) @Min(value = 1)
+                @Max(value = 12) Integer month) {
+        log.info(categoryAnalyticsInfo, userId, year, month);
+        return ResponseEntity.ok().body(analyticsService.getAnalyticsByCategories(userId, new DatePart(month, year)));
     }
     
     @GetMapping("/popular")
     @PreAuthorize("#userId == authentication.principal.id && hasAuthority('analytics:read')")
     public ResponseEntity<List<ExpensesAnalyticsView>> getMostPopularExpenses(
-            @RequestParam @Min(value = 1, message = INCORRECT_ID) Integer userId,
-            @RequestParam(required = false) @Min(value = 1, message = INCORRECT_ID) Integer categoryId,
+            @RequestParam Integer userId,
+            @RequestParam(required = false) Integer categoryId,
             @RequestParam(required = false) Integer year,
-            @RequestParam(required = false) @Min(value = 1, message = INCORRECT_MONTH) @Max(value = 12, message = INCORRECT_MONTH) Integer month,
-            @RequestParam(required = false) @Min(value = 1, message = INCORRECT_OFFSET) Integer offset,
-            @RequestParam(required = false) @Min(value = 0, message = INCORRECT_LIMIT) Integer limit) {
-                return ResponseEntity.ok().body(analyticsService.getPopularExpensesAnalytics(userId, categoryId, month, year, offset, limit));
+            @RequestParam(required = false) @Min(value = 1) @Max(value = 1) Integer month,
+            @RequestParam(required = false) @Min(value = 0) Integer limit) {
+        log.info(popularAnalyticsInfo, userId, categoryId, year, month);
+        return ResponseEntity.ok().body(analyticsService.getPopularExpensesAnalytics(userId, categoryId, new DatePart(month, year), limit));
     }
 
 }
