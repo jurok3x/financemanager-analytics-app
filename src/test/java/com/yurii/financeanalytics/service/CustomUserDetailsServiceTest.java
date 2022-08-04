@@ -18,7 +18,9 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Arrays;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @ExtendWith(value = { MockitoExtension.class })
 class CustomUserDetailsServiceTest {
@@ -48,7 +50,11 @@ class CustomUserDetailsServiceTest {
         user.setEmail("jurok3x@gmail.com");
         user.setName("Yurii Kotsiuba");
         user.setPassword("pazzword");
-        user.setRole(Role.ADMIN);
+        user.setRole(Role.builder()
+                .id(1)
+                .name("ROLE_ADMIN")
+                .permissions(Arrays.asList("user:read", "user:write").stream().collect(Collectors.toSet()))
+                .build());
         return Optional.of(user);
     }
 }
