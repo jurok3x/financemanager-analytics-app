@@ -14,7 +14,6 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -27,9 +26,6 @@ public class UserDaoImpl implements UserDao {
     
     @Value("${find.by_email}")
     private String findByEmail;
-    
-    @Value("${find.all}")
-    private String findAll;
 
     @Override
     public Optional<User> findByEmail(String email) {
@@ -41,11 +37,6 @@ public class UserDaoImpl implements UserDao {
             ex.printStackTrace();
         }
         return Optional.ofNullable(user);
-    }
-    
-    @Override
-    public List<User> findAll() {
-        return template.query(findAll, rowMapper);
     }
 
 }

@@ -11,8 +11,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 @SpringBootTest(classes = {TestDBConfiguration.class, UserDaoImpl.class})
 class UserDaoImplTest {
@@ -21,26 +21,26 @@ class UserDaoImplTest {
     
     @Autowired
     private UserDao userDao;
-
-    @Test
-    void when_findByAll_then_returnCorrectList() {
-        List<User> users = userDao.findAll();
-        assertFalse(users.isEmpty());
-        assertEquals(USER_EMAIL, userDao.findAll().get(0).getEmail());
-    }
     
     @Test
     void when_findByEmail_then_returnCorrectUser() {
-        assertEquals(Optional.of(getUser()), userDao.findByEmail(USER_EMAIL));
+        assertEquals(getUser().getEmail(), userDao.findByEmail(USER_EMAIL).get().getEmail());
+        assertEquals(getUser().getRole().getName(), userDao.findByEmail(USER_EMAIL).get().getRole().getName());
+        assertTrue(userDao.findByEmail(USER_EMAIL).get().getRole().getGrantedAuthorities()
+                .stream().map(permission -> permission.getAuthority()).collect(Collectors.toSet()).contains("ROLE_ADMIN"));
     }
     
     private static User getUser() {
         User user = new User();
         user.setId(1);
         user.setEmail(USER_EMAIL);
-        user.setName("YuriiKotsiuba");
+        user.setName("Yurii Kotsiuba");
         user.setPassword("metropoliten");
-        user.setRole(Role.ADMIN);
+        user.setRole(Role.builder()
+                .id(1)
+                .name("ROLE_ADMIN")
+                .permissions(Arrays.asList("user:read", "user:write").stream().collect(Collectors.toSet()))
+                .build());
         return user;
     }
 
