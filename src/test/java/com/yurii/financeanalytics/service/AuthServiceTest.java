@@ -54,10 +54,10 @@ public class AuthServiceTest {
         User user = getUser();
         AuthRequest request = new AuthRequest(user.getEmail(), USER_PASSWORD);
         given(userDao.findByEmail(Mockito.anyString())).willReturn(Optional.of(user));
-        given(jwtProvider.generateToken(Mockito.anyString())).willReturn("token");
+        given(jwtProvider.generateToken(Mockito.anyString(), Mockito.anyInt())).willReturn("token");
         assertEquals("token", authService.login(request).getToken());
         verify(userDao).findByEmail(Mockito.anyString());
-        verify(jwtProvider).generateToken(Mockito.anyString());
+        verify(jwtProvider).generateToken(Mockito.anyString(), Mockito.anyInt());
     }
     
     @Test

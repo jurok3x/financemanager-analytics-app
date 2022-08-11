@@ -38,7 +38,7 @@ public class AuthServiceImpl implements AuthService {
             throw new BadCredentialsException(
                     String.format(wrongPasswordError, request.getEmail()));
         }
-        return new AuthResponse(jwtProvider.generateToken(user.getEmail()), TOKEN_TYPE);
+        return new AuthResponse(jwtProvider.generateToken(user.getEmail(), user.getId()), TOKEN_TYPE);
     }
 
 }
