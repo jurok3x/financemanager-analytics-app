@@ -46,7 +46,7 @@ class AuthControllerTest {
         AuthRequest request = new AuthRequest("login", "password");
         AuthResponse expectedResponse = new AuthResponse("token", "Bearer");
         given(authService.login(Mockito.any(AuthRequest.class))).willReturn(expectedResponse);
-        ResultActions result = mvc.perform(post("/api/auth/login")
+        ResultActions result = mvc.perform(post("/api/auth/signin")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(request)))
         .andExpect(status().isOk())
