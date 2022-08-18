@@ -45,7 +45,7 @@ class AnalyticsUtilsControllerTest {
         mapper = new ObjectMapper();
         List<Integer> expectedList = Arrays.asList(2022, 2021);
         given(utilsService.getActiveYears(Mockito.anyInt())).willReturn(expectedList);
-        ResultActions result = mvc.perform(get("/api/utils/active-years/2"))
+        ResultActions result = mvc.perform(get("/api/analytics/utils/active-years/2"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
         
