@@ -19,7 +19,7 @@ import java.util.List;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 @RestController
-@RequestMapping("/api/utils")
+@RequestMapping("/api/analytics/utils")
 @RequiredArgsConstructor
 @Slf4j
 @PropertySource(value = {"classpath:/messages/info.properties"})

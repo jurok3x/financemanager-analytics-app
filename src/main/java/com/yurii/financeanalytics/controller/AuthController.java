@@ -19,7 +19,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("api/auth")
+@RequestMapping("api/analytics/auth")
 @PropertySource(value = {"classpath:/messages/info.properties"})
 @Slf4j
 @SecurityRequirement(name = "bearerAuth")
