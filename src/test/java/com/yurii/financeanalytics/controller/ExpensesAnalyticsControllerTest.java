@@ -48,8 +48,7 @@ class ExpensesAnalyticsControllerTest {
         mapper = new ObjectMapper();
         List<CategoryExpensesAnalyticsView> expectedList = getCategoryAnalytics();
         given(analyticsService.getAnalyticsByCategories(Mockito.anyInt(), Mockito.any(DatePart.class))).willReturn(expectedList);
-        ResultActions result = mvc.perform(get("/api/analytics/expenses/category")
-                .param("userId", "2")
+        ResultActions result = mvc.perform(get("/api/analytics/expenses/category/user/2")
                 .param("month", "2")
                 .param("year", "2020"))
         .andExpect(status().isOk())
@@ -66,8 +65,7 @@ class ExpensesAnalyticsControllerTest {
         List<ExpensesAnalyticsView> expectedList = getPopularExpensesAnalytics();
         given(analyticsService.getPopularExpensesAnalytics(Mockito.anyInt(), Mockito.anyInt(), Mockito.any(DatePart.class),
                 Mockito.anyInt())).willReturn(expectedList);
-        ResultActions result = mvc.perform(get("/api/analytics/expenses/popular")
-                .param("userId", "2")
+        ResultActions result = mvc.perform(get("/api/analytics/expenses/popular/user/2")
                 .param("categoryId", "2")
                 .param("month", "2")
                 .param("year", "2020")

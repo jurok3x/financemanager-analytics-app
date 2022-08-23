@@ -11,6 +11,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -32,10 +33,10 @@ public class MonthExpensesAnalyticsController {
     @Value("month_analytics.info")
     private String monthAnalyticsInfo;
     
-    @GetMapping
+    @GetMapping("/user/{userId}")
     @PreAuthorize("#userId == authentication.principal.id && hasAuthority('analytics:read')")
     public ResponseEntity<List<MonthExpensesAnalyticsView>> getMonthAnalytics(
-            @RequestParam Integer userId,
+            @PathVariable Integer userId,
             @RequestParam(required = false) Integer categoryId,
             @RequestParam(required = false) Integer year) {
         log.info(monthAnalyticsInfo, userId, categoryId, year);

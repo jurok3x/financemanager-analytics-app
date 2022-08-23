@@ -47,8 +47,7 @@ class MonthExpensesAnalyticsControllerTest {
         List<MonthExpensesAnalyticsView> expectedList = getMonthAnalytics();
         given(analyticsService.getMonthAnalytics(Mockito.anyInt(), Mockito.anyInt(), Mockito.anyInt()))
         .willReturn(expectedList);
-        ResultActions result = mvc.perform(get("/api/analytics/expenses/month")
-                    .param("userId", "2")
+        ResultActions result = mvc.perform(get("/api/analytics/expenses/month/user/2")
                     .param("categoryId", "2")
                     .param("year", "2020"))
                 .andExpect(status().isOk())
