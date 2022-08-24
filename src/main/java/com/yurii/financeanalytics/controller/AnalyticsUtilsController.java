@@ -31,7 +31,7 @@ public class AnalyticsUtilsController {
     @Value("active_years.info")
     private String activeYearsInfo;
     
-    @GetMapping("/active-years/{userId}")
+    @GetMapping("/active-years/user/{userId}")
     @PreAuthorize("#userId == authentication.principal.id && hasAuthority('utils:read')") 
     public ResponseEntity<List<Integer>> getAllActiveYears(
             @PathVariable Integer userId) {
