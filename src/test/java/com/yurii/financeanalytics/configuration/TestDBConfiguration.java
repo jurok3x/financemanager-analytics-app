@@ -2,7 +2,7 @@ package com.yurii.financeanalytics.configuration;
 
 import com.yurii.financeanalytics.dao.extractor.CategoryExpensesAnalyticsViewMapper;
 import com.yurii.financeanalytics.dao.extractor.ExpensesAnalyticsViewMapper;
-import com.yurii.financeanalytics.dao.extractor.MonthExpensesAnalyticsViewMapper;
+import com.yurii.financeanalytics.dao.extractor.MonthAnalyticsViewMapper;
 import com.yurii.financeanalytics.dao.extractor.UserRowMapper;
 
 import org.springframework.boot.test.context.TestConfiguration;
@@ -16,7 +16,7 @@ import javax.sql.DataSource;
 
 @TestConfiguration
 @Import(value = { UserRowMapper.class, ExpensesAnalyticsViewMapper.class,
-        CategoryExpensesAnalyticsViewMapper.class, MonthExpensesAnalyticsViewMapper.class })
+        CategoryExpensesAnalyticsViewMapper.class, MonthAnalyticsViewMapper.class })
 public class TestDBConfiguration {
     
     @Bean
@@ -27,6 +27,8 @@ public class TestDBConfiguration {
                 .addScript("classpath:/db/user/test-data.sql")
                 .addScript("classpath:/db/category/schema.sql")
                 .addScript("classpath:/db/category/test-data.sql")
+                .addScript("classpath:/db/incomes/schema.sql")
+                .addScript("classpath:/db/incomes/test-data.sql")
                 .addScript("classpath:/db/expenses/schema.sql")
                 .addScript("classpath:/db/expenses/test-data.sql")
                 .addScript("classpath:/db/expenses/months-schema.sql")
