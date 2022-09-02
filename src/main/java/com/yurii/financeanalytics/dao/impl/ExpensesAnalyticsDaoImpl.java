@@ -28,7 +28,7 @@ public class ExpensesAnalyticsDaoImpl implements ExpensesAnalyticsDao{
     @Value(value = "${get.category_analytics}")
     private String categoryAnalyticsQuery;
     
-    @Value(value = "${get.most_poular_items_analytics}")
+    @Value(value = "${get.most_poular_expenses_analytics}")
     private String popularItemsAnalyticsQuery;
     
     @Value(value = "${get.all_active_years}")

@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class MonthExpensesAnalyticsView {
+public class MonthAnalyticsView {
     
     private Integer monthId;
     private String monthName;
